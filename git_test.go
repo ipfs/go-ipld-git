@@ -13,7 +13,7 @@ type GitObj interface {
 }
 
 func TestObjectParse(t *testing.T) {
-	err := filepath.Walk("samples/objects", func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}

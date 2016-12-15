@@ -45,6 +45,8 @@ func ParseObject(r io.Reader) (node.Node, error) {
 		return ReadCommit(rd)
 	case "blob":
 		return ReadBlob(rd)
+	case "tag":
+		return ReadTag(rd)
 	default:
 		return nil, fmt.Errorf("unrecognized type: %s", typ)
 	}
@@ -131,6 +133,61 @@ func ReadCommit(rd *bufio.Reader) (*Commit, error) {
 			}
 			out.Sig = sig
 
+		case len(line) == 0:
+			rest, err := ioutil.ReadAll(rd)
+			if err != nil {
+				return nil, err
+			}
+
+			out.Message = string(rest)
+		default:
+			fmt.Println("unhandled line: ", string(line))
+		}
+	}
+
+	out.cid = hashObject(out.RawData())
+
+	return out, nil
+}
+
+func ReadTag(rd *bufio.Reader) (*Tag, error) {
+	size, err := rd.ReadString(0)
+	if err != nil {
+		return nil, err
+	}
+
+	out := &Tag{
+		dataSize: size[:len(size)-1],
+	}
+
+	for {
+		line, _, err := rd.ReadLine()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return nil, err
+		}
+
+		switch {
+		case bytes.HasPrefix(line, []byte("object ")):
+			sha, err := hex.DecodeString(string(line[7:]))
+			if err != nil {
+				return nil, err
+			}
+
+			out.Object = shaToCid(sha)
+		case bytes.HasPrefix(line, []byte("tag ")):
+			out.Tag = string(line[4:])
+		case bytes.HasPrefix(line, []byte("tagger ")):
+			c, err := parsePersonInfo(line)
+			if err != nil {
+				return nil, err
+			}
+
+			out.Tagger = c
+		case bytes.HasPrefix(line, []byte("type ")):
+			out.Type = string(line[5:])
 		case len(line) == 0:
 			rest, err := ioutil.ReadAll(rd)
 			if err != nil {
