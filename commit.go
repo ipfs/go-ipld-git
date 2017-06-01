@@ -9,6 +9,7 @@ import (
 
 	cid "github.com/ipfs/go-cid"
 	node "github.com/ipfs/go-ipld-node"
+	"errors"
 )
 
 type Commit struct {
@@ -58,7 +59,7 @@ func (pi PersonInfo) resolve(p []string) (interface{}, []string, error) {
 	case "date":
 		return pi.Date + " " + pi.Timezone, p[1:], nil
 	default:
-		return nil, nil, cid.ErrNoSuchLink
+		return nil, nil, errors.New("no such link")// TODO: change to cid.ErrNoSuchLink
 	}
 }
 
@@ -148,7 +149,7 @@ func (c *Commit) Resolve(path []string) (interface{}, []string, error) {
 	case "tree":
 		return &node.Link{Cid: c.GitTree}, path[1:], nil
 	default:
-		return nil, nil, cid.ErrNoSuchLink
+		return nil, nil, errors.New("no such link")// TODO: change to cid.ErrNoSuchLink
 	}
 }
 
@@ -160,7 +161,7 @@ func (c *Commit) ResolveLink(path []string) (*node.Link, []string, error) {
 
 	lnk, ok := out.(*node.Link)
 	if !ok {
-		return nil, nil, node.ErrNotLink
+		return nil, nil, errors.New("not a link") //TODO: change to node.ErrNotLink
 	}
 
 	return lnk, rest, nil

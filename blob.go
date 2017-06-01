@@ -4,6 +4,7 @@ import (
 	cid "github.com/ipfs/go-cid"
 	node "github.com/ipfs/go-ipld-node"
 	mh "github.com/multiformats/go-multihash"
+	"errors"
 )
 
 type Blob []byte
@@ -12,7 +13,7 @@ func (b Blob) Cid() *cid.Cid {
 	c, _ := cid.Prefix{
 		MhType:   mh.SHA1,
 		MhLength: -1,
-		Codec:    cid.Git,
+		Codec:    0x78, //TODO: change to cid.Git
 		Version:  1,
 	}.Sum([]byte(b))
 	return c
@@ -29,11 +30,11 @@ func (b Blob) Links() []*node.Link {
 }
 
 func (b Blob) Resolve(_ []string) (interface{}, []string, error) {
-	return nil, nil, cid.ErrNoSuchLink
+	return nil, nil, errors.New("no such link")// TODO: change to cid.ErrNoSuchLink
 }
 
 func (b Blob) ResolveLink(_ []string) (*node.Link, []string, error) {
-	return nil, nil, cid.ErrNoSuchLink
+	return nil, nil, errors.New("no such link")// TODO: change to cid.ErrNoSuchLink
 }
 
 func (b Blob) Loggable() map[string]interface{} {

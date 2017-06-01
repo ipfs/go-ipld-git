@@ -209,7 +209,7 @@ func hashObject(data []byte) *cid.Cid {
 	c, err := cid.Prefix{
 		MhType:   mh.SHA1,
 		MhLength: -1,
-		Codec:    cid.Git,
+		Codec:    0x78, //TODO: change to cid.Git
 		Version:  1,
 	}.Sum(data)
 	if err != nil {
@@ -306,7 +306,7 @@ func cidToSha(c *cid.Cid) []byte {
 
 func shaToCid(sha []byte) *cid.Cid {
 	h, _ := mh.Encode(sha, mh.SHA1)
-	return cid.NewCidV1(cid.Git, h)
+	return cid.NewCidV1(0x78, h) //TODO: change to cid.Git
 }
 
 func ReadEntry(r *bufio.Reader) (*TreeEntry, error) {

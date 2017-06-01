@@ -7,6 +7,7 @@ import (
 
 	cid "github.com/ipfs/go-cid"
 	node "github.com/ipfs/go-ipld-node"
+	"errors"
 )
 
 type Tag struct {
@@ -70,7 +71,7 @@ func (t *Tag) Resolve(path []string) (interface{}, []string, error) {
 	case "tag":
 		return t.Tag, path[1:], nil
 	default:
-		return nil, nil, cid.ErrNoSuchLink
+		return nil, nil, errors.New("no such link")// TODO: change to cid.ErrNoSuchLink
 	}
 }
 
@@ -82,7 +83,7 @@ func (t *Tag) ResolveLink(path []string) (*node.Link, []string, error) {
 
 	lnk, ok := out.(*node.Link)
 	if !ok {
-		return nil, nil, node.ErrNotLink
+		return nil, nil, errors.New("not a link") //TODO: change to node.ErrNotLink
 	}
 
 	return lnk, rest, nil
