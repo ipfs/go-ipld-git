@@ -98,57 +98,83 @@ func ReadCommit(rd *bufio.Reader) (*Commit, error) {
 			return nil, err
 		}
 
-		switch {
-		case bytes.HasPrefix(line, []byte("tree ")):
-			sha, err := hex.DecodeString(string(line[5:]))
-			if err != nil {
-				return nil, err
-			}
-
-			out.GitTree = shaToCid(sha)
-		case bytes.HasPrefix(line, []byte("parent ")):
-			psha, err := hex.DecodeString(string(line[7:]))
-			if err != nil {
-				return nil, err
-			}
-
-			out.Parents = append(out.Parents, shaToCid(psha))
-		case bytes.HasPrefix(line, []byte("author ")):
-			a, err := parsePersonInfo(line)
-			if err != nil {
-				return nil, err
-			}
-
-			out.Author = a
-		case bytes.HasPrefix(line, []byte("committer ")):
-			c, err := parsePersonInfo(line)
-			if err != nil {
-				return nil, err
-			}
-
-			out.Committer = c
-		case bytes.HasPrefix(line, []byte("gpgsig ")):
-			sig, err := ReadGpgSig(rd)
-			if err != nil {
-				return nil, err
-			}
-			out.Sig = sig
-
-		case len(line) == 0:
-			rest, err := ioutil.ReadAll(rd)
-			if err != nil {
-				return nil, err
-			}
-
-			out.Message = string(rest)
-		default:
-			fmt.Println("unhandled line: ", string(line))
+		err = parseCommitLine(out, line, rd)
+		if err != nil {
+			return nil, err
 		}
 	}
 
 	out.cid = hashObject(out.RawData())
 
 	return out, nil
+}
+
+func parseCommitLine(out *Commit, line []byte, rd *bufio.Reader) error {
+	switch {
+	case bytes.HasPrefix(line, []byte("tree ")):
+		sha, err := hex.DecodeString(string(line[5:]))
+		if err != nil {
+			return err
+		}
+
+		out.GitTree = shaToCid(sha)
+	case bytes.HasPrefix(line, []byte("parent ")):
+		psha, err := hex.DecodeString(string(line[7:]))
+		if err != nil {
+			return err
+		}
+
+		out.Parents = append(out.Parents, shaToCid(psha))
+	case bytes.HasPrefix(line, []byte("author ")):
+		a, err := parsePersonInfo(line)
+		if err != nil {
+			return err
+		}
+
+		out.Author = a
+	case bytes.HasPrefix(line, []byte("committer ")):
+		c, err := parsePersonInfo(line)
+		if err != nil {
+			return err
+		}
+
+		out.Committer = c
+	case bytes.HasPrefix(line, []byte("mergetag object ")):
+		sha, err := hex.DecodeString(string(line)[16:])
+		if err != nil {
+			return err
+		}
+
+		mt, rest, err := ReadMergeTag(sha, rd)
+		if err != nil {
+			return err
+		}
+
+		out.MergeTag = mt
+
+		if rest != nil {
+			err = parseCommitLine(out, rest, rd)
+			if err != nil {
+				return err
+			}
+		}
+	case bytes.HasPrefix(line, []byte("gpgsig ")):
+		sig, err := ReadGpgSig(rd)
+		if err != nil {
+			return err
+		}
+		out.Sig = sig
+	case len(line) == 0:
+		rest, err := ioutil.ReadAll(rd)
+		if err != nil {
+			return err
+		}
+
+		out.Message = string(rest)
+	default:
+		fmt.Println("unhandled line: ", string(line))
+	}
+	return nil
 }
 
 func ReadTag(rd *bufio.Reader) (*Tag, error) {
@@ -217,6 +243,47 @@ func hashObject(data []byte) *cid.Cid {
 		panic(err)
 	}
 	return c
+}
+
+func ReadMergeTag(hash []byte, rd *bufio.Reader) (*MergeTag, []byte, error) {
+	out := new(MergeTag)
+
+	out.Object = shaToCid(hash)
+	for {
+		line, _, err := rd.ReadLine()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return nil, nil, err
+		}
+
+		switch {
+		case bytes.HasPrefix(line, []byte(" type ")):
+			out.Type = string(line[6:])
+		case bytes.HasPrefix(line, []byte(" tag ")):
+			out.Tag = string(line[5:])
+		case bytes.HasPrefix(line, []byte(" tagger ")):
+			out.Tagger, err = parsePersonInfo(line[1:])
+			if err != nil {
+				return nil, nil, err
+			}
+		case string(line) == " ":
+			for {
+				line, _, err := rd.ReadLine()
+				if err != nil {
+					return nil, nil, err
+				}
+
+				if !bytes.HasPrefix(line, []byte(" ")) {
+					return out, line, nil
+				}
+
+				out.Text += string(line) + "\n"
+			}
+		}
+	}
+	return out, nil, nil
 }
 
 func ReadGpgSig(rd *bufio.Reader) (*GpgSig, error) {

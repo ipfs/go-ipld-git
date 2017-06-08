@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
-	"errors"
 
 	cid "github.com/ipfs/go-cid"
 	node "github.com/ipfs/go-ipld-format"
@@ -20,6 +20,7 @@ type Commit struct {
 	Author    PersonInfo `json:"author"`
 	Committer PersonInfo `json:"committer"`
 	Sig       *GpgSig    `json:"signature,omitempty"`
+	MergeTag  *MergeTag  `json:"mergetag,omitempty"`
 
 	cid *cid.Cid
 }
@@ -63,6 +64,14 @@ func (pi PersonInfo) resolve(p []string) (interface{}, []string, error) {
 	}
 }
 
+type MergeTag struct {
+	Object *cid.Cid
+	Type   string
+	Tag    string
+	Tagger PersonInfo
+	Text   string
+}
+
 type GpgSig struct {
 	Text string
 }
@@ -102,6 +111,13 @@ func (c *Commit) RawData() []byte {
 	}
 	fmt.Fprintf(buf, "author %s\n", c.Author.String())
 	fmt.Fprintf(buf, "committer %s\n", c.Committer.String())
+	if c.MergeTag != nil {
+		fmt.Fprintf(buf, "mergetag object %s\n", hex.EncodeToString(cidToSha(c.MergeTag.Object)))
+		fmt.Fprintf(buf, " type %s\n", c.MergeTag.Type)
+		fmt.Fprintf(buf, " tag %s\n", c.MergeTag.Tag)
+		fmt.Fprintf(buf, " tagger %s\n \n", c.MergeTag.Tagger.String())
+		fmt.Fprintf(buf, "%s", c.MergeTag.Text)
+	}
 	if c.Sig != nil {
 		fmt.Fprintln(buf, "gpgsig -----BEGIN PGP SIGNATURE-----")
 		fmt.Fprint(buf, c.Sig.Text)
