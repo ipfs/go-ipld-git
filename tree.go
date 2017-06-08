@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"io"
 
-	cid "github.com/ipfs/go-cid"
-	node "github.com/ipfs/go-ipld-node"
 	"errors"
+	cid "github.com/ipfs/go-cid"
+	node "github.com/ipfs/go-ipld-format"
 )
 
 type Tree struct {
@@ -107,7 +107,7 @@ func (t *Tree) RawData() []byte {
 func (t *Tree) Resolve(p []string) (interface{}, []string, error) {
 	e, ok := t.entries[p[0]]
 	if !ok {
-		return nil, nil, errors.New("no such link")// TODO: change to cid.ErrNoSuchLink
+		return nil, nil, errors.New("no such link") //TODO: change to cid.ErrNoSuchLink
 	}
 
 	if len(p) == 1 {
@@ -120,7 +120,7 @@ func (t *Tree) Resolve(p []string) (interface{}, []string, error) {
 	case "mode":
 		return e.Mode, p[2:], nil
 	default:
-		return nil, nil, errors.New("no such link")// TODO: change to cid.ErrNoSuchLink
+		return nil, nil, errors.New("no such link") //TODO: change to cid.ErrNoSuchLink
 	}
 }
 

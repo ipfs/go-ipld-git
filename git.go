@@ -9,9 +9,10 @@ import (
 	"io"
 	"io/ioutil"
 	"strconv"
+	"strings"
 
 	cid "github.com/ipfs/go-cid"
-	node "github.com/ipfs/go-ipld-node"
+	node "github.com/ipfs/go-ipld-format"
 	mh "github.com/multiformats/go-multihash"
 )
 
@@ -48,7 +49,7 @@ func ParseObject(r io.Reader) (node.Node, error) {
 	case "tag":
 		return ReadTag(rd)
 	default:
-		return nil, fmt.Errorf("unrecognized type: %s", typ)
+		return nil, fmt.Errorf("unrecognized object type: %s", typ)
 	}
 }
 
@@ -224,11 +225,18 @@ func ReadGpgSig(rd *bufio.Reader) (*GpgSig, error) {
 		return nil, err
 	}
 
+	out := new(GpgSig)
+
 	if string(line) != " " {
-		return nil, fmt.Errorf("expected first line of sig to be a single space")
+		if strings.HasPrefix(string(line), " Version: ") {
+			out.Text += string(line) + "\n"
+		} else {
+			return nil, fmt.Errorf("expected first line of sig to be a single space or version")
+		}
+	} else {
+		out.Text += " \n"
 	}
 
-	out := new(GpgSig)
 	for {
 		line, _, err := rd.ReadLine()
 		if err != nil {

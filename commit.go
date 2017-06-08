@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"errors"
 
 	cid "github.com/ipfs/go-cid"
-	node "github.com/ipfs/go-ipld-node"
-	"errors"
+	node "github.com/ipfs/go-ipld-format"
 )
 
 type Commit struct {
@@ -59,7 +59,7 @@ func (pi PersonInfo) resolve(p []string) (interface{}, []string, error) {
 	case "date":
 		return pi.Date + " " + pi.Timezone, p[1:], nil
 	default:
-		return nil, nil, errors.New("no such link")// TODO: change to cid.ErrNoSuchLink
+		return nil, nil, errors.New("no such link") //TODO: change to cid.ErrNoSuchLink
 	}
 }
 
@@ -103,7 +103,7 @@ func (c *Commit) RawData() []byte {
 	fmt.Fprintf(buf, "author %s\n", c.Author.String())
 	fmt.Fprintf(buf, "committer %s\n", c.Committer.String())
 	if c.Sig != nil {
-		fmt.Fprintln(buf, "gpgsig -----BEGIN PGP SIGNATURE-----\n ")
+		fmt.Fprintln(buf, "gpgsig -----BEGIN PGP SIGNATURE-----")
 		fmt.Fprint(buf, c.Sig.Text)
 		fmt.Fprintln(buf, " -----END PGP SIGNATURE-----")
 	}
@@ -149,7 +149,7 @@ func (c *Commit) Resolve(path []string) (interface{}, []string, error) {
 	case "tree":
 		return &node.Link{Cid: c.GitTree}, path[1:], nil
 	default:
-		return nil, nil, errors.New("no such link")// TODO: change to cid.ErrNoSuchLink
+		return nil, nil, errors.New("no such link") //TODO: change to cid.ErrNoSuchLink
 	}
 }
 

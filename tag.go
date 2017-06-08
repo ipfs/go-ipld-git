@@ -5,9 +5,9 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	cid "github.com/ipfs/go-cid"
-	node "github.com/ipfs/go-ipld-node"
 	"errors"
+	cid "github.com/ipfs/go-cid"
+	node "github.com/ipfs/go-ipld-format"
 )
 
 type Tag struct {
@@ -71,7 +71,7 @@ func (t *Tag) Resolve(path []string) (interface{}, []string, error) {
 	case "tag":
 		return t.Tag, path[1:], nil
 	default:
-		return nil, nil, errors.New("no such link")// TODO: change to cid.ErrNoSuchLink
+		return nil, nil, errors.New("no such link") //TODO: change to cid.ErrNoSuchLink
 	}
 }
 

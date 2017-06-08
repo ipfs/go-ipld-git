@@ -1,10 +1,11 @@
 package ipldgit
 
 import (
-	cid "github.com/ipfs/go-cid"
-	node "github.com/ipfs/go-ipld-node"
-	mh "github.com/multiformats/go-multihash"
 	"errors"
+
+	cid "github.com/ipfs/go-cid"
+	node "github.com/ipfs/go-ipld-format"
+	mh "github.com/multiformats/go-multihash"
 )
 
 type Blob []byte
@@ -30,11 +31,11 @@ func (b Blob) Links() []*node.Link {
 }
 
 func (b Blob) Resolve(_ []string) (interface{}, []string, error) {
-	return nil, nil, errors.New("no such link")// TODO: change to cid.ErrNoSuchLink
+	return nil, nil, errors.New("no such link") //TODO: change to cid.ErrNoSuchLink
 }
 
 func (b Blob) ResolveLink(_ []string) (*node.Link, []string, error) {
-	return nil, nil, errors.New("no such link")// TODO: change to cid.ErrNoSuchLink
+	return nil, nil, errors.New("no such link") //TODO: change to cid.ErrNoSuchLink
 }
 
 func (b Blob) Loggable() map[string]interface{} {
