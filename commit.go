@@ -13,14 +13,15 @@ import (
 )
 
 type Commit struct {
-	DataSize  string     `json:"-"`
-	GitTree   *cid.Cid   `json:"tree"`
-	Parents   []*cid.Cid `json:"parents"`
-	Message   string     `json:"message"`
-	Author    PersonInfo `json:"author"`
-	Committer PersonInfo `json:"committer"`
-	Sig       *GpgSig    `json:"signature,omitempty"`
-	MergeTag  *MergeTag  `json:"mergetag,omitempty"`
+	DataSize  string      `json:"-"`
+	GitTree   *cid.Cid    `json:"tree"`
+	Parents   []*cid.Cid  `json:"parents"`
+	Message   string      `json:"message"`
+	Author    PersonInfo  `json:"author"`
+	Committer PersonInfo  `json:"committer"`
+	Encoding  string      `json:"encoding,omitempty"`
+	Sig       *GpgSig     `json:"signature,omitempty"`
+	MergeTag  []*MergeTag `json:"mergetag,omitempty"`
 
 	cid *cid.Cid
 }
@@ -111,12 +112,15 @@ func (c *Commit) RawData() []byte {
 	}
 	fmt.Fprintf(buf, "author %s\n", c.Author.String())
 	fmt.Fprintf(buf, "committer %s\n", c.Committer.String())
-	if c.MergeTag != nil {
-		fmt.Fprintf(buf, "mergetag object %s\n", hex.EncodeToString(cidToSha(c.MergeTag.Object)))
-		fmt.Fprintf(buf, " type %s\n", c.MergeTag.Type)
-		fmt.Fprintf(buf, " tag %s\n", c.MergeTag.Tag)
-		fmt.Fprintf(buf, " tagger %s\n \n", c.MergeTag.Tagger.String())
-		fmt.Fprintf(buf, "%s", c.MergeTag.Text)
+	if len(c.Encoding) > 0 {
+		fmt.Fprintf(buf, "encoding %s\n", c.Encoding)
+	}
+	for _, mtag := range c.MergeTag {
+		fmt.Fprintf(buf, "mergetag object %s\n", hex.EncodeToString(cidToSha(mtag.Object)))
+		fmt.Fprintf(buf, " type %s\n", mtag.Type)
+		fmt.Fprintf(buf, " tag %s\n", mtag.Tag)
+		fmt.Fprintf(buf, " tagger %s\n \n", mtag.Tagger.String())
+		fmt.Fprintf(buf, "%s", mtag.Text)
 	}
 	if c.Sig != nil {
 		fmt.Fprintln(buf, "gpgsig -----BEGIN PGP SIGNATURE-----")

@@ -131,14 +131,16 @@ func parseCommitLine(out *Commit, line []byte, rd *bufio.Reader) error {
 			return err
 		}
 
-		out.Author = a
+		out.Author = *a
 	case bytes.HasPrefix(line, []byte("committer ")):
 		c, err := parsePersonInfo(line)
 		if err != nil {
 			return err
 		}
 
-		out.Committer = c
+		out.Committer = *c
+	case bytes.HasPrefix(line, []byte("encoding ")):
+		out.Encoding = string(line[9:])
 	case bytes.HasPrefix(line, []byte("mergetag object ")):
 		sha, err := hex.DecodeString(string(line)[16:])
 		if err != nil {
@@ -150,7 +152,7 @@ func parseCommitLine(out *Commit, line []byte, rd *bufio.Reader) error {
 			return err
 		}
 
-		out.MergeTag = mt
+		out.MergeTag = append(out.MergeTag, mt)
 
 		if rest != nil {
 			err = parseCommitLine(out, rest, rd)
@@ -264,10 +266,11 @@ func ReadMergeTag(hash []byte, rd *bufio.Reader) (*MergeTag, []byte, error) {
 		case bytes.HasPrefix(line, []byte(" tag ")):
 			out.Tag = string(line[5:])
 		case bytes.HasPrefix(line, []byte(" tagger ")):
-			out.Tagger, err = parsePersonInfo(line[1:])
+			tagger, err := parsePersonInfo(line[1:])
 			if err != nil {
 				return nil, nil, err
 			}
+			out.Tagger = *tagger
 		case string(line) == " ":
 			for {
 				line, _, err := rd.ReadLine()
@@ -320,23 +323,78 @@ func ReadGpgSig(rd *bufio.Reader) (*GpgSig, error) {
 	return out, nil
 }
 
-func parsePersonInfo(line []byte) (PersonInfo, error) {
+func parsePersonInfo(line []byte) (*PersonInfo, error) {
 	parts := bytes.Split(line, []byte{' '})
 	if len(parts) < 5 {
 		fmt.Println(string(line))
-		return PersonInfo{}, fmt.Errorf("incorrectly formatted person info line")
+		return nil, fmt.Errorf("incorrectly formatted person info line")
 	}
 
-	var pi PersonInfo
-	email_bytes := parts[len(parts)-3][1:]
-	pi.Email = string(email_bytes[:len(email_bytes)-1])
-	pi.Date = string(parts[len(parts)-2])
-	pi.Timezone = string(parts[len(parts)-1])
+	//TODO: just use regex?
+	//skip prefix
+	at := 1
 
-	lb := len(parts[0]) + 1
-	hb := len(line) - (len(pi.Email) + len(pi.Date) + len(pi.Timezone) + 5)
-	pi.Name = string(line[lb:hb])
-	return pi, nil
+	var pi PersonInfo
+	var name string
+
+	for {
+		if at == len(parts) {
+			return nil, fmt.Errorf("invalid personInfo: %s\n", line)
+		}
+		part := parts[at]
+		if len(part) != 0 {
+			if part[0] == '<' {
+				break
+			}
+			name += string(part) + " "
+		} else if len(name) > 0 {
+			name += " "
+		}
+		at++
+	}
+	if len(name) != 0 {
+		pi.Name = name[:len(name)-1]
+	}
+
+	var email string
+	for {
+		if at == len(parts) {
+			return nil, fmt.Errorf("invalid personInfo: %s\n", line)
+		}
+		part := parts[at]
+		if part[0] == '<' {
+			part = part[1:]
+		}
+
+		at++
+		if part[len(part)-1] == '>' {
+			email += string(part[:len(part)-1])
+			break
+		}
+		email += string(part) + " "
+	}
+	pi.Email = email
+
+	if at == len(parts) {
+		return nil, fmt.Errorf("invalid personInfo: %s\n", line)
+	}
+	pi.Date = string(parts[at])
+
+	at++
+	if at == len(parts) {
+		return nil, fmt.Errorf("invalid personInfo: %s\n", line)
+	}
+	pi.Timezone = string(parts[at])
+	/*
+		email_bytes := parts[len(parts)-3][1:]
+		pi.Email = string(email_bytes[:len(email_bytes)-1])
+		pi.Date = string(parts[len(parts)-2])
+		pi.Timezone = string(parts[len(parts)-1])
+
+		lb := len(parts[0]) + 1
+		hb := len(line) - (len(pi.Email) + len(pi.Date) + len(pi.Timezone) + 5)
+		pi.Name = string(line[lb:hb])*/
+	return &pi, nil
 }
 
 func ReadTree(rd *bufio.Reader) (*Tree, error) {

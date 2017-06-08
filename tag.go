@@ -11,11 +11,11 @@ import (
 )
 
 type Tag struct {
-	Object   *cid.Cid   `json:"object"`
-	Type     string     `json:"type"`
-	Tag      string     `json:"tag"`
-	Tagger   PersonInfo `json:"tagger"`
-	Message  string     `json:"message"`
+	Object   *cid.Cid    `json:"object"`
+	Type     string      `json:"type"`
+	Tag      string      `json:"tag"`
+	Tagger   *PersonInfo `json:"tagger"`
+	Message  string      `json:"message"`
 	dataSize string
 
 	cid *cid.Cid
@@ -46,7 +46,9 @@ func (t *Tag) RawData() []byte {
 	fmt.Fprintf(buf, "object %s\n", hex.EncodeToString(cidToSha(t.Object)))
 	fmt.Fprintf(buf, "type %s\n", t.Type)
 	fmt.Fprintf(buf, "tag %s\n", t.Tag)
-	fmt.Fprintf(buf, "tagger %s\n", t.Tagger.String())
+	if t.Tagger != nil {
+		fmt.Fprintf(buf, "tagger %s\n", t.Tagger.String())
+	}
 	fmt.Fprintf(buf, "\n%s", t.Message)
 	return buf.Bytes()
 }
