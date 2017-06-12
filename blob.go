@@ -14,7 +14,7 @@ func (b Blob) Cid() *cid.Cid {
 	c, _ := cid.Prefix{
 		MhType:   mh.SHA1,
 		MhLength: -1,
-		Codec:    0x78, //TODO: change to cid.Git
+		Codec:    cid.GitRaw,
 		Version:  1,
 	}.Sum([]byte(b))
 	return c
@@ -31,11 +31,11 @@ func (b Blob) Links() []*node.Link {
 }
 
 func (b Blob) Resolve(_ []string) (interface{}, []string, error) {
-	return nil, nil, errors.New("no such link") //TODO: change to cid.ErrNoSuchLink
+	return nil, nil, errors.New("no such link")
 }
 
 func (b Blob) ResolveLink(_ []string) (*node.Link, []string, error) {
-	return nil, nil, errors.New("no such link") //TODO: change to cid.ErrNoSuchLink
+	return nil, nil, errors.New("no such link")
 }
 
 func (b Blob) Loggable() map[string]interface{} {

@@ -131,14 +131,14 @@ func parseCommitLine(out *Commit, line []byte, rd *bufio.Reader) error {
 			return err
 		}
 
-		out.Author = *a
+		out.Author = a
 	case bytes.HasPrefix(line, []byte("committer ")):
 		c, err := parsePersonInfo(line)
 		if err != nil {
 			return err
 		}
 
-		out.Committer = *c
+		out.Committer = c
 	case bytes.HasPrefix(line, []byte("encoding ")):
 		out.Encoding = string(line[9:])
 	case bytes.HasPrefix(line, []byte("mergetag object ")):
@@ -238,7 +238,7 @@ func hashObject(data []byte) *cid.Cid {
 	c, err := cid.Prefix{
 		MhType:   mh.SHA1,
 		MhLength: -1,
-		Codec:    0x78, //TODO: change to cid.Git
+		Codec:    cid.GitRaw,
 		Version:  1,
 	}.Sum(data)
 	if err != nil {
@@ -270,7 +270,7 @@ func ReadMergeTag(hash []byte, rd *bufio.Reader) (*MergeTag, []byte, error) {
 			if err != nil {
 				return nil, nil, err
 			}
-			out.Tagger = *tagger
+			out.Tagger = tagger
 		case string(line) == " ":
 			for {
 				line, _, err := rd.ReadLine()
@@ -385,15 +385,6 @@ func parsePersonInfo(line []byte) (*PersonInfo, error) {
 		return nil, fmt.Errorf("invalid personInfo: %s\n", line)
 	}
 	pi.Timezone = string(parts[at])
-	/*
-		email_bytes := parts[len(parts)-3][1:]
-		pi.Email = string(email_bytes[:len(email_bytes)-1])
-		pi.Date = string(parts[len(parts)-2])
-		pi.Timezone = string(parts[len(parts)-1])
-
-		lb := len(parts[0]) + 1
-		hb := len(line) - (len(pi.Email) + len(pi.Date) + len(pi.Timezone) + 5)
-		pi.Name = string(line[lb:hb])*/
 	return &pi, nil
 }
 
@@ -439,7 +430,7 @@ func cidToSha(c *cid.Cid) []byte {
 
 func shaToCid(sha []byte) *cid.Cid {
 	h, _ := mh.Encode(sha, mh.SHA1)
-	return cid.NewCidV1(0x78, h) //TODO: change to cid.Git
+	return cid.NewCidV1(cid.GitRaw, h)
 }
 
 func ReadEntry(r *bufio.Reader) (*TreeEntry, error) {

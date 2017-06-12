@@ -49,7 +49,9 @@ func (t *Tag) RawData() []byte {
 	if t.Tagger != nil {
 		fmt.Fprintf(buf, "tagger %s\n", t.Tagger.String())
 	}
-	fmt.Fprintf(buf, "\n%s", t.Message)
+	if t.Message != "" {
+		fmt.Fprintf(buf, "\n%s", t.Message)
+	}
 	return buf.Bytes()
 }
 
@@ -73,7 +75,7 @@ func (t *Tag) Resolve(path []string) (interface{}, []string, error) {
 	case "tag":
 		return t.Tag, path[1:], nil
 	default:
-		return nil, nil, errors.New("no such link") //TODO: change to cid.ErrNoSuchLink
+		return nil, nil, errors.New("no such link")
 	}
 }
 
@@ -85,7 +87,7 @@ func (t *Tag) ResolveLink(path []string) (*node.Link, []string, error) {
 
 	lnk, ok := out.(*node.Link)
 	if !ok {
-		return nil, nil, errors.New("not a link") //TODO: change to node.ErrNotLink
+		return nil, nil, errors.New("not a link")
 	}
 
 	return lnk, rest, nil

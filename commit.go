@@ -17,8 +17,8 @@ type Commit struct {
 	GitTree   *cid.Cid    `json:"tree"`
 	Parents   []*cid.Cid  `json:"parents"`
 	Message   string      `json:"message"`
-	Author    PersonInfo  `json:"author"`
-	Committer PersonInfo  `json:"committer"`
+	Author    *PersonInfo `json:"author"`
+	Committer *PersonInfo `json:"committer"`
 	Encoding  string      `json:"encoding,omitempty"`
 	Sig       *GpgSig     `json:"signature,omitempty"`
 	MergeTag  []*MergeTag `json:"mergetag,omitempty"`
@@ -33,7 +33,7 @@ type PersonInfo struct {
 	Timezone string
 }
 
-func (pi PersonInfo) MarshalJSON() ([]byte, error) {
+func (pi *PersonInfo) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]string{
 		"name":  pi.Name,
 		"email": pi.Email,
@@ -41,18 +41,18 @@ func (pi PersonInfo) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (pi PersonInfo) String() string {
+func (pi *PersonInfo) String() string {
 	return fmt.Sprintf("%s <%s> %s %s", pi.Name, pi.Email, pi.Date, pi.Timezone)
 }
 
-func (pi PersonInfo) tree(name string, depth int) []string {
+func (pi *PersonInfo) tree(name string, depth int) []string {
 	if depth == 1 {
 		return []string{name}
 	}
 	return []string{name + "/name", name + "/email", name + "/date"}
 }
 
-func (pi PersonInfo) resolve(p []string) (interface{}, []string, error) {
+func (pi *PersonInfo) resolve(p []string) (interface{}, []string, error) {
 	switch p[0] {
 	case "name":
 		return pi.Name, p[1:], nil
@@ -61,7 +61,7 @@ func (pi PersonInfo) resolve(p []string) (interface{}, []string, error) {
 	case "date":
 		return pi.Date + " " + pi.Timezone, p[1:], nil
 	default:
-		return nil, nil, errors.New("no such link") //TODO: change to cid.ErrNoSuchLink
+		return nil, nil, errors.New("no such link")
 	}
 }
 
@@ -69,7 +69,7 @@ type MergeTag struct {
 	Object *cid.Cid
 	Type   string
 	Tag    string
-	Tagger PersonInfo
+	Tagger *PersonInfo
 	Text   string
 }
 
@@ -169,7 +169,7 @@ func (c *Commit) Resolve(path []string) (interface{}, []string, error) {
 	case "tree":
 		return &node.Link{Cid: c.GitTree}, path[1:], nil
 	default:
-		return nil, nil, errors.New("no such link") //TODO: change to cid.ErrNoSuchLink
+		return nil, nil, errors.New("no such link")
 	}
 }
 
@@ -181,7 +181,7 @@ func (c *Commit) ResolveLink(path []string) (*node.Link, []string, error) {
 
 	lnk, ok := out.(*node.Link)
 	if !ok {
-		return nil, nil, errors.New("not a link") //TODO: change to node.ErrNotLink
+		return nil, nil, errors.New("not a link")
 	}
 
 	return lnk, rest, nil
