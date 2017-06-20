@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"compress/zlib"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -23,6 +24,12 @@ func init() {
 }
 
 func DecodeBlock(block blocks.Block) (node.Node, error) {
+	prefix := block.Cid().Prefix()
+
+	if prefix.Codec != cid.GitRaw || prefix.MhType != mh.SHA1 || prefix.MhLength != mh.DefaultLengths[mh.SHA1] {
+		return nil, errors.New("invalid CID prefix")
+	}
+
 	return ParseObjectFromBuffer(block.RawData())
 }
 

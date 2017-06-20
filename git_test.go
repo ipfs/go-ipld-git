@@ -18,6 +18,7 @@ type GitObj interface {
 }
 
 func TestObjectParse(t *testing.T) {
+	i := 0
 	err := filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -44,7 +45,9 @@ func TestObjectParse(t *testing.T) {
 			return err
 		}
 
-		fmt.Printf("%s\r", path)
+		if i%64 == 0 {
+			fmt.Printf("%d %s\r", i, path)
+		}
 
 		sha := thing.(GitObj).GitSha()
 		if fmt.Sprintf("%x", sha) != parts[len(parts)-2]+parts[len(parts)-1] {
@@ -62,6 +65,7 @@ func TestObjectParse(t *testing.T) {
 		if err != nil {
 			t.Fatalf("error: %s, %s", path, err)
 		}
+		i++
 		return nil
 	})
 	if err != nil {
