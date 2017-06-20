@@ -11,10 +11,20 @@ import (
 	"strconv"
 	"strings"
 
+	blocks "github.com/ipfs/go-block-format"
 	cid "github.com/ipfs/go-cid"
 	node "github.com/ipfs/go-ipld-format"
 	mh "github.com/multiformats/go-multihash"
 )
+
+func init() {
+	// Register the block decoder
+	node.DefaultBlockDecoder[cid.GitRaw] = DecodeBlock
+}
+
+func DecodeBlock(block blocks.Block) (node.Node, error) {
+	return ParseObjectFromBuffer(block.RawData())
+}
 
 func ParseObjectFromBuffer(b []byte) (node.Node, error) {
 	return ParseObject(bytes.NewReader(b))
