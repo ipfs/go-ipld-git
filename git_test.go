@@ -4,12 +4,13 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"fmt"
-	node "github.com/ipfs/go-ipld-format"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	node "github.com/ipfs/go-ipld-format"
 )
 
 type GitObj interface {
