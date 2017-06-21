@@ -191,7 +191,7 @@ func parseCommitLine(out *Commit, line []byte, rd *bufio.Reader) error {
 
 		out.Message = string(rest)
 	default:
-		fmt.Println("unhandled line: ", string(line))
+		out.Other = append(out.Other, string(line))
 	}
 	return nil
 }
@@ -315,7 +315,7 @@ func ReadGpgSig(rd *bufio.Reader) (*GpgSig, error) {
 	out := new(GpgSig)
 
 	if string(line) != " " {
-		if strings.HasPrefix(string(line), " Version: ") {
+		if strings.HasPrefix(string(line), " Version: ") || strings.HasPrefix(string(line), " Comment: ") {
 			out.Text += string(line) + "\n"
 		} else {
 			return nil, fmt.Errorf("expected first line of sig to be a single space or version")
@@ -342,7 +342,7 @@ func ReadGpgSig(rd *bufio.Reader) (*GpgSig, error) {
 
 func parsePersonInfo(line []byte) (*PersonInfo, error) {
 	parts := bytes.Split(line, []byte{' '})
-	if len(parts) < 5 {
+	if len(parts) < 3 {
 		fmt.Println(string(line))
 		return nil, fmt.Errorf("incorrectly formatted person info line")
 	}
@@ -393,13 +393,13 @@ func parsePersonInfo(line []byte) (*PersonInfo, error) {
 	pi.Email = email
 
 	if at == len(parts) {
-		return nil, fmt.Errorf("invalid personInfo: %s\n", line)
+		return &pi, nil
 	}
 	pi.Date = string(parts[at])
 
 	at++
 	if at == len(parts) {
-		return nil, fmt.Errorf("invalid personInfo: %s\n", line)
+		return &pi, nil
 	}
 	pi.Timezone = string(parts[at])
 	return &pi, nil
