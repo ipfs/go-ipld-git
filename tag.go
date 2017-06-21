@@ -5,16 +5,17 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	"errors"
 	cid "github.com/ipfs/go-cid"
-	node "github.com/ipfs/go-ipld-node"
+	node "github.com/ipfs/go-ipld-format"
 )
 
 type Tag struct {
-	Object   *cid.Cid   `json:"object"`
-	Type     string     `json:"type"`
-	Tag      string     `json:"tag"`
-	Tagger   PersonInfo `json:"tagger"`
-	Message  string     `json:"message"`
+	Object   *cid.Cid    `json:"object"`
+	Type     string      `json:"type"`
+	Tag      string      `json:"tag"`
+	Tagger   *PersonInfo `json:"tagger"`
+	Message  string      `json:"message"`
 	dataSize string
 
 	cid *cid.Cid
@@ -45,8 +46,12 @@ func (t *Tag) RawData() []byte {
 	fmt.Fprintf(buf, "object %s\n", hex.EncodeToString(cidToSha(t.Object)))
 	fmt.Fprintf(buf, "type %s\n", t.Type)
 	fmt.Fprintf(buf, "tag %s\n", t.Tag)
-	fmt.Fprintf(buf, "tagger %s\n", t.Tagger.String())
-	fmt.Fprintf(buf, "\n%s", t.Message)
+	if t.Tagger != nil {
+		fmt.Fprintf(buf, "tagger %s\n", t.Tagger.String())
+	}
+	if t.Message != "" {
+		fmt.Fprintf(buf, "\n%s", t.Message)
+	}
 	return buf.Bytes()
 }
 
@@ -70,7 +75,7 @@ func (t *Tag) Resolve(path []string) (interface{}, []string, error) {
 	case "tag":
 		return t.Tag, path[1:], nil
 	default:
-		return nil, nil, cid.ErrNoSuchLink
+		return nil, nil, errors.New("no such link")
 	}
 }
 
@@ -82,7 +87,7 @@ func (t *Tag) ResolveLink(path []string) (*node.Link, []string, error) {
 
 	lnk, ok := out.(*node.Link)
 	if !ok {
-		return nil, nil, node.ErrNotLink
+		return nil, nil, errors.New("not a link")
 	}
 
 	return lnk, rest, nil

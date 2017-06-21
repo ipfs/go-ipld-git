@@ -1,8 +1,10 @@
 package ipldgit
 
 import (
+	"errors"
+
 	cid "github.com/ipfs/go-cid"
-	node "github.com/ipfs/go-ipld-node"
+	node "github.com/ipfs/go-ipld-format"
 	mh "github.com/multiformats/go-multihash"
 )
 
@@ -12,7 +14,7 @@ func (b Blob) Cid() *cid.Cid {
 	c, _ := cid.Prefix{
 		MhType:   mh.SHA1,
 		MhLength: -1,
-		Codec:    cid.Git,
+		Codec:    cid.GitRaw,
 		Version:  1,
 	}.Sum([]byte(b))
 	return c
@@ -29,11 +31,11 @@ func (b Blob) Links() []*node.Link {
 }
 
 func (b Blob) Resolve(_ []string) (interface{}, []string, error) {
-	return nil, nil, cid.ErrNoSuchLink
+	return nil, nil, errors.New("no such link")
 }
 
 func (b Blob) ResolveLink(_ []string) (*node.Link, []string, error) {
-	return nil, nil, cid.ErrNoSuchLink
+	return nil, nil, errors.New("no such link")
 }
 
 func (b Blob) Loggable() map[string]interface{} {

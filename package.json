@@ -9,9 +9,9 @@
   "gxDependencies": [
     {
       "author": "whyrusleeping",
-      "hash": "QmRSU5EqqWVZSNdbU51yXmVoF1uNw3JgTNB6RaiL7DZM16",
-      "name": "go-ipld-node",
-      "version": "0.4.2"
+      "hash": "QmUBtPvHKFAX43XMsyxsYpMi3U5VwZ4jYFTo4kFhvAR33G",
+      "name": "go-ipld-format",
+      "version": "0.4.9"
     }
   ],
   "gxVersion": "0.10.0",
