@@ -23,6 +23,9 @@ type Commit struct {
 	Sig       *GpgSig     `json:"signature,omitempty"`
 	MergeTag  []*MergeTag `json:"mergetag,omitempty"`
 
+	// Other contains all the non-standard headers, such as 'HG:extra'
+	Other []string `json:"other,omitempty"`
+
 	cid *cid.Cid
 }
 
@@ -42,7 +45,18 @@ func (pi *PersonInfo) MarshalJSON() ([]byte, error) {
 }
 
 func (pi *PersonInfo) String() string {
-	return fmt.Sprintf("%s <%s> %s %s", pi.Name, pi.Email, pi.Date, pi.Timezone)
+	f := "%s <%s>"
+	arg := []interface{}{pi.Name, pi.Email}
+	if pi.Date != "" {
+		f = f + " %s"
+		arg = append(arg, pi.Date)
+	}
+
+	if pi.Timezone != "" {
+		f = f + " %s"
+		arg = append(arg, pi.Timezone)
+	}
+	return fmt.Sprintf(f, arg...)
 }
 
 func (pi *PersonInfo) tree(name string, depth int) []string {
@@ -126,6 +140,9 @@ func (c *Commit) RawData() []byte {
 		fmt.Fprintln(buf, "gpgsig -----BEGIN PGP SIGNATURE-----")
 		fmt.Fprint(buf, c.Sig.Text)
 		fmt.Fprintln(buf, " -----END PGP SIGNATURE-----")
+	}
+	for _, line := range c.Other {
+		fmt.Fprintln(buf, line)
 	}
 	fmt.Fprintf(buf, "\n%s", c.Message)
 	return buf.Bytes()

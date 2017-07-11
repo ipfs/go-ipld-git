@@ -291,6 +291,13 @@ func TestParsePersonInfo(t *testing.T) {
 	if pi.Name != "Someone " {
 		t.Fatalf("invalid name, got %s\n", pi.Name)
 	}
+
+	pi, err = parsePersonInfo([]byte("prefix Someone <some.one@some.where>"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert(t, pi.String() == "Someone <some.one@some.where>")
 }
 
 func assert(t *testing.T, ok bool) {
