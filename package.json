@@ -9,9 +9,21 @@
   "gxDependencies": [
     {
       "author": "whyrusleeping",
-      "hash": "QmUBtPvHKFAX43XMsyxsYpMi3U5VwZ4jYFTo4kFhvAR33G",
+      "hash": "QmPAKbSsgEX5B6fpmxa61jXYnoWzZr5sNafd3qgPiSH8Uv",
       "name": "go-ipld-format",
-      "version": "0.4.9"
+      "version": "0.4.10"
+    },
+    {
+      "author": "whyrusleeping",
+      "hash": "Qma4RJSuh7mMeJQYCqMbKzekn6EwBo7HEs5AQYjVRMQATB",
+      "name": "go-cid",
+      "version": "0.7.16"
+    },
+    {
+      "author": "stebalien",
+      "hash": "QmXxGS5QsUxpR3iqL5DjmsYPHR1Yz74siRQ4ChJqWFosMh",
+      "name": "go-block-format",
+      "version": "0.1.2"
     }
   ],
   "gxVersion": "0.10.0",
