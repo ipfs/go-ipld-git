@@ -62,9 +62,41 @@ git commit -m "Encoded"
 git tag -a v1-file -m "Some file" 933b7583b7767b07ea4cf242c1be29162eb8bb85
 git tag -a v1-tree -m "Some tree" 672ef117424f54b71e5e058d1184de6a07450d0e
 
+# Create test 'signed' objects
+
+git cat-file commit $(cat .git/refs/heads/master) | head -n4 > sigobj
+echo "gpgsig -----BEGIN PGP SIGNATURE-----" >> sigobj
+echo " " >> sigobj
+echo " NotReallyABase64Signature" >> sigobj
+echo " ButItsGoodEnough" >> sigobj
+echo " -----END PGP SIGNATURE-----" >> sigobj
+echo "" >> sigobj
+echo "Encoded" >> sigobj
+
+cat <(printf "commit %d\0" $(wc -c sigobj | cut -d' ' -f1); cat sigobj) > sigcommit
+FILE=.git/objects/$(sha1sum sigcommit | cut -d' ' -f1 | sed 's/../\0\//')
+mkdir -p $(dirname ${FILE})
+cat sigcommit | zlib-flate -compress > ${FILE}
+
+git cat-file commit $(cat .git/refs/heads/master) | head -n4 > sigobj
+echo "gpgsig -----BEGIN PGP SIGNATURE-----" >> sigobj
+echo " Version: 0.1.2" >> sigobj
+echo " " >> sigobj
+echo " NotReallyABase64Signature" >> sigobj
+echo " ButItsGoodEnough" >> sigobj
+echo " -----END PGP SIGNATURE-----" >> sigobj
+echo "" >> sigobj
+echo "Encoded" >> sigobj
+
+cat <(printf "commit %d\0" $(wc -c sigobj | cut -d' ' -f1); cat sigobj) > sigcommit
+FILE=.git/objects/$(sha1sum sigcommit | cut -d' ' -f1 | sed 's/../\0\//')
+mkdir -p $(dirname ${FILE})
+cat sigcommit | zlib-flate -compress >> ${FILE}
+rm sigobj sigcommit
+
 # Create test archive, clean up
 
 tar czf git.tar.gz .git
 mv git.tar.gz ${CUR_DIR}/testdata.tar.gz
 cd ${CUR_DIR}
-#rm -rf ${TEST_DIR}
+rm -rf ${TEST_DIR}
