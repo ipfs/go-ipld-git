@@ -18,11 +18,6 @@ import (
 	mh "github.com/multiformats/go-multihash"
 )
 
-func init() {
-	// Register the block decoder
-	node.DefaultBlockDecoder[cid.GitRaw] = DecodeBlock
-}
-
 func DecodeBlock(block blocks.Block) (node.Node, error) {
 	prefix := block.Cid().Prefix()
 
@@ -32,6 +27,8 @@ func DecodeBlock(block blocks.Block) (node.Node, error) {
 
 	return ParseObjectFromBuffer(block.RawData())
 }
+
+var _ node.DecodeBlockFunc = DecodeBlock
 
 func ParseObjectFromBuffer(b []byte) (node.Node, error) {
 	return ParseObject(bytes.NewReader(b))
