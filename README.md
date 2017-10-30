@@ -14,8 +14,7 @@ Note: This is WIP and may not be an entirely correct parser.
 ## Table of Contents
 
 - [Install](#install)
-- [Usage](#usage)
-- [API](#api)
+- [About](#about)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -25,6 +24,70 @@ Note: This is WIP and may not be an entirely correct parser.
 go get github.com/ipfs/go-ipld-git
 ```
 
+## About
+This is an IPLD codec which handles git objects. Objects are transformed
+into IPLD graph in the following way:
+
+* Commit:
+```json
+{
+  "author": {
+    "date": "1503667703 +0200",
+    "email": "author@mail",
+    "name": "Author Name"
+  },
+  "committer": {
+    "date": "1503667703 +0200",
+    "email": "author@mail",
+    "name": "Author Name"
+  },
+  "message": "Commit Message\n",
+  "parents": [
+    <LINK>, <LINK>, ...
+  ],
+  "tree": <LINK>
+}
+
+```
+
+* Tag:
+```json
+{
+  "message": "message\n",
+  "object": {
+    "/": "z8mWaJGuvHyZf5uwV8TSYbvSbXP6xS9gR"
+  },
+  "tag": "tagname",
+  "tagger": {
+    "date": "1503667703 +0200",
+    "email": "author@mail",
+    "name": "Author Name"
+  },
+  "type": "commit"
+}
+
+```
+
+* Tree:
+```json
+{
+  "file.name": {
+    "mode": "100664",
+    "hash": <LINK>
+  },
+  "directoryname": {
+    "mode": "40000",
+    "hash": <LINK>
+  },
+  ...
+}
+```
+
+
+* Blob:
+```json
+"<base64 of 'blob <size>\0<data>'>"
+```
 ## Contribute
 
 PRs are welcome!
