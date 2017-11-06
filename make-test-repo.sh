@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -x
 CUR_DIR=$(pwd)
 TEST_DIR=$(mktemp -d)
 cd ${TEST_DIR}
@@ -85,6 +86,7 @@ echo " " >> sigobj
 echo " NotReallyABase64Signature" >> sigobj
 echo " ButItsGoodEnough" >> sigobj
 echo " -----END PGP SIGNATURE-----" >> sigobj
+echo " " >> sigobj
 echo "" >> sigobj
 echo "Encoded" >> sigobj
 
