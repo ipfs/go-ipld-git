@@ -80,11 +80,11 @@ func (pi *PersonInfo) resolve(p []string) (interface{}, []string, error) {
 }
 
 type MergeTag struct {
-	Object *cid.Cid
-	Type   string
-	Tag    string
-	Tagger *PersonInfo
-	Text   string
+	Object *cid.Cid     `json:"object"`
+	Type   string       `json:"type"`
+	Tag    string       `json:"tag"`
+	Tagger *PersonInfo  `json:"tagger"`
+	Text   string       `json:"text"`
 }
 
 type GpgSig struct {
