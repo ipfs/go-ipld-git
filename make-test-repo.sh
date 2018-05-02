@@ -47,11 +47,26 @@ git commit -m "Release"
 git tag -a v1 -m "Some version"
 git checkout master
 
-echo "mwvz" > dir/f5
-git add dir/f5
-git commit -m "Hotfix"
+## defer eyes.Open()
+## eyes.Close()
 
-git merge v1 -m "Merge tag v1"
+git cat-file tag $(cat .git/refs/tags/v1) | head -n4 | sed 's/v1/v1sig/g' > sigobj
+cat >>sigobj <<EOF
+
+Some signed version
+-----BEGIN PGP SIGNATURE-----
+NotReallyABase64Signature
+ButItsGoodEnough
+-----END PGP SIGNATURE-----
+EOF
+
+cat <(printf "tag %d\0" $(wc -c sigobj | cut -d' ' -f1); cat sigobj) > sigtag
+FILE=.git/objects/$(sha1sum sigtag | cut -d' ' -f1 | sed 's/../\0\//')
+mkdir -p $(dirname ${FILE})
+cat sigtag | zlib-flate -compress > ${FILE}
+echo $(sha1sum sigtag | cut -d' ' -f1) > .git/refs/tags/v1sig
+
+git merge v1sig --no-ff -m "Merge tag v1"
 
 # Test encoding
 git config i18n.commitencoding "ISO-8859-1"

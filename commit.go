@@ -80,11 +80,11 @@ func (pi *PersonInfo) resolve(p []string) (interface{}, []string, error) {
 }
 
 type MergeTag struct {
-	Object *cid.Cid
-	Type   string
-	Tag    string
-	Tagger *PersonInfo
-	Text   string
+	Object *cid.Cid     `json:"object"`
+	Type   string       `json:"type"`
+	Tag    string       `json:"tag"`
+	Tagger *PersonInfo  `json:"tagger"`
+	Text   string       `json:"text"`
 }
 
 type GpgSig struct {
@@ -185,6 +185,24 @@ func (c *Commit) Resolve(path []string) (interface{}, []string, error) {
 		return c.Message, path[1:], nil
 	case "tree":
 		return &node.Link{Cid: c.GitTree}, path[1:], nil
+	case "mergetag":
+		if len(path) == 1 {
+			return c.MergeTag, nil, nil
+		}
+
+		i, err := strconv.Atoi(path[1])
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if i < 0 || i >= len(c.MergeTag) {
+			return nil, nil, fmt.Errorf("index out of range")
+		}
+
+		if len(path) == 2 {
+			return c.MergeTag[i], nil, nil
+		}
+		return c.MergeTag[i].resolve(path[2:])
 	default:
 		return nil, nil, errors.New("no such link")
 	}
@@ -231,6 +249,30 @@ func (c *Commit) Tree(p string, depth int) []string {
 
 func (c *Commit) GitSha() []byte {
 	return cidToSha(c.Cid())
+}
+
+func (t *MergeTag) resolve(path []string) (interface{}, []string, error) {
+	if len(path) == 0 {
+		return nil, nil, fmt.Errorf("zero length path")
+	}
+
+	switch path[0] {
+	case "object":
+		return &node.Link{Cid: t.Object}, path[1:], nil
+	case "tag":
+		return t.Tag, path[1:], nil
+	case "tagger":
+		if len(path) == 1 {
+			return t.Tagger, nil, nil
+		}
+		return t.Tagger.resolve(path[1:])
+	case "text":
+		return t.Text, path[1:], nil
+	case "type":
+		return t.Type, path[1:], nil
+	default:
+		return nil, nil, errors.New("no such link")
+	}
 }
 
 var _ node.Node = (*Commit)(nil)

@@ -179,9 +179,49 @@ func testNode(t *testing.T, nd node.Node) error {
 		lnk, rest, err := commit.ResolveLink([]string{"tree", "aoeu"})
 		assert(t, err == nil)
 		assert(t, lnk != nil)
-		assert(t, rest != nil)
 		assert(t, len(rest) == 1)
 		assert(t, rest[0] == "aoeu")
+
+		lnk, rest, err = commit.ResolveLink([]string{"parents", "0"})
+		assert(t, err == nil || err.Error() == "index out of range")
+		assert(t, lnk != nil || err.Error() == "index out of range")
+		assert(t, len(rest) == 0)
+
+		mt, rest, err := commit.Resolve([]string{"mergetag"})
+		if len(mt.([]*MergeTag)) > 0 {
+			mtag, rest, err := commit.Resolve([]string{"mergetag", "0"})
+			tag, ok := mtag.(*MergeTag)
+			if !ok {
+				t.Fatal("Invalid mergetag")
+			}
+
+			ttype, rest, err := commit.Resolve([]string{"mergetag", "0", "type"})
+			assert(t, err == nil)
+			assert(t, len(rest) == 0)
+			assert(t, ttype.(string) == "commit")
+
+			tagger, rest, err := commit.Resolve([]string{"mergetag", "0", "tagger"})
+			assert(t, err == nil)
+			assert(t, len(rest) == 0)
+			assert(t, tagger == tag.Tagger)
+
+			link, rest, err := commit.Resolve([]string{"mergetag", "0", "object"})
+			assert(t, err == nil)
+			assert(t, len(rest) == 0)
+			assert(t, link.(*node.Link).Cid == tag.Object)
+
+			text, rest, err := commit.Resolve([]string{"mergetag", "0", "tag"})
+			assert(t, err == nil)
+			assert(t, len(rest) == 0)
+			assert(t, text.(string) == tag.Tag)
+
+			text, rest, err = commit.Resolve([]string{"mergetag", "0", "text"})
+			assert(t, err == nil)
+			assert(t, len(rest) == 0)
+			assert(t, text.(string) == tag.Text)
+		}
+
+
 	case "[git tag object]":
 		tag, ok := nd.(*Tag)
 		if !ok {
@@ -303,6 +343,6 @@ func TestParsePersonInfo(t *testing.T) {
 func assert(t *testing.T, ok bool) {
 	if !ok {
 		fmt.Printf("\n")
-		panic("Assernion failed")
+		t.Fatal("Assertion failed")
 	}
 }
