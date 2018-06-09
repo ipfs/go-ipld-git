@@ -221,7 +221,6 @@ func testNode(t *testing.T, nd node.Node) error {
 			assert(t, text.(string) == tag.Text)
 		}
 
-
 	case "[git tag object]":
 		tag, ok := nd.(*Tag)
 		if !ok {
