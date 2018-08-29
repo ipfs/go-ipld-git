@@ -438,12 +438,18 @@ func ReadTree(rd *bufio.Reader) (*Tree, error) {
 }
 
 func cidToSha(c *cid.Cid) []byte {
-	h := c.Hash()
-	return h[len(h)-20:]
+	// FIXME(steb)
+	h, err := mh.Decode(c.Hash().Bytes())
+	if err != nil {
+		panic(err)
+	}
+	return h.Digest
 }
 
 func shaToCid(sha []byte) *cid.Cid {
-	h, _ := mh.Encode(sha, mh.SHA1)
+	// FIXME(steb)
+	hb, _ := mh.Encode(sha, mh.SHA1)
+	h, _ := mh.Cast(hb)
 	return cid.NewCidV1(cid.GitRaw, h)
 }
 
