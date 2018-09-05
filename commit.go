@@ -14,8 +14,8 @@ import (
 
 type Commit struct {
 	DataSize  string      `json:"-"`
-	GitTree   *cid.Cid    `json:"tree"`
-	Parents   []*cid.Cid  `json:"parents"`
+	GitTree   cid.Cid    `json:"tree"`
+	Parents   []cid.Cid  `json:"parents"`
 	Message   string      `json:"message"`
 	Author    *PersonInfo `json:"author"`
 	Committer *PersonInfo `json:"committer"`
@@ -26,7 +26,7 @@ type Commit struct {
 	// Other contains all the non-standard headers, such as 'HG:extra'
 	Other []string `json:"other,omitempty"`
 
-	cid *cid.Cid
+	cid cid.Cid
 }
 
 type PersonInfo struct {
@@ -80,7 +80,7 @@ func (pi *PersonInfo) resolve(p []string) (interface{}, []string, error) {
 }
 
 type MergeTag struct {
-	Object *cid.Cid    `json:"object"`
+	Object cid.Cid    `json:"object"`
 	Type   string      `json:"type"`
 	Tag    string      `json:"tag"`
 	Tagger *PersonInfo `json:"tagger"`
@@ -91,7 +91,7 @@ type GpgSig struct {
 	Text string
 }
 
-func (c *Commit) Cid() *cid.Cid {
+func (c *Commit) Cid() cid.Cid {
 	return c.cid
 }
 

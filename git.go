@@ -248,7 +248,7 @@ func ReadTag(rd *bufio.Reader) (*Tag, error) {
 	return out, nil
 }
 
-func hashObject(data []byte) *cid.Cid {
+func hashObject(data []byte) cid.Cid {
 	c, err := cid.Prefix{
 		MhType:   mh.SHA1,
 		MhLength: -1,
@@ -437,12 +437,12 @@ func ReadTree(rd *bufio.Reader) (*Tree, error) {
 	return t, nil
 }
 
-func cidToSha(c *cid.Cid) []byte {
+func cidToSha(c cid.Cid) []byte {
 	h := c.Hash()
 	return h[len(h)-20:]
 }
 
-func shaToCid(sha []byte) *cid.Cid {
+func shaToCid(sha []byte) cid.Cid {
 	h, _ := mh.Encode(sha, mh.SHA1)
 	return cid.NewCidV1(cid.GitRaw, h)
 }

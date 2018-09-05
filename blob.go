@@ -10,7 +10,7 @@ import (
 
 type Blob []byte
 
-func (b Blob) Cid() *cid.Cid {
+func (b Blob) Cid() cid.Cid {
 	c, _ := cid.Prefix{
 		MhType:   mh.SHA1,
 		MhLength: -1,

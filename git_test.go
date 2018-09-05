@@ -171,7 +171,7 @@ func testNode(t *testing.T, nd node.Node) error {
 
 		/*s, _ := commit.Size()
 		assert.Equal(t, len(commit.RawData()), int(s))*/ //TODO: Known breakage
-		assert(t, commit.GitTree != nil)
+		assert(t, commit.GitTree.Defined())
 		assert(t, commit.Links() != nil)
 		assert(t, commit.Loggable()["type"] == "git_commit")
 
@@ -228,7 +228,7 @@ func testNode(t *testing.T, nd node.Node) error {
 		}
 
 		assert(t, tag.Type == "commit" || tag.Type == "tree" || tag.Type == "blob" || tag.Type == "tag")
-		assert(t, tag.Object != nil)
+		assert(t, tag.Object.Defined())
 		assert(t, tag.Loggable()["type"] == "git_tag")
 		assert(t, tag.Tree("", -1) != nil)
 		obj, rest, err := tag.ResolveLink([]string{"object", "aoeu"})

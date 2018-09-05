@@ -11,17 +11,17 @@ import (
 )
 
 type Tag struct {
-	Object   *cid.Cid    `json:"object"`
+	Object   cid.Cid    `json:"object"`
 	Type     string      `json:"type"`
 	Tag      string      `json:"tag"`
 	Tagger   *PersonInfo `json:"tagger"`
 	Message  string      `json:"message"`
 	dataSize string
 
-	cid *cid.Cid
+	cid cid.Cid
 }
 
-func (t *Tag) Cid() *cid.Cid {
+func (t *Tag) Cid() cid.Cid {
 	return t.cid
 }
 

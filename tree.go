@@ -15,16 +15,16 @@ type Tree struct {
 	entries map[string]*TreeEntry
 	size    int
 	order   []string
-	cid     *cid.Cid
+	cid     cid.Cid
 }
 
 type TreeEntry struct {
 	name string
 	Mode string   `json:"mode"`
-	Hash *cid.Cid `json:"hash"`
+	Hash cid.Cid `json:"hash"`
 }
 
-func (t *Tree) Cid() *cid.Cid {
+func (t *Tree) Cid() cid.Cid {
 	return t.cid
 }
 
