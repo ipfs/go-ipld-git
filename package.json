@@ -37,6 +37,6 @@
   "license": "",
   "name": "go-ipld-git",
   "releaseCmd": "git commit -a -m \"gx publish $VERSION\"",
-  "version": "0.2.5"
+  "version": "0.3.0"
 }
 
