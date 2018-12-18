@@ -152,7 +152,7 @@ func TestArchiveObjectParse(t *testing.T) {
 func testNode(t *testing.T, nd node.Node) error {
 	switch nd.String() {
 	case "[git blob]":
-		blob, ok := nd.(Blob)
+		blob, ok := nd.(*Blob)
 		if !ok {
 			t.Fatalf("Blob is not a blob")
 		}
