@@ -67,7 +67,7 @@ func ParseObject(r io.Reader) (node.Node, error) {
 	}
 }
 
-func ReadBlob(rd *bufio.Reader) (Blob, error) {
+func ReadBlob(rd *bufio.Reader) (*Blob, error) {
 	size, err := rd.ReadString(0)
 	if err != nil {
 		return nil, err
@@ -90,7 +90,11 @@ func ReadBlob(rd *bufio.Reader) (Blob, error) {
 		return nil, fmt.Errorf("blob size was not accurate")
 	}
 
-	return Blob(buf.Bytes()), nil
+	out := &Blob{}
+	out.rawData = buf.Bytes()
+	out.cid = hashObject(out.RawData())
+
+	return out, nil
 }
 
 func ReadCommit(rd *bufio.Reader) (*Commit, error) {
