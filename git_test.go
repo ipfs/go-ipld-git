@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -171,6 +172,7 @@ func testNode(t *testing.T, nd node.Node) error {
 
 		/*s, _ := commit.Size()
 		assert.Equal(t, len(commit.RawData()), int(s))*/ //TODO: Known breakage
+		assert(t, reflect.DeepEqual(commit.RawData(), commit.RawData()))
 		assert(t, commit.GitTree.Defined())
 		assert(t, commit.Links() != nil)
 		assert(t, commit.Loggable()["type"] == "git_commit")
@@ -228,6 +230,7 @@ func testNode(t *testing.T, nd node.Node) error {
 		}
 
 		assert(t, tag.Type == "commit" || tag.Type == "tree" || tag.Type == "blob" || tag.Type == "tag")
+		assert(t, reflect.DeepEqual(tag.RawData(), tag.RawData()))
 		assert(t, tag.Object.Defined())
 		assert(t, tag.Loggable()["type"] == "git_tag")
 		assert(t, tag.Tree("", -1) != nil)
@@ -243,6 +246,7 @@ func testNode(t *testing.T, nd node.Node) error {
 			t.Fatalf("Tree is not a tree")
 		}
 
+		assert(t, reflect.DeepEqual(tree.RawData(), tree.RawData()))
 		assert(t, tree.entries != nil)
 		assert(t, tree.Tree("", 0) == nil)
 	}
@@ -343,5 +347,71 @@ func assert(t *testing.T, ok bool) {
 	if !ok {
 		fmt.Printf("\n")
 		t.Fatal("Assertion failed")
+	}
+}
+
+func BenchmarkRawData(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		err := filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return nil
+			}
+			if info.IsDir() {
+				return nil
+			}
+
+			parts := strings.Split(path, "/")
+			if dir := parts[len(parts)-2]; dir == "info" || dir == "pack" {
+				return nil
+			}
+
+			fi, err := os.Open(path)
+			if err != nil {
+				return err
+			}
+
+			thing, err := ParseCompressedObject(fi)
+			if err != nil {
+				return err
+			}
+			thing.RawData()
+			return nil
+		})
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkCid(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		err := filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return nil
+			}
+			if info.IsDir() {
+				return nil
+			}
+
+			parts := strings.Split(path, "/")
+			if dir := parts[len(parts)-2]; dir == "info" || dir == "pack" {
+				return nil
+			}
+
+			fi, err := os.Open(path)
+			if err != nil {
+				return err
+			}
+
+			thing, err := ParseCompressedObject(fi)
+			if err != nil {
+				return err
+			}
+			thing.Cid()
+			return nil
+		})
+		if err != nil {
+			b.Fatal(err)
+		}
 	}
 }

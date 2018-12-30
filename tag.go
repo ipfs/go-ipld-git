@@ -3,15 +3,16 @@ package ipldgit
 import (
 	"bytes"
 	"encoding/hex"
-	"fmt"
-
 	"errors"
+	"fmt"
+	"sync"
+
 	cid "github.com/ipfs/go-cid"
 	node "github.com/ipfs/go-ipld-format"
 )
 
 type Tag struct {
-	Object   cid.Cid    `json:"object"`
+	Object   cid.Cid     `json:"object"`
 	Type     string      `json:"type"`
 	Tag      string      `json:"tag"`
 	Tagger   *PersonInfo `json:"tagger"`
@@ -19,6 +20,9 @@ type Tag struct {
 	dataSize string
 
 	cid cid.Cid
+
+	rawData     []byte
+	rawDataOnce sync.Once
 }
 
 func (t *Tag) Cid() cid.Cid {
@@ -41,18 +45,22 @@ func (t *Tag) Loggable() map[string]interface{} {
 }
 
 func (t *Tag) RawData() []byte {
-	buf := new(bytes.Buffer)
-	fmt.Fprintf(buf, "tag %s\x00", t.dataSize)
-	fmt.Fprintf(buf, "object %s\n", hex.EncodeToString(cidToSha(t.Object)))
-	fmt.Fprintf(buf, "type %s\n", t.Type)
-	fmt.Fprintf(buf, "tag %s\n", t.Tag)
-	if t.Tagger != nil {
-		fmt.Fprintf(buf, "tagger %s\n", t.Tagger.String())
-	}
-	if t.Message != "" {
-		fmt.Fprintf(buf, "\n%s", t.Message)
-	}
-	return buf.Bytes()
+	t.rawDataOnce.Do(func() {
+		buf := new(bytes.Buffer)
+		fmt.Fprintf(buf, "tag %s\x00", t.dataSize)
+		fmt.Fprintf(buf, "object %s\n", hex.EncodeToString(cidToSha(t.Object)))
+		fmt.Fprintf(buf, "type %s\n", t.Type)
+		fmt.Fprintf(buf, "tag %s\n", t.Tag)
+		if t.Tagger != nil {
+			fmt.Fprintf(buf, "tagger %s\n", t.Tagger.String())
+		}
+		if t.Message != "" {
+			fmt.Fprintf(buf, "\n%s", t.Message)
+		}
+		t.rawData = buf.Bytes()
+	})
+
+	return t.rawData
 }
 
 func (t *Tag) Resolve(path []string) (interface{}, []string, error) {

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"sync"
 
 	cid "github.com/ipfs/go-cid"
 	node "github.com/ipfs/go-ipld-format"
@@ -14,8 +15,8 @@ import (
 
 type Commit struct {
 	DataSize  string      `json:"-"`
-	GitTree   cid.Cid    `json:"tree"`
-	Parents   []cid.Cid  `json:"parents"`
+	GitTree   cid.Cid     `json:"tree"`
+	Parents   []cid.Cid   `json:"parents"`
 	Message   string      `json:"message"`
 	Author    *PersonInfo `json:"author"`
 	Committer *PersonInfo `json:"committer"`
@@ -27,6 +28,9 @@ type Commit struct {
 	Other []string `json:"other,omitempty"`
 
 	cid cid.Cid
+
+	rawData     []byte
+	rawDataOnce sync.Once
 }
 
 type PersonInfo struct {
@@ -80,7 +84,7 @@ func (pi *PersonInfo) resolve(p []string) (interface{}, []string, error) {
 }
 
 type MergeTag struct {
-	Object cid.Cid    `json:"object"`
+	Object cid.Cid     `json:"object"`
 	Type   string      `json:"type"`
 	Tag    string      `json:"tag"`
 	Tagger *PersonInfo `json:"tagger"`
@@ -118,34 +122,38 @@ func (c *Commit) Loggable() map[string]interface{} {
 }
 
 func (c *Commit) RawData() []byte {
-	buf := new(bytes.Buffer)
-	fmt.Fprintf(buf, "commit %s\x00", c.DataSize)
-	fmt.Fprintf(buf, "tree %s\n", hex.EncodeToString(cidToSha(c.GitTree)))
-	for _, p := range c.Parents {
-		fmt.Fprintf(buf, "parent %s\n", hex.EncodeToString(cidToSha(p)))
-	}
-	fmt.Fprintf(buf, "author %s\n", c.Author.String())
-	fmt.Fprintf(buf, "committer %s\n", c.Committer.String())
-	if len(c.Encoding) > 0 {
-		fmt.Fprintf(buf, "encoding %s\n", c.Encoding)
-	}
-	for _, mtag := range c.MergeTag {
-		fmt.Fprintf(buf, "mergetag object %s\n", hex.EncodeToString(cidToSha(mtag.Object)))
-		fmt.Fprintf(buf, " type %s\n", mtag.Type)
-		fmt.Fprintf(buf, " tag %s\n", mtag.Tag)
-		fmt.Fprintf(buf, " tagger %s\n \n", mtag.Tagger.String())
-		fmt.Fprintf(buf, "%s", mtag.Text)
-	}
-	if c.Sig != nil {
-		fmt.Fprintln(buf, "gpgsig -----BEGIN PGP SIGNATURE-----")
-		fmt.Fprint(buf, c.Sig.Text)
-		fmt.Fprintln(buf, " -----END PGP SIGNATURE-----")
-	}
-	for _, line := range c.Other {
-		fmt.Fprintln(buf, line)
-	}
-	fmt.Fprintf(buf, "\n%s", c.Message)
-	return buf.Bytes()
+	c.rawDataOnce.Do(func() {
+		buf := new(bytes.Buffer)
+		fmt.Fprintf(buf, "commit %s\x00", c.DataSize)
+		fmt.Fprintf(buf, "tree %s\n", hex.EncodeToString(cidToSha(c.GitTree)))
+		for _, p := range c.Parents {
+			fmt.Fprintf(buf, "parent %s\n", hex.EncodeToString(cidToSha(p)))
+		}
+		fmt.Fprintf(buf, "author %s\n", c.Author.String())
+		fmt.Fprintf(buf, "committer %s\n", c.Committer.String())
+		if len(c.Encoding) > 0 {
+			fmt.Fprintf(buf, "encoding %s\n", c.Encoding)
+		}
+		for _, mtag := range c.MergeTag {
+			fmt.Fprintf(buf, "mergetag object %s\n", hex.EncodeToString(cidToSha(mtag.Object)))
+			fmt.Fprintf(buf, " type %s\n", mtag.Type)
+			fmt.Fprintf(buf, " tag %s\n", mtag.Tag)
+			fmt.Fprintf(buf, " tagger %s\n \n", mtag.Tagger.String())
+			fmt.Fprintf(buf, "%s", mtag.Text)
+		}
+		if c.Sig != nil {
+			fmt.Fprintln(buf, "gpgsig -----BEGIN PGP SIGNATURE-----")
+			fmt.Fprint(buf, c.Sig.Text)
+			fmt.Fprintln(buf, " -----END PGP SIGNATURE-----")
+		}
+		for _, line := range c.Other {
+			fmt.Fprintln(buf, line)
+		}
+		fmt.Fprintf(buf, "\n%s", c.Message)
+		c.rawData = buf.Bytes()
+	})
+
+	return c.rawData
 }
 
 func (c *Commit) Resolve(path []string) (interface{}, []string, error) {
