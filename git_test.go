@@ -342,12 +342,30 @@ func TestParsePersonInfo(t *testing.T) {
 	}
 
 	assert(t, pi.String() == "Someone <some.one@some.where>")
+
+	pi, err = parsePersonInfo([]byte("prefix Łukasz Magiera <magik6k@users.noreply.github.com> 1546187652 +0100"))
+	piJSON, err := pi.MarshalJSON()
+	date, _, err := pi.resolve([]string{"date"})
+	assert(t, string(piJSON) == `{"date":"2018-12-30T17:34:12+01:00","email":"magik6k@users.noreply.github.com","name":"Łukasz Magiera"}`)
+	assert(t, date == "2018-12-30T17:34:12+01:00")
+
+	pi, err = parsePersonInfo([]byte("prefix Sameer <sameer@users.noreply.github.com> 1545162499 -0500"))
+	piJSON, err = pi.MarshalJSON()
+	assert(t, string(piJSON) == `{"date":"2018-12-18T14:48:19-05:00","email":"sameer@users.noreply.github.com","name":"Sameer"}`)
+
+	pi, err = parsePersonInfo([]byte("prefix Łukasz Magiera <magik6k@users.noreply.github.com> 1546187652 +0122"))
+	piJSON, err = pi.MarshalJSON()
+	assert(t, string(piJSON) == `{"date":"2018-12-30T17:56:12+01:22","email":"magik6k@users.noreply.github.com","name":"Łukasz Magiera"}`)
+
+	pi, err = parsePersonInfo([]byte("prefix Sameer <sameer@users.noreply.github.com> 1545162499 -0545"))
+	piJSON, err = pi.MarshalJSON()
+	assert(t, string(piJSON) == `{"date":"2018-12-18T14:03:19-05:45","email":"sameer@users.noreply.github.com","name":"Sameer"}`)
 }
 
 func assert(t *testing.T, ok bool) {
 	if !ok {
 		fmt.Printf("\n")
-		t.Fatal("Assertion failed")
+		panic("Assertion failed")
 	}
 }
 
