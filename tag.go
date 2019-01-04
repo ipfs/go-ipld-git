@@ -102,7 +102,7 @@ func (t *Tag) ResolveLink(path []string) (*node.Link, []string, error) {
 }
 
 func (t *Tag) Size() (uint64, error) {
-	return 42, nil // close enough
+	return uint64(len(t.RawData())), nil
 }
 
 func (t *Tag) Stat() (*node.NodeStat, error) {

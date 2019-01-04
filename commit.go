@@ -231,7 +231,7 @@ func (c *Commit) ResolveLink(path []string) (*node.Link, []string, error) {
 }
 
 func (c *Commit) Size() (uint64, error) {
-	return 42, nil // close enough
+	return uint64(len(c.RawData())), nil
 }
 
 func (c *Commit) Stat() (*node.NodeStat, error) {

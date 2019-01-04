@@ -146,8 +146,7 @@ func (t Tree) ResolveLink(path []string) (*node.Link, []string, error) {
 }
 
 func (t *Tree) Size() (uint64, error) {
-	fmt.Println("size isnt implemented")
-	return 13, nil // trees are probably smaller than commits, so 13 seems like a good number
+	return uint64(len(t.RawData())), nil
 }
 
 func (t *Tree) Stat() (*node.NodeStat, error) {
