@@ -171,8 +171,8 @@ func testNode(t *testing.T, nd node.Node) error {
 			t.Fatalf("Commit is not a commit")
 		}
 
-		/*s, _ := commit.Size()
-		assert.Equal(t, len(commit.RawData()), int(s))*/ //TODO: Known breakage
+		s, _ := commit.Size()
+		assert(t, len(commit.RawData()) == int(s))
 		assert(t, reflect.DeepEqual(commit.RawData(), commit.RawData()))
 		assert(t, commit.GitTree.Defined())
 		assert(t, commit.Links() != nil)
