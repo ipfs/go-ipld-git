@@ -28,7 +28,8 @@ func TestObjectParse(t *testing.T) {
 			return nil
 		}
 
-		parts := strings.Split(path, "/")
+		parts := strings.Split(path, string(filepath.Separator))
+
 		dir := parts[len(parts)-2]
 		if dir == "info" || dir == "pack" {
 			return nil
@@ -360,7 +361,7 @@ func BenchmarkRawData(b *testing.B) {
 				return nil
 			}
 
-			parts := strings.Split(path, "/")
+			parts := strings.Split(path, string(filepath.Separator))
 			if dir := parts[len(parts)-2]; dir == "info" || dir == "pack" {
 				return nil
 			}
@@ -393,7 +394,7 @@ func BenchmarkCid(b *testing.B) {
 				return nil
 			}
 
-			parts := strings.Split(path, "/")
+			parts := strings.Split(path, string(filepath.Separator))
 			if dir := parts[len(parts)-2]; dir == "info" || dir == "pack" {
 				return nil
 			}
