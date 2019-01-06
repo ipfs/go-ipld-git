@@ -112,6 +112,10 @@ func (t *Tree) RawData() []byte {
 }
 
 func (t *Tree) Resolve(p []string) (interface{}, []string, error) {
+	if p == nil {
+		return t.entries, nil, nil
+	}
+
 	e, ok := t.entries[p[0]]
 	if !ok {
 		return nil, nil, errors.New("no such link")

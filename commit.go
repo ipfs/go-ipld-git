@@ -42,15 +42,11 @@ type PersonInfo struct {
 }
 
 func (pi *PersonInfo) MarshalJSON() ([]byte, error) {
-	date, err := pi.date()
+	obj, _, err := pi.resolve(nil)
 	if err != nil {
 		return nil, err
 	}
-	return json.Marshal(map[string]interface{}{
-		"name":  pi.Name,
-		"email": pi.Email,
-		"date":  *date,
-	})
+	return json.Marshal(obj)
 }
 
 func (pi *PersonInfo) String() string {
@@ -76,6 +72,18 @@ func (pi *PersonInfo) tree(name string, depth int) []string {
 }
 
 func (pi *PersonInfo) resolve(p []string) (interface{}, []string, error) {
+	if p == nil {
+		date, err := pi.date()
+		if err != nil {
+			return nil, nil, err
+		}
+		return map[string]interface{}{
+			"name":  pi.Name,
+			"email": pi.Email,
+			"date":  date.Format(time.RFC3339),
+		}, nil, nil
+	}
+
 	switch p[0] {
 	case "name":
 		return pi.Name, p[1:], nil
@@ -181,6 +189,23 @@ func (c *Commit) RawData() []byte {
 }
 
 func (c *Commit) Resolve(path []string) (interface{}, []string, error) {
+	if path == nil {
+		obj := map[string]interface{}{
+			"parents":   c.Parents,
+			"author":    c.Author,
+			"committer": c.Committer,
+			"message":   c.Message,
+			"tree":      &node.Link{Cid: c.GitTree},
+			"mergetag":  c.MergeTag,
+		}
+
+		if c.Sig != nil {
+			obj["signature"] = c.Sig.Text
+		}
+
+		return obj, nil, nil
+	}
+
 	if len(path) == 0 {
 		return nil, nil, fmt.Errorf("zero length path")
 	}
@@ -212,6 +237,9 @@ func (c *Commit) Resolve(path []string) (interface{}, []string, error) {
 		}
 		return c.Committer.resolve(path[1:])
 	case "signature":
+		if c.Sig == nil {
+			return nil, nil, errors.New("no signature")
+		}
 		return c.Sig.Text, path[1:], nil
 	case "message":
 		return c.Message, path[1:], nil
@@ -284,6 +312,15 @@ func (c *Commit) GitSha() []byte {
 }
 
 func (t *MergeTag) resolve(path []string) (interface{}, []string, error) {
+	if path == nil {
+		return map[string]interface{}{
+			"object": &node.Link{Cid: t.Object},
+			"tag":    t.Tag,
+			"tagger": t.Tagger,
+			"text":   t.Text,
+			"type":   t.Type,
+		}, nil, nil
+	}
 	if len(path) == 0 {
 		return nil, nil, fmt.Errorf("zero length path")
 	}

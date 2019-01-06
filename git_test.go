@@ -197,6 +197,9 @@ func testNode(t *testing.T, nd node.Node) error {
 			if !ok {
 				t.Fatal("Invalid mergetag")
 			}
+			obj, _, err := tag.resolve(nil)
+			assert(t, err == nil)
+			assert(t, obj != nil)
 
 			ttype, rest, err := commit.Resolve([]string{"mergetag", "0", "type"})
 			assert(t, err == nil)
@@ -224,6 +227,10 @@ func testNode(t *testing.T, nd node.Node) error {
 			assert(t, text.(string) == tag.Text)
 		}
 
+		obj, _, err := commit.Resolve(nil)
+		assert(t, err == nil)
+		assert(t, obj != nil)
+
 	case "[git tag object]":
 		tag, ok := nd.(*Tag)
 		if !ok {
@@ -235,12 +242,16 @@ func testNode(t *testing.T, nd node.Node) error {
 		assert(t, tag.Object.Defined())
 		assert(t, tag.Loggable()["type"] == "git_tag")
 		assert(t, tag.Tree("", -1) != nil)
+		var obj interface{}
 		obj, rest, err := tag.ResolveLink([]string{"object", "aoeu"})
 		assert(t, err == nil)
 		assert(t, obj != nil)
 		assert(t, rest != nil)
 		assert(t, len(rest) == 1)
 		assert(t, rest[0] == "aoeu")
+		obj, _, err = tag.Resolve(nil)
+		assert(t, err == nil)
+		assert(t, obj != nil)
 	case "[git tree object]":
 		tree, ok := nd.(*Tree)
 		if !ok {
@@ -250,6 +261,9 @@ func testNode(t *testing.T, nd node.Node) error {
 		assert(t, reflect.DeepEqual(tree.RawData(), tree.RawData()))
 		assert(t, tree.entries != nil)
 		assert(t, tree.Tree("", 0) == nil)
+		obj, _, err := tree.Resolve(nil)
+		assert(t, err == nil)
+		assert(t, reflect.DeepEqual(obj, tree.entries))
 	}
 	return nil
 }
@@ -348,6 +362,13 @@ func TestParsePersonInfo(t *testing.T) {
 	date, _, err := pi.resolve([]string{"date"})
 	assert(t, string(piJSON) == `{"date":"2018-12-30T17:34:12+01:00","email":"magik6k@users.noreply.github.com","name":"Łukasz Magiera"}`)
 	assert(t, date == "2018-12-30T17:34:12+01:00")
+	obj, _, err := pi.resolve(nil)
+	assert(t, err == nil)
+	assert(t, reflect.DeepEqual(obj, map[string]interface{}{
+		"date":  "2018-12-30T17:34:12+01:00",
+		"email": "magik6k@users.noreply.github.com",
+		"name":  "Łukasz Magiera",
+	}))
 
 	pi, err = parsePersonInfo([]byte("prefix Sameer <sameer@users.noreply.github.com> 1545162499 -0500"))
 	piJSON, err = pi.MarshalJSON()

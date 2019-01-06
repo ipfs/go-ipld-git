@@ -64,6 +64,15 @@ func (t *Tag) RawData() []byte {
 }
 
 func (t *Tag) Resolve(path []string) (interface{}, []string, error) {
+	if path == nil {
+		return map[string]interface{}{
+			"object":  &node.Link{Cid: t.Object},
+			"type":    t.Type,
+			"tagger":  t.Tagger,
+			"message": t.Message,
+			"tag":     t.Tag,
+		}, nil, nil
+	}
 	if len(path) == 0 {
 		return nil, nil, fmt.Errorf("zero length path")
 	}
