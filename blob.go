@@ -1,6 +1,7 @@
 package ipldgit
 
 import (
+	"encoding/json"
 	"errors"
 
 	cid "github.com/ipfs/go-cid"
@@ -37,6 +38,10 @@ func (b *Blob) Loggable() map[string]interface{} {
 	return map[string]interface{}{
 		"type": "git_blob",
 	}
+}
+
+func (b *Blob) MarshalJSON() ([]byte, error) {
+	return json.Marshal(b.rawData)
 }
 
 func (b *Blob) RawData() []byte {
