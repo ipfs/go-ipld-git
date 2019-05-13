@@ -55,7 +55,7 @@ into IPLD graph in the following way:
 {
   "message": "message\n",
   "object": {
-    "/": "z8mWaJGuvHyZf5uwV8TSYbvSbXP6xS9gR"
+    "/": "baf4bcfg3mbz3yj3njqyr3ifdaqyfv3prei6h6bq"
   },
   "tag": "tagname",
   "tagger": {
