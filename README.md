@@ -11,6 +11,10 @@ Git ipld format
 
 Note: This is WIP and may not be an entirely correct parser.
 
+## Lead Maintainer
+
+[Łukasz Magiera](https://github.com/magik6k)
+
 ## Table of Contents
 
 - [Install](#install)
