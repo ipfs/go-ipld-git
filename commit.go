@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strconv"
 	"sync"
+	"time"
 
 	cid "github.com/ipfs/go-cid"
 	node "github.com/ipfs/go-ipld-format"
@@ -41,10 +42,14 @@ type PersonInfo struct {
 }
 
 func (pi *PersonInfo) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]string{
+	date, err := pi.date()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(map[string]interface{}{
 		"name":  pi.Name,
 		"email": pi.Email,
-		"date":  pi.Date + " " + pi.Timezone,
+		"date":  *date,
 	})
 }
 
@@ -77,10 +82,29 @@ func (pi *PersonInfo) resolve(p []string) (interface{}, []string, error) {
 	case "email":
 		return pi.Email, p[1:], nil
 	case "date":
-		return pi.Date + " " + pi.Timezone, p[1:], nil
+		date, err := pi.date()
+		if err != nil {
+			return nil, nil, err
+		}
+		return date.Format(time.RFC3339), p[1:], nil
 	default:
 		return nil, nil, errors.New("no such link")
 	}
+}
+
+func (pi *PersonInfo) date() (*time.Time, error) {
+	sec, err := strconv.ParseInt(pi.Date, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	zoneOffset, err := strconv.Atoi(pi.Timezone)
+	if err != nil {
+		return nil, err
+	}
+	hr, mm := zoneOffset/100, zoneOffset%100
+	location := time.FixedZone("UTC", hr*60*60+mm*60)
+	date := time.Unix(sec, 0).In(location)
+	return &date, nil
 }
 
 type MergeTag struct {
