@@ -1,5 +1,6 @@
 package ipldgit
 
+/*
 import (
 	"archive/tar"
 	"compress/gzip"
@@ -434,3 +435,4 @@ func BenchmarkCid(b *testing.B) {
 		}
 	}
 }
+*/

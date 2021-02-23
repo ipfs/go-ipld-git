@@ -1,5 +1,6 @@
 package ipldgit
 
+/*
 import (
 	"bufio"
 	"bytes"
@@ -476,3 +477,4 @@ func ReadEntry(r *bufio.Reader) (*TreeEntry, error) {
 		Hash: shaToCid(sha),
 	}, nil
 }
+*/

@@ -1,71 +1,38 @@
 package ipldgit
 
 import (
-	"encoding/json"
-	"errors"
+	"bufio"
+	"bytes"
+	"fmt"
+	"io"
+	"strconv"
 
-	cid "github.com/ipfs/go-cid"
-	node "github.com/ipfs/go-ipld-format"
+	"github.com/ipld/go-ipld-prime"
 )
 
-type Blob struct {
-	rawData []byte
-	cid     cid.Cid
-}
-
-func (b *Blob) Cid() cid.Cid {
-	return b.cid
-}
-
-func (b *Blob) Copy() node.Node {
-	nb := *b
-	return &nb
-}
-
-func (b *Blob) Links() []*node.Link {
-	return nil
-}
-
-func (b *Blob) Resolve(_ []string) (interface{}, []string, error) {
-	return nil, nil, errors.New("no such link")
-}
-
-func (b *Blob) ResolveLink(_ []string) (*node.Link, []string, error) {
-	return nil, nil, errors.New("no such link")
-}
-
-func (b *Blob) Loggable() map[string]interface{} {
-	return map[string]interface{}{
-		"type": "git_blob",
+// DecodeBlob fills a NodeAssembler (from `Type.Blob__Repr.NewBuilder()`) from a stream of bytes
+func DecodeBlob(na ipld.NodeAssembler, rd *bufio.Reader) error {
+	size, err := rd.ReadString(0)
+	if err != nil {
+		return err
 	}
-}
 
-func (b *Blob) MarshalJSON() ([]byte, error) {
-	return json.Marshal(b.rawData)
-}
+	sizen, err := strconv.Atoi(size[:len(size)-1])
+	if err != nil {
+		return err
+	}
 
-func (b *Blob) RawData() []byte {
-	return []byte(b.rawData)
-}
+	buf := new(bytes.Buffer)
+	fmt.Fprintf(buf, "blob %d\x00", sizen)
 
-func (b *Blob) Size() (uint64, error) {
-	return uint64(len(b.rawData)), nil
-}
+	n, err := io.Copy(buf, rd)
+	if err != nil {
+		return err
+	}
 
-func (b *Blob) Stat() (*node.NodeStat, error) {
-	return &node.NodeStat{}, nil
-}
+	if n != int64(sizen) {
+		return fmt.Errorf("blob size was not accurate")
+	}
 
-func (b *Blob) String() string {
-	return "[git blob]"
+	return na.AssignBytes(buf.Bytes())
 }
-
-func (b *Blob) Tree(p string, depth int) []string {
-	return nil
-}
-
-func (b *Blob) GitSha() []byte {
-	return cidToSha(b.Cid())
-}
-
-var _ node.Node = (*Blob)(nil)
