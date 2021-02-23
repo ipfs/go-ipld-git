@@ -1,170 +1,68 @@
 package ipldgit
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
-	"fmt"
+	"bufio"
 	"io"
-	"sync"
+	"strconv"
 
-	cid "github.com/ipfs/go-cid"
-	node "github.com/ipfs/go-ipld-format"
+	"github.com/ipld/go-ipld-prime"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
-type Tree struct {
-	entries     map[string]*TreeEntry
-	size        int
-	order       []string
-	cid         cid.Cid
-	rawData     []byte
-	rawDataOnce sync.Once
-}
+// DecodeTree fills a NodeAssembler (from `Type.Tree__Repr.NewBuilder()`) from a stream of bytes
+func DecodeTree(na ipld.NodeAssembler, rd *bufio.Reader) error {
+	lstr, err := rd.ReadString(0)
+	if err != nil {
+		return err
+	}
+	lstr = lstr[:len(lstr)-1]
 
-type TreeEntry struct {
-	name string
-	Mode string  `json:"mode"`
-	Hash cid.Cid `json:"hash"`
-}
-
-func (t *Tree) Cid() cid.Cid {
-	return t.cid
-}
-
-func (t *Tree) String() string {
-	return "[git tree object]"
-}
-
-func (t *Tree) GitSha() []byte {
-	return cidToSha(t.cid)
-}
-
-func (t *Tree) Copy() node.Node {
-	out := &Tree{
-		entries: make(map[string]*TreeEntry),
-		cid:     t.cid,
-		size:    t.size,
-		order:   t.order, // TODO: make a deep copy of this
+	n, err := strconv.Atoi(lstr)
+	if err != nil {
+		return err
 	}
 
-	for k, v := range t.entries {
-		nv := *v
-		out.entries[k] = &nv
+	t := Type.Tree__Repr.NewBuilder()
+	la, err := t.BeginList(int64(n))
+	if err != nil {
+		return err
 	}
-	return out
-}
-
-func (t *Tree) MarshalJSON() ([]byte, error) {
-	return json.Marshal(t.entries)
-}
-
-func (t *Tree) Tree(p string, depth int) []string {
-	if p != "" {
-		_, ok := t.entries[p]
-		if !ok {
-			return nil
+	for {
+		err := DecodeTreeEntry(la.AssembleValue(), rd)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return err
 		}
-
-		return []string{"mode", "type", "hash"}
 	}
-
-	if depth == 0 {
-		return nil
-	}
-
-	if depth == 1 {
-		return t.order
-	}
-
-	var out []string
-	for k := range t.entries {
-		out = append(out, k, k+"/mode", k+"/type", k+"/hash")
-	}
-	return out
+	return na.AssignNode(t.Build())
 }
 
-func (t *Tree) Links() []*node.Link {
-	var out []*node.Link
-	for _, v := range t.entries {
-		out = append(out, &node.Link{Cid: v.Hash})
-	}
-	return out
-}
-
-func (t *Tree) Loggable() map[string]interface{} {
-	return map[string]interface{}{
-		"type": "git tree object",
-	}
-}
-
-func (t *Tree) RawData() []byte {
-	t.rawDataOnce.Do(func() {
-		buf := new(bytes.Buffer)
-
-		fmt.Fprintf(buf, "tree %d\x00", t.size)
-		for _, s := range t.order {
-			t.entries[s].WriteTo(buf)
-		}
-		t.rawData = buf.Bytes()
-	})
-
-	return t.rawData
-}
-
-func (t *Tree) Resolve(p []string) (interface{}, []string, error) {
-	e, ok := t.entries[p[0]]
-	if !ok {
-		return nil, nil, errors.New("no such link")
-	}
-
-	if len(p) == 1 {
-		return e, nil, nil
-	}
-
-	switch p[1] {
-	case "hash":
-		return &node.Link{Cid: e.Hash}, p[2:], nil
-	case "mode":
-		return e.Mode, p[2:], nil
-	default:
-		return nil, nil, errors.New("no such link")
-	}
-}
-
-func (t *Tree) ResolveLink(path []string) (*node.Link, []string, error) {
-	out, rest, err := t.Resolve(path)
+// DecodeTreeEntry fills a NodeAssembler (from `Type.TreeEntry__Repr.NewBuilder()`) from a stream of bytes
+func DecodeTreeEntry(na ipld.NodeAssembler, rd *bufio.Reader) error {
+	data, err := rd.ReadString(' ')
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
+	data = data[:len(data)-1]
 
-	lnk, ok := out.(*node.Link)
-	if !ok {
-		return nil, nil, errors.New("not a link")
-	}
-
-	return lnk, rest, nil
-}
-
-func (t *Tree) Size() (uint64, error) {
-	return uint64(len(t.RawData())), nil
-}
-
-func (t *Tree) Stat() (*node.NodeStat, error) {
-	return &node.NodeStat{}, nil
-}
-
-func (te *TreeEntry) WriteTo(w io.Writer) (int64, error) {
-	n, err := fmt.Fprintf(w, "%s %s\x00", te.Mode, te.name)
+	name, err := rd.ReadString(0)
 	if err != nil {
-		return 0, err
+		return err
 	}
+	name = name[:len(name)-1]
 
-	nn, err := w.Write(cidToSha(te.Hash))
+	sha := make([]byte, 20)
+	_, err = io.ReadFull(rd, sha)
 	if err != nil {
-		return int64(n), err
+		return err
 	}
 
-	return int64(n + nn), nil
+	te := _TreeEntry{
+		Mode: _String{data},
+		Name: _String{name},
+		Hash: _Link{cidlink.Link{Cid: shaToCid(sha)}},
+	}
+	return na.AssignNode(&te)
 }
-
-var _ node.Node = (*Tree)(nil)
