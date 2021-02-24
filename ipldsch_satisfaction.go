@@ -5227,6 +5227,9 @@ func (n _Tag) FieldTagger() PersonInfo {
 func (n _Tag) FieldText() String {
 	return &n.Text
 }
+func (n _Tag) FieldDataSize() MaybeString {
+	return &n.DataSize
+}
 type _Tag__Maybe struct {
 	m schema.Maybe
 	v Tag
@@ -5266,6 +5269,7 @@ var (
 	fieldName__Tag_Tag = _String{"Tag"}
 	fieldName__Tag_Tagger = _String{"Tagger"}
 	fieldName__Tag_Text = _String{"Text"}
+	fieldName__Tag_DataSize = _String{"DataSize"}
 )
 var _ ipld.Node = (Tag)(&_Tag{})
 var _ schema.TypedNode = (Tag)(&_Tag{})
@@ -5284,6 +5288,11 @@ func (n Tag) LookupByString(key string) (ipld.Node, error) {
 		return &n.Tagger, nil
 	case "Text":
 		return &n.Text, nil
+	case "DataSize":
+		if n.DataSize.m == schema.Maybe_Absent {
+			return ipld.Absent, nil
+		}
+		return n.DataSize.v, nil
 	default:
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
 	}
@@ -5311,7 +5320,7 @@ type _Tag__MapItr struct {
 }
 
 func (itr *_Tag__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 5 {
+	if itr.idx >= 6 {
 		return nil, nil, ipld.ErrIteratorOverread{}
 	}
 	switch itr.idx {
@@ -5330,6 +5339,13 @@ func (itr *_Tag__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 	case 4:
 		k = &fieldName__Tag_Text
 		v = &itr.n.Text
+	case 5:
+		k = &fieldName__Tag_DataSize
+		if itr.n.DataSize.m == schema.Maybe_Absent {
+			v = ipld.Absent
+			break
+		}
+		v = itr.n.DataSize.v
 	default:
 		panic("unreachable")
 	}
@@ -5337,14 +5353,14 @@ func (itr *_Tag__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 	return
 }
 func (itr *_Tag__MapItr) Done() bool {
-	return itr.idx >= 5
+	return itr.idx >= 6
 }
 
 func (Tag) ListIterator() ipld.ListIterator {
 	return nil
 }
 func (Tag) Length() int64 {
-	return 5
+	return 6
 }
 func (Tag) IsAbsent() bool {
 	return false
@@ -5407,6 +5423,7 @@ type _Tag__Assembler struct {
 	ca_Tag _String__Assembler
 	ca_Tagger _PersonInfo__Assembler
 	ca_Text _String__Assembler
+	ca_DataSize _String__Assembler
 	}
 
 func (na *_Tag__Assembler) reset() {
@@ -5417,6 +5434,7 @@ func (na *_Tag__Assembler) reset() {
 	na.ca_Tag.reset()
 	na.ca_Tagger.reset()
 	na.ca_Text.reset()
+	na.ca_DataSize.reset()
 }
 
 var (
@@ -5425,6 +5443,7 @@ var (
 	fieldBit__Tag_Tag = 1 << 2
 	fieldBit__Tag_Tagger = 1 << 3
 	fieldBit__Tag_Text = 1 << 4
+	fieldBit__Tag_DataSize = 1 << 5
 	fieldBits__Tag_sufficient = 0 + 1 << 0 + 1 << 1 + 1 << 2 + 1 << 3 + 1 << 4
 )
 func (na *_Tag__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
@@ -5568,6 +5587,15 @@ func (ma *_Tag__Assembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
+	case 5:
+		switch ma.w.DataSize.m {
+		case schema.Maybe_Value:
+			ma.w.DataSize.v = ma.ca_DataSize.w
+			ma.state = maState_initial
+			return true
+		default:
+			return false
+		}
 	default:
 		panic("unreachable")
 	}
@@ -5638,6 +5666,16 @@ func (ma *_Tag__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
 		ma.ca_Text.w = &ma.w.Text
 		ma.ca_Text.m = &ma.cm
 		return &ma.ca_Text, nil
+	case "DataSize":
+		if ma.s & fieldBit__Tag_DataSize != 0 {
+			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_DataSize}
+		}
+		ma.s += fieldBit__Tag_DataSize
+		ma.state = maState_midValue
+		ma.f = 5
+		ma.ca_DataSize.w = ma.w.DataSize.v
+		ma.ca_DataSize.m = &ma.w.DataSize.m
+		return &ma.ca_DataSize, nil
 	default:
 		return nil, ipld.ErrInvalidKey{TypeName:"ipldgit.Tag", Key:&_String{k}}
 	}
@@ -5695,6 +5733,10 @@ func (ma *_Tag__Assembler) AssembleValue() ipld.NodeAssembler {
 		ma.ca_Text.w = &ma.w.Text
 		ma.ca_Text.m = &ma.cm
 		return &ma.ca_Text
+	case 5:
+		ma.ca_DataSize.w = ma.w.DataSize.v
+		ma.ca_DataSize.m = &ma.w.DataSize.m
+		return &ma.ca_DataSize
 	default:
 		panic("unreachable")
 	}
@@ -5802,6 +5844,13 @@ func (ka *_Tag__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Tag_Text
 		ka.state = maState_expectValue
 		ka.f = 4
+	case "DataSize":
+		if ka.s & fieldBit__Tag_DataSize != 0 {
+			return ipld.ErrRepeatedMapKey{&fieldName__Tag_DataSize}
+		}
+		ka.s += fieldBit__Tag_DataSize
+		ka.state = maState_expectValue
+		ka.f = 5
 	default:
 		return ipld.ErrInvalidKey{TypeName:"ipldgit.Tag", Key:&_String{k}}
 	}
@@ -5836,6 +5885,7 @@ var (
 	fieldName__Tag_Tag_serial = _String{"Tag"}
 	fieldName__Tag_Tagger_serial = _String{"Tagger"}
 	fieldName__Tag_Text_serial = _String{"Text"}
+	fieldName__Tag_DataSize_serial = _String{"DataSize"}
 )
 var _ ipld.Node = &_Tag__Repr{}
 func (_Tag__Repr) Kind() ipld.Kind {
@@ -5853,6 +5903,11 @@ func (n *_Tag__Repr) LookupByString(key string) (ipld.Node, error) {
 		return n.Tagger.Representation(), nil
 	case "Text":
 		return n.Text.Representation(), nil
+	case "DataSize":
+		if n.DataSize.m == schema.Maybe_Absent {
+			return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+		}
+		return n.DataSize.v.Representation(), nil
 	default:
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
 	}
@@ -5871,17 +5926,24 @@ func (n _Tag__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
 }
 func (n *_Tag__Repr) MapIterator() ipld.MapIterator {
-	return &_Tag__ReprMapItr{n, 0}
+	end := 6
+	if n.DataSize.m == schema.Maybe_Absent {
+		end = 5
+	} else {
+		goto done
+	}
+done:
+	return &_Tag__ReprMapItr{n, 0, end}
 }
 
 type _Tag__ReprMapItr struct {
 	n   *_Tag__Repr
 	idx int
-	
+	end int
 }
 
 func (itr *_Tag__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-if itr.idx >= 5 {
+advance:if itr.idx >= 6 {
 		return nil, nil, ipld.ErrIteratorOverread{}
 	}
 	switch itr.idx {
@@ -5900,6 +5962,13 @@ if itr.idx >= 5 {
 	case 4:
 		k = &fieldName__Tag_Text_serial
 		v = itr.n.Text.Representation()
+	case 5:
+		k = &fieldName__Tag_DataSize_serial
+		if itr.n.DataSize.m == schema.Maybe_Absent {
+			itr.idx++
+			goto advance
+		}
+		v = itr.n.DataSize.v.Representation()
 	default:
 		panic("unreachable")
 	}
@@ -5907,13 +5976,16 @@ if itr.idx >= 5 {
 	return
 }
 func (itr *_Tag__ReprMapItr) Done() bool {
-	return itr.idx >= 5
+	return itr.idx >= itr.end
 }
 func (_Tag__Repr) ListIterator() ipld.ListIterator {
 	return nil
 }
 func (rn *_Tag__Repr) Length() int64 {
-	l := 5
+	l := 6
+	if rn.DataSize.m == schema.Maybe_Absent {
+		l--
+	}
 	return int64(l)
 }
 func (_Tag__Repr) IsAbsent() bool {
@@ -5977,6 +6049,7 @@ type _Tag__ReprAssembler struct {
 	ca_Tag _String__ReprAssembler
 	ca_Tagger _PersonInfo__ReprAssembler
 	ca_Text _String__ReprAssembler
+	ca_DataSize _String__ReprAssembler
 	}
 
 func (na *_Tag__ReprAssembler) reset() {
@@ -5987,6 +6060,7 @@ func (na *_Tag__ReprAssembler) reset() {
 	na.ca_Tag.reset()
 	na.ca_Tagger.reset()
 	na.ca_Text.reset()
+	na.ca_DataSize.reset()
 }
 func (na *_Tag__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	switch *na.m {
@@ -6119,6 +6193,15 @@ func (ma *_Tag__ReprAssembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
+	case 5:
+		switch ma.w.DataSize.m {
+		case schema.Maybe_Value:
+			ma.w.DataSize.v = ma.ca_DataSize.w
+			ma.state = maState_initial
+			return true
+		default:
+			return false
+		}
 	default:
 		panic("unreachable")
 	}
@@ -6189,6 +6272,17 @@ func (ma *_Tag__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 		ma.ca_Text.w = &ma.w.Text
 		ma.ca_Text.m = &ma.cm
 		return &ma.ca_Text, nil
+	case "DataSize":
+		if ma.s & fieldBit__Tag_DataSize != 0 {
+			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_DataSize_serial}
+		}
+		ma.s += fieldBit__Tag_DataSize
+		ma.state = maState_midValue
+		ma.f = 5
+		ma.ca_DataSize.w = ma.w.DataSize.v
+		ma.ca_DataSize.m = &ma.w.DataSize.m
+		
+		return &ma.ca_DataSize, nil
 	default:
 		return nil, ipld.ErrInvalidKey{TypeName:"ipldgit.Tag.Repr", Key:&_String{k}}
 	}
@@ -6246,6 +6340,11 @@ func (ma *_Tag__ReprAssembler) AssembleValue() ipld.NodeAssembler {
 		ma.ca_Text.w = &ma.w.Text
 		ma.ca_Text.m = &ma.cm
 		return &ma.ca_Text
+	case 5:
+		ma.ca_DataSize.w = ma.w.DataSize.v
+		ma.ca_DataSize.m = &ma.w.DataSize.m
+		
+		return &ma.ca_DataSize
 	default:
 		panic("unreachable")
 	}
@@ -6353,6 +6452,13 @@ func (ka *_Tag__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Tag_Text
 		ka.state = maState_expectValue
 		ka.f = 4
+	case "DataSize":
+		if ka.s & fieldBit__Tag_DataSize != 0 {
+			return ipld.ErrRepeatedMapKey{&fieldName__Tag_DataSize_serial}
+		}
+		ka.s += fieldBit__Tag_DataSize
+		ka.state = maState_expectValue
+		ka.f = 5
 	default:
 		return ipld.ErrInvalidKey{TypeName:"ipldgit.Tag.Repr", Key:&_String{k}}
 	}

@@ -10,16 +10,19 @@ import (
 
 	"github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime/schema"
 )
 
 // DecodeTag fills a NodeAssembler (from `Type.Tag__Repr.NewBuilder()`) from a stream of bytes
 func DecodeTag(na ipld.NodeAssembler, rd *bufio.Reader) error {
-	_, err := rd.ReadString(0)
+	size, err := rd.ReadString(0)
 	if err != nil {
 		return err
 	}
 
 	out := _Tag{}
+	out.DataSize.m = schema.Maybe_Value
+	out.DataSize.v = &_String{size}
 
 	for {
 		line, _, err := rd.ReadLine()
@@ -105,4 +108,25 @@ func readMergeTag(hash []byte, rd *bufio.Reader) (Tag, []byte, error) {
 		}
 	}
 	return &out, nil, nil
+}
+
+func encodeTag(n ipld.Node, w io.Writer) error {
+	t, ok := n.(Tag)
+	if !ok {
+		return fmt.Errorf("not a Commit: %T", n)
+	}
+
+	buf := new(bytes.Buffer)
+	fmt.Fprintf(buf, "tag %s\x00", t.DataSize.Must().x)
+	fmt.Fprintf(buf, "object %s\n", hex.EncodeToString(t.Object.sha()))
+	fmt.Fprintf(buf, "type %s\n", t.TagType.x)
+	fmt.Fprintf(buf, "tag %s\n", t.Tag.x)
+	if !t.Tagger.IsNull() {
+		fmt.Fprintf(buf, "tagger %s\n", t.Tagger.GitString())
+	}
+	if t.Text.x != "" {
+		fmt.Fprintf(buf, "\n%s", t.Text.x)
+	}
+	_, err := buf.WriteTo(w)
+	return err
 }
