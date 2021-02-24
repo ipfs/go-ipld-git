@@ -31,3 +31,38 @@ func Decoder(na ipld.NodeAssembler, r io.Reader) error {
 		return fmt.Errorf("unrecognized object type: %s", typ)
 	}
 }
+
+// ParseObject produces an ipld.Node from a stream / binary represnetation.
+func ParseObject(r io.Reader) (ipld.Node, error) {
+	rd := bufio.NewReader(r)
+
+	typ, err := rd.ReadString(' ')
+	if err != nil {
+		return nil, err
+	}
+	typ = typ[:len(typ)-1]
+
+	var na ipld.NodeBuilder
+	var f func(ipld.NodeAssembler, *bufio.Reader) error
+	switch typ {
+	case "tree":
+		na = Type.Tree.NewBuilder()
+		f = DecodeTree
+	case "commit":
+		na = Type.Commit.NewBuilder()
+		f = DecodeCommit
+	case "blob":
+		na = Type.Blob.NewBuilder()
+		f = DecodeBlob
+	case "tag":
+		na = Type.Tag.NewBuilder()
+		f = DecodeTag
+	default:
+		return nil, fmt.Errorf("unrecognized object type: %s", typ)
+	}
+
+	if err := f(na, rd); err != nil {
+		return nil, err
+	}
+	return na.Build(), nil
+}
