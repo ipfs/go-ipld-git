@@ -5,6 +5,7 @@ package ipldgit
 import (
 	ipld "github.com/ipld/go-ipld-prime"
 )
+
 var _ ipld.Node = nil // suppress errors when this dependency is not referenced
 // Type is a struct embeding a NodePrototype/Type for every Node implementation in this package.
 // One of its major uses is to start the construction of a value.
@@ -19,32 +20,32 @@ var _ ipld.Node = nil // suppress errors when this dependency is not referenced
 var Type typeSlab
 
 type typeSlab struct {
-	Blob       _Blob__Prototype
-	Blob__Repr _Blob__ReprPrototype
-	Commit       _Commit__Prototype
-	Commit__Repr _Commit__ReprPrototype
-	GpgSig       _GpgSig__Prototype
-	GpgSig__Repr _GpgSig__ReprPrototype
-	Link       _Link__Prototype
-	Link__Repr _Link__ReprPrototype
-	LinkTree       _LinkTree__Prototype
-	LinkTree__Repr _LinkTree__ReprPrototype
+	Blob              _Blob__Prototype
+	Blob__Repr        _Blob__ReprPrototype
+	Commit            _Commit__Prototype
+	Commit__Repr      _Commit__ReprPrototype
+	GpgSig            _GpgSig__Prototype
+	GpgSig__Repr      _GpgSig__ReprPrototype
+	Link              _Link__Prototype
+	Link__Repr        _Link__ReprPrototype
+	LinkTree          _LinkTree__Prototype
+	LinkTree__Repr    _LinkTree__ReprPrototype
 	ListParents       _ListParents__Prototype
 	ListParents__Repr _ListParents__ReprPrototype
-	ListString       _ListString__Prototype
-	ListString__Repr _ListString__ReprPrototype
-	ListTag       _ListTag__Prototype
-	ListTag__Repr _ListTag__ReprPrototype
-	PersonInfo       _PersonInfo__Prototype
-	PersonInfo__Repr _PersonInfo__ReprPrototype
-	String       _String__Prototype
-	String__Repr _String__ReprPrototype
-	Tag       _Tag__Prototype
-	Tag__Repr _Tag__ReprPrototype
-	Tree       _Tree__Prototype
-	Tree__Repr _Tree__ReprPrototype
-	TreeEntry       _TreeEntry__Prototype
-	TreeEntry__Repr _TreeEntry__ReprPrototype
+	ListString        _ListString__Prototype
+	ListString__Repr  _ListString__ReprPrototype
+	ListTag           _ListTag__Prototype
+	ListTag__Repr     _ListTag__ReprPrototype
+	PersonInfo        _PersonInfo__Prototype
+	PersonInfo__Repr  _PersonInfo__ReprPrototype
+	String            _String__Prototype
+	String__Repr      _String__ReprPrototype
+	Tag               _Tag__Prototype
+	Tag__Repr         _Tag__ReprPrototype
+	Tree              _Tree__Prototype
+	Tree__Repr        _Tree__ReprPrototype
+	TreeEntry         _TreeEntry__Prototype
+	TreeEntry__Repr   _TreeEntry__ReprPrototype
 }
 
 // --- type definitions follow ---
@@ -56,16 +57,16 @@ type _Blob struct{ x []byte }
 // Commit matches the IPLD Schema type "Commit".  It has Struct type-kind, and may be interrogated like map kind.
 type Commit = *_Commit
 type _Commit struct {
-	DataSize _String
-	GitTree _LinkTree
-	Parents _ListParents
-	Message _String
-	Author _PersonInfo__Maybe
+	DataSize  _String
+	GitTree   _LinkTree
+	Parents   _ListParents
+	Message   _String
+	Author    _PersonInfo__Maybe
 	Committer _PersonInfo__Maybe
-	Encoding _String__Maybe
-	Sig _GpgSig__Maybe
-	MergeTag _ListTag
-	Other _ListString
+	Encoding  _String__Maybe
+	Sig       _GpgSig__Maybe
+	MergeTag  _ListTag
+	Other     _ListString
 }
 
 // GpgSig matches the IPLD Schema type "GpgSig".  It has string kind.
@@ -101,9 +102,9 @@ type _ListTag struct {
 // PersonInfo matches the IPLD Schema type "PersonInfo".  It has Struct type-kind, and may be interrogated like map kind.
 type PersonInfo = *_PersonInfo
 type _PersonInfo struct {
-	Name _String
-	Email _String
-	Date _String
+	Name     _String
+	Email    _String
+	Date     _String
 	Timezone _String
 }
 
@@ -114,11 +115,11 @@ type _String struct{ x string }
 // Tag matches the IPLD Schema type "Tag".  It has Struct type-kind, and may be interrogated like map kind.
 type Tag = *_Tag
 type _Tag struct {
-	Object _Link
-	TagType _String
-	Tag _String
-	Tagger _PersonInfo
-	Text _String
+	Object   _Link
+	TagType  _String
+	Tag      _String
+	Tagger   _PersonInfo
+	Text     _String
 	DataSize _String__Maybe
 }
 
@@ -135,4 +136,3 @@ type _TreeEntry struct {
 	Name _String
 	Hash _Link
 }
-

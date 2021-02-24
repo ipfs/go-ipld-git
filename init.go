@@ -1,5 +1,8 @@
 package ipldgit
 
+//go:generate go run ./gen .
+//go:generate go fmt ./
+
 import (
 	"github.com/ipfs/go-cid"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
