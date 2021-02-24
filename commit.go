@@ -148,3 +148,56 @@ func decodeGpgSig(rd *bufio.Reader) (GpgSig, error) {
 
 	return &out, nil
 }
+
+func encodeCommit(n ipld.Node, w io.Writer) error {
+	c, ok := n.(Commit)
+	if !ok {
+		return fmt.Errorf("not a Commit: %T", n)
+	}
+
+	buf := new(bytes.Buffer)
+	fmt.Fprintf(buf, "commit %s\x00", c.DataSize.x)
+	fmt.Fprintf(buf, "tree %s\n", hex.EncodeToString(c.GitTree.sha()))
+	for _, p := range c.Parents.x {
+		fmt.Fprintf(buf, "parent %s\n", hex.EncodeToString(p.sha()))
+	}
+	fmt.Fprintf(buf, "author %s\n", c.Author.v.GitString())
+	fmt.Fprintf(buf, "committer %s\n", c.Committer.v.GitString())
+	if len(c.Encoding.v.x) > 0 {
+		fmt.Fprintf(buf, "encoding %s\n", c.Encoding.v.x)
+	}
+	for _, mtag := range c.MergeTag.x {
+		fmt.Fprintf(buf, "mergetag object %s\n", hex.EncodeToString(mtag.Object.sha()))
+		fmt.Fprintf(buf, " type %s\n", mtag.TagType.x)
+		fmt.Fprintf(buf, " tag %s\n", mtag.Tag.x)
+		fmt.Fprintf(buf, " tagger %s\n \n", mtag.Tagger.GitString())
+		fmt.Fprintf(buf, "%s", mtag.Text.x)
+	}
+	if c.Sig.m == schema.Maybe_Value {
+		fmt.Fprintln(buf, "gpgsig -----BEGIN PGP SIGNATURE-----")
+		fmt.Fprint(buf, c.Sig.v.x)
+		fmt.Fprintln(buf, " -----END PGP SIGNATURE-----")
+	}
+	for _, line := range c.Other.x {
+		fmt.Fprintln(buf, line.x)
+	}
+	fmt.Fprintf(buf, "\n%s", c.Message.x)
+
+	_, err := bufio.NewWriter(w).Write(buf.Bytes())
+	return err
+}
+
+func (p _PersonInfo) GitString() string {
+	f := "%s <%s>"
+	arg := []interface{}{p.Name.x, p.Email.x}
+	if p.Date.x != "" {
+		f = f + " %s"
+		arg = append(arg, p.Date.x)
+	}
+
+	if p.Timezone.x != "" {
+		f = f + " %s"
+		arg = append(arg, p.Timezone.x)
+	}
+	return fmt.Sprintf(f, arg...)
+}

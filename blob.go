@@ -36,3 +36,12 @@ func DecodeBlob(na ipld.NodeAssembler, rd *bufio.Reader) error {
 
 	return na.AssignBytes(buf.Bytes())
 }
+
+func encodeBlob(n ipld.Node, w io.Writer) error {
+	bytes, err := n.AsBytes()
+	if err != nil {
+		return err
+	}
+	_, err = bufio.NewWriter(w).Write(bytes)
+	return err
+}

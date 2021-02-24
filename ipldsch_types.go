@@ -119,6 +119,7 @@ type _Tag struct {
 	Tag _String
 	Tagger _PersonInfo
 	Text _String
+	DataSize _String__Maybe
 }
 
 // Tree matches the IPLD Schema type "Tree".  It has list kind.
