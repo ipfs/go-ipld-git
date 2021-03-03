@@ -4,7 +4,6 @@ import (
 	"archive/tar"
 	"bytes"
 	"compress/gzip"
-	"context"
 	"fmt"
 	"io"
 	"os"
@@ -15,17 +14,15 @@ import (
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	mh "github.com/multiformats/go-multihash"
 )
 
 func TestObjectParse(t *testing.T) {
-	lb := cidlink.LinkBuilder{Prefix: cid.NewCidV1(cid.GitRaw, mh.Multihash{}).Prefix()}
-	sc := func(ipld.Link) error {
-		return nil
-	}
-	storer := func(lnkCtx ipld.LinkContext) (io.Writer, ipld.StoreCommitter, error) {
-		return bytes.NewBuffer([]byte{}), sc, nil
-	}
+	lb := cidlink.LinkPrototype{cid.Prefix{
+		Version:  1,
+		Codec:    cid.GitRaw,
+		MhType:   0x11,
+		MhLength: 20,
+	}}
 
 	i := 0
 	err := filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
@@ -59,11 +56,10 @@ func TestObjectParse(t *testing.T) {
 			fmt.Printf("%d %s\r", i, path)
 		}
 
-		shal, err := lb.Build(context.Background(), ipld.LinkContext{}, thing, storer)
-		if err != nil {
-			t.Fatal(err)
-		}
-		sha := shal.(cidlink.Link).Cid.Hash()
+		ls := cidlink.DefaultLinkSystem()
+		lnk := ls.MustComputeLink(lb, thing)
+
+		sha := lnk.(cidlink.Link).Cid.Hash()
 		if fmt.Sprintf("%x", sha) != parts[len(parts)-2]+parts[len(parts)-1] {
 			fmt.Printf("\nsha: %x\n", sha)
 			fmt.Printf("path: %s\n", path)
@@ -88,18 +84,12 @@ func TestObjectParse(t *testing.T) {
 }
 
 func TestArchiveObjectParse(t *testing.T) {
-	lb := cidlink.LinkBuilder{Prefix: cid.Prefix{
+	lb := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
 		Codec:    cid.GitRaw,
 		MhType:   0x11,
 		MhLength: 20,
 	}}
-	sc := func(ipld.Link) error {
-		return nil
-	}
-	storer := func(lnkCtx ipld.LinkContext) (io.Writer, ipld.StoreCommitter, error) {
-		return bytes.NewBuffer([]byte{}), sc, nil
-	}
 
 	archive, err := os.Open("testdata.tar.gz")
 	if err != nil {
@@ -153,11 +143,10 @@ func TestArchiveObjectParse(t *testing.T) {
 
 			fmt.Printf("%s\r", name)
 
-			shal, err := lb.Build(context.Background(), ipld.LinkContext{}, thing, storer)
-			if err != nil {
-				t.Fatal(err)
-			}
-			sha := shal.(cidlink.Link).Cid.Hash()
+			ls := cidlink.DefaultLinkSystem()
+			lnk := ls.MustComputeLink(lb, thing)
+
+			sha := lnk.(cidlink.Link).Cid.Hash()
 			if fmt.Sprintf("%x", sha) != parts[len(parts)-2]+parts[len(parts)-1] {
 				fmt.Printf("\nsha: %x\n", sha)
 				fmt.Printf("path: %s\n", name)
@@ -432,13 +421,14 @@ func BenchmarkRawData(b *testing.B) {
 }
 
 func BenchmarkCid(b *testing.B) {
-	lb := cidlink.LinkBuilder{Prefix: cid.NewCidV1(cid.GitRaw, mh.Multihash{}).Prefix()}
-	sc := func(ipld.Link) error {
-		return nil
-	}
-	storer := func(lnkCtx ipld.LinkContext) (io.Writer, ipld.StoreCommitter, error) {
-		return bytes.NewBuffer([]byte{}), sc, nil
-	}
+	lb := cidlink.LinkPrototype{cid.Prefix{
+		Version:  1,
+		Codec:    cid.GitRaw,
+		MhType:   0x11,
+		MhLength: 20,
+	}}
+	ls := cidlink.DefaultLinkSystem()
+
 	for i := 0; i < b.N; i++ {
 		err := filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
 			if err != nil {
@@ -463,7 +453,7 @@ func BenchmarkCid(b *testing.B) {
 				return err
 			}
 
-			_, err = lb.Build(context.Background(), ipld.LinkContext{}, thing, storer)
+			_, err = ls.ComputeLink(lb, thing)
 			return err
 		})
 		if err != nil {
