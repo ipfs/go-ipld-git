@@ -5,15 +5,16 @@ package ipldgit
 
 import (
 	"github.com/ipfs/go-cid"
-	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime"
+	mc "github.com/ipld/go-ipld-prime/multicodec"
 )
 
 var (
-	_ cidlink.MulticodecDecoder = Decoder
-	_ cidlink.MulticodecEncoder = Encoder
+	_ ipld.Decoder = Decoder
+	_ ipld.Encoder = Encoder
 )
 
 func init() {
-	cidlink.RegisterMulticodecDecoder(cid.GitRaw, Decoder)
-	cidlink.RegisterMulticodecEncoder(cid.GitRaw, Encoder)
+	mc.EncoderRegistry[cid.GitRaw]= Encoder
+	mc.DecoderRegistry[cid.GitRaw]= Decoder
 }
