@@ -71,7 +71,7 @@ func parsePersonInfo(line []byte) (PersonInfo, error) {
 }
 
 func (p _PersonInfo) GitString() string {
-	f := "prefix %s <%s>"
+	f := "%s <%s>"
 	arg := []interface{}{p.Name.x, p.Email.x}
 	if p.Date.x != "" {
 		f = f + " %s"

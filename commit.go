@@ -16,7 +16,7 @@ import (
 
 // DecodeCommit fills a NodeAssembler (from `Type.Commit__Repr.NewBuilder()`) from a stream of bytes
 func DecodeCommit(na ipld.NodeAssembler, rd *bufio.Reader) error {
-	size, err := rd.ReadString(0)
+	_, err := rd.ReadString(0)
 	if err != nil {
 		return err
 	}
@@ -26,7 +26,6 @@ func DecodeCommit(na ipld.NodeAssembler, rd *bufio.Reader) error {
 		MergeTag: _ListTag{[]_Tag{}},
 		Other:    _ListString{[]_String{}},
 	}
-	c.DataSize = _String{size[:len(size)-1]}
 	for {
 		line, _, err := rd.ReadLine()
 		if err != nil {
@@ -156,7 +155,7 @@ func encodeCommit(n ipld.Node, w io.Writer) error {
 	}
 
 	buf := new(bytes.Buffer)
-	fmt.Fprintf(buf, "commit %s\x00", c.DataSize.x)
+
 	fmt.Fprintf(buf, "tree %s\n", hex.EncodeToString(c.GitTree.sha()))
 	for _, p := range c.Parents.x {
 		fmt.Fprintf(buf, "parent %s\n", hex.EncodeToString(p.sha()))
@@ -183,6 +182,13 @@ func encodeCommit(n ipld.Node, w io.Writer) error {
 	}
 	fmt.Fprintf(buf, "\n%s", c.Message.x)
 
-	_, err := buf.WriteTo(w)
+	fmt.Printf("encode commit len: %d \n", buf.Len())
+	//	fmt.Printf("out: %s\n", string(buf.Bytes()))
+	_, err := fmt.Fprintf(w, "commit %d\x00", buf.Len())
+	if err != nil {
+		return err
+	}
+
+	_, err = buf.WriteTo(w)
 	return err
 }

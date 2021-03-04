@@ -99,6 +99,7 @@ func TestArchiveObjectParse(t *testing.T) {
 		MhType:   0x11,
 		MhLength: 20,
 	}}
+	ls := cidlink.DefaultLinkSystem()
 
 	archive, err := os.Open("testdata.tar.gz")
 	if err != nil {
@@ -152,17 +153,21 @@ func TestArchiveObjectParse(t *testing.T) {
 
 			fmt.Printf("%s\r", name)
 
-			ls := cidlink.DefaultLinkSystem()
 			lnk := ls.MustComputeLink(lb, thing)
-
 			sha := lnk.(cidlink.Link).Cid.Hash()
-			if fmt.Sprintf("%x", sha) != parts[len(parts)-2]+parts[len(parts)-1] {
+			mh, err := multihash.Decode(sha)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if fmt.Sprintf("%x", mh.Digest) != parts[len(parts)-2]+parts[len(parts)-1] {
 				fmt.Printf("\nsha: %x\n", sha)
 				fmt.Printf("path: %s\n", name)
 				fmt.Printf("mismatch on: %T\n", thing)
 				fmt.Printf("%#v\n", thing)
 				fmt.Println("vvvvvv")
-				fmt.Println(thing.AsBytes())
+				buf := bytes.NewBuffer([]byte{})
+				Encoder(thing, buf)
+				fmt.Println(string(buf.Bytes()))
 				fmt.Println("^^^^^^")
 				t.Fatal("mismatch!")
 			}
@@ -197,8 +202,6 @@ func testNode(t *testing.T, nd ipld.Node) error {
 		}
 
 		assert(t, !commit.GitTree.IsNull())
-		assert(t, len(commit.FieldMergeTag().x) > 0)
-
 	case Type.Tag:
 		tag, ok := nd.(Tag)
 		if !ok {
@@ -228,7 +231,7 @@ func TestParsePersonInfo(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !bytes.Equal([]byte(pi.GitString()), p1) {
+	if !bytes.Equal([]byte(pi.GitString()), p1[7:]) {
 		t.Fatal("not equal:", string(p1), "vs: ", pi.GitString())
 	}
 
@@ -261,7 +264,7 @@ func TestParsePersonInfo(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !bytes.Equal([]byte(pi.GitString()), p2) {
+	if !bytes.Equal([]byte(pi.GitString()), p2[7:]) {
 		t.Fatal("not equal", p2, pi.GitString())
 	}
 
@@ -276,7 +279,7 @@ func TestParsePersonInfo(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !bytes.Equal([]byte(pi.GitString()), p3) {
+	if !bytes.Equal([]byte(pi.GitString()), p3[7:]) {
 		t.Fatal("not equal", p3, pi.GitString())
 	}
 	if d, err := pi.LookupByString("Date"); err != nil {
@@ -308,7 +311,7 @@ func TestParsePersonInfo(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !bytes.Equal([]byte(pi.GitString()), p4) {
+	if !bytes.Equal([]byte(pi.GitString()), p4[7:]) {
 		t.Fatal("not equal", p4, pi.GitString())
 	}
 
@@ -341,7 +344,7 @@ func TestParsePersonInfo(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !bytes.Equal([]byte(pi.GitString()), p5) {
+	if !bytes.Equal([]byte(pi.GitString()), p5[7:]) {
 		t.Fatal("not equal", p5, pi.GitString())
 	}
 
@@ -357,7 +360,7 @@ func TestParsePersonInfo(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert(t, pi.GitString() == "prefix Someone <some.one@some.where>")
+	assert(t, pi.GitString() == "Someone <some.one@some.where>")
 
 	/* TODO: json
 	pi, err = parsePersonInfo([]byte("prefix Łukasz Magiera <magik6k@users.noreply.github.com> 1546187652 +0100"))

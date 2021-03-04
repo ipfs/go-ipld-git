@@ -57,7 +57,6 @@ type _Blob struct{ x []byte }
 // Commit matches the IPLD Schema type "Commit".  It has Struct type-kind, and may be interrogated like map kind.
 type Commit = *_Commit
 type _Commit struct {
-	DataSize  _String
 	GitTree   _LinkTree
 	Parents   _ListParents
 	Message   _String
@@ -115,12 +114,11 @@ type _String struct{ x string }
 // Tag matches the IPLD Schema type "Tag".  It has Struct type-kind, and may be interrogated like map kind.
 type Tag = *_Tag
 type _Tag struct {
-	Object   _Link
-	TagType  _String
-	Tag      _String
-	Tagger   _PersonInfo
-	Text     _String
-	DataSize _String__Maybe
+	Object  _Link
+	TagType _String
+	Tag     _String
+	Tagger  _PersonInfo
+	Text    _String
 }
 
 // Tree matches the IPLD Schema type "Tree".  It has list kind.

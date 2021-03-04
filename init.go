@@ -15,6 +15,6 @@ var (
 )
 
 func init() {
-	mc.EncoderRegistry[cid.GitRaw]= Encoder
-	mc.DecoderRegistry[cid.GitRaw]= Decoder
+	mc.EncoderRegistry[cid.GitRaw] = Encoder
+	mc.DecoderRegistry[cid.GitRaw] = Decoder
 }

@@ -10,19 +10,16 @@ import (
 
 	"github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	"github.com/ipld/go-ipld-prime/schema"
 )
 
 // DecodeTag fills a NodeAssembler (from `Type.Tag__Repr.NewBuilder()`) from a stream of bytes
 func DecodeTag(na ipld.NodeAssembler, rd *bufio.Reader) error {
-	size, err := rd.ReadString(0)
+	_, err := rd.ReadString(0)
 	if err != nil {
 		return err
 	}
 
 	out := _Tag{}
-	out.DataSize.m = schema.Maybe_Value
-	out.DataSize.v = &_String{size}
 
 	for {
 		line, _, err := rd.ReadLine()
@@ -117,7 +114,6 @@ func encodeTag(n ipld.Node, w io.Writer) error {
 	}
 
 	buf := new(bytes.Buffer)
-	fmt.Fprintf(buf, "tag %s\x00", t.DataSize.Must().x)
 	fmt.Fprintf(buf, "object %s\n", hex.EncodeToString(t.Object.sha()))
 	fmt.Fprintf(buf, "type %s\n", t.TagType.x)
 	fmt.Fprintf(buf, "tag %s\n", t.Tag.x)
@@ -126,6 +122,10 @@ func encodeTag(n ipld.Node, w io.Writer) error {
 	}
 	if t.Text.x != "" {
 		fmt.Fprintf(buf, "\n%s", t.Text.x)
+	}
+
+	if _, err := fmt.Fprintf(w, "tag %d\x00", buf.Len()); err != nil {
+		return err
 	}
 	_, err := buf.WriteTo(w)
 	return err
