@@ -16,7 +16,6 @@ func DecodeBlob(na ipld.NodeAssembler, rd *bufio.Reader) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Size of blob was %s\n", size)
 
 	sizen, err := strconv.Atoi(size[:len(size)-1])
 	if err != nil {
@@ -39,10 +38,11 @@ func DecodeBlob(na ipld.NodeAssembler, rd *bufio.Reader) error {
 }
 
 func encodeBlob(n ipld.Node, w io.Writer) error {
-	bytes, err := n.AsBytes()
+	b, err := n.AsBytes()
 	if err != nil {
 		return err
 	}
-	_, err = bufio.NewWriter(w).Write(bytes)
+
+	_, err = bytes.NewBuffer(b).WriteTo(w)
 	return err
 }
