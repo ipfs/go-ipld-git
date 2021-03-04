@@ -69,3 +69,18 @@ func parsePersonInfo(line []byte) (PersonInfo, error) {
 	pi.Timezone = _String{string(parts[at])}
 	return &pi, nil
 }
+
+func (p _PersonInfo) GitString() string {
+	f := "prefix %s <%s>"
+	arg := []interface{}{p.Name.x, p.Email.x}
+	if p.Date.x != "" {
+		f = f + " %s"
+		arg = append(arg, p.Date.x)
+	}
+
+	if p.Timezone.x != "" {
+		f = f + " %s"
+		arg = append(arg, p.Timezone.x)
+	}
+	return fmt.Sprintf(f, arg...)
+}
