@@ -26,7 +26,7 @@ func DecodeCommit(na ipld.NodeAssembler, rd *bufio.Reader) error {
 		MergeTag: _ListTag{[]_Tag{}},
 		Other:    _ListString{[]_String{}},
 	}
-	c.DataSize = _String{size}
+	c.DataSize = _String{size[:len(size)-1]}
 	for {
 		line, _, err := rd.ReadLine()
 		if err != nil {
@@ -163,7 +163,7 @@ func encodeCommit(n ipld.Node, w io.Writer) error {
 	}
 	fmt.Fprintf(buf, "author %s\n", c.Author.v.GitString())
 	fmt.Fprintf(buf, "committer %s\n", c.Committer.v.GitString())
-	if len(c.Encoding.v.x) > 0 {
+	if c.Encoding.m == schema.Maybe_Value {
 		fmt.Fprintf(buf, "encoding %s\n", c.Encoding.v.x)
 	}
 	for _, mtag := range c.MergeTag.x {
@@ -183,21 +183,6 @@ func encodeCommit(n ipld.Node, w io.Writer) error {
 	}
 	fmt.Fprintf(buf, "\n%s", c.Message.x)
 
-	_, err := bufio.NewWriter(w).Write(buf.Bytes())
+	_, err := buf.WriteTo(w)
 	return err
-}
-
-func (p _PersonInfo) GitString() string {
-	f := "%s <%s>"
-	arg := []interface{}{p.Name.x, p.Email.x}
-	if p.Date.x != "" {
-		f = f + " %s"
-		arg = append(arg, p.Date.x)
-	}
-
-	if p.Timezone.x != "" {
-		f = f + " %s"
-		arg = append(arg, p.Timezone.x)
-	}
-	return fmt.Sprintf(f, arg...)
 }

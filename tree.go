@@ -76,25 +76,23 @@ func DecodeTreeEntry(rd *bufio.Reader) (ipld.Node, error) {
 func encodeTree(n ipld.Node, w io.Writer) error {
 	buf := new(bytes.Buffer)
 
-	cnt := 0
 	li := n.ListIterator()
 	for !li.Done() {
 		_, te, err := li.Next()
 		if err != nil {
 			return err
 		}
-		cnt++
 		if err := encodeTreeEntry(te, buf); err != nil {
 			return err
 		}
 	}
+	cnt := buf.Len()
 	if _, err := fmt.Fprintf(w, "tree %d\x00", cnt); err != nil {
 		return err
 	}
 
-	_, err := bufio.NewWriter(w).Write(buf.Bytes())
+	_, err := buf.WriteTo(w)
 	return err
-
 }
 
 func encodeTreeEntry(n ipld.Node, w io.Writer) error {

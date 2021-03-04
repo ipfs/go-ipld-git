@@ -229,7 +229,7 @@ func TestParsePersonInfo(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !bytes.Equal([]byte(pi.GitString()), p1) {
-		t.Fatal("not equal", p1, pi.GitString())
+		t.Fatal("not equal:", string(p1), "vs: ", pi.GitString())
 	}
 
 	if d, err := pi.LookupByString("Date"); err != nil {
@@ -357,7 +357,7 @@ func TestParsePersonInfo(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert(t, pi.GitString() == "Someone <some.one@some.where>")
+	assert(t, pi.GitString() == "prefix Someone <some.one@some.where>")
 
 	/* TODO: json
 	pi, err = parsePersonInfo([]byte("prefix Łukasz Magiera <magik6k@users.noreply.github.com> 1546187652 +0100"))
