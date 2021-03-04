@@ -19,46 +19,50 @@ func DecodeTree(na ipld.NodeAssembler, rd *bufio.Reader) error {
 	}
 	lstr = lstr[:len(lstr)-1]
 
-	n, err := strconv.Atoi(lstr)
+	_, err = strconv.Atoi(lstr)
 	if err != nil {
 		return err
 	}
 
 	t := Type.Tree__Repr.NewBuilder()
-	la, err := t.BeginList(int64(n))
+	la, err := t.BeginList(-1)
 	if err != nil {
 		return err
 	}
 	for {
-		err := DecodeTreeEntry(la.AssembleValue(), rd)
+		node, err := DecodeTreeEntry(rd)
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
 			return err
 		}
+		la.AssembleValue().AssignNode(node)
+	}
+	if err := la.Finish(); err != nil {
+		return err
 	}
 	return na.AssignNode(t.Build())
 }
 
 // DecodeTreeEntry fills a NodeAssembler (from `Type.TreeEntry__Repr.NewBuilder()`) from a stream of bytes
-func DecodeTreeEntry(na ipld.NodeAssembler, rd *bufio.Reader) error {
+func DecodeTreeEntry(rd *bufio.Reader) (ipld.Node, error) {
 	data, err := rd.ReadString(' ')
 	if err != nil {
-		return err
+		return nil, err
 	}
 	data = data[:len(data)-1]
 
 	name, err := rd.ReadString(0)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	name = name[:len(name)-1]
 
 	sha := make([]byte, 20)
 	_, err = io.ReadFull(rd, sha)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	te := _TreeEntry{
@@ -66,7 +70,7 @@ func DecodeTreeEntry(na ipld.NodeAssembler, rd *bufio.Reader) error {
 		Name: _String{name},
 		Hash: _Link{cidlink.Link{Cid: shaToCid(sha)}},
 	}
-	return na.AssignNode(&te)
+	return &te, nil
 }
 
 func encodeTree(n ipld.Node, w io.Writer) error {

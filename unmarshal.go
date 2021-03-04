@@ -41,7 +41,6 @@ func ParseObject(r io.Reader) (ipld.Node, error) {
 		return nil, err
 	}
 	typ = typ[:len(typ)-1]
-	fmt.Printf("type is %s\n", typ)
 
 	var na ipld.NodeBuilder
 	var f func(ipld.NodeAssembler, *bufio.Reader) error
@@ -61,6 +60,7 @@ func ParseObject(r io.Reader) (ipld.Node, error) {
 	default:
 		return nil, fmt.Errorf("unrecognized object type: %s", typ)
 	}
+	fmt.Printf("type %s\n", typ)
 
 	if err := f(na, rd); err != nil {
 		return nil, err
