@@ -14,6 +14,7 @@ import (
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/multiformats/go-multihash"
 )
 
 func TestObjectParse(t *testing.T) {
@@ -23,6 +24,7 @@ func TestObjectParse(t *testing.T) {
 		MhType:   0x11,
 		MhLength: 20,
 	}}
+	ls := cidlink.DefaultLinkSystem()
 
 	i := 0
 	err := filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
@@ -46,21 +48,26 @@ func TestObjectParse(t *testing.T) {
 		}
 		defer fi.Close()
 
+		fmt.Printf("parsing for %s\n", path)
 		thing, err := ParseCompressedObject(fi)
 		if err != nil {
 			fmt.Println("ERROR: ", path, err)
 			return err
 		}
+		fmt.Printf("parsed.. now compute link.\n")
 
 		if i%64 == 0 {
 			fmt.Printf("%d %s\r", i, path)
 		}
 
-		ls := cidlink.DefaultLinkSystem()
 		lnk := ls.MustComputeLink(lb, thing)
-
 		sha := lnk.(cidlink.Link).Cid.Hash()
-		if fmt.Sprintf("%x", sha) != parts[len(parts)-2]+parts[len(parts)-1] {
+		mh, err := multihash.Decode(sha)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if fmt.Sprintf("%x", mh.Digest) != parts[len(parts)-2]+parts[len(parts)-1] {
+			fmt.Printf("\n")
 			fmt.Printf("\nsha: %x\n", sha)
 			fmt.Printf("path: %s\n", path)
 			fmt.Printf("mismatch on: %T\n", thing)
@@ -69,6 +76,8 @@ func TestObjectParse(t *testing.T) {
 			fmt.Println(thing.AsBytes())
 			fmt.Println("^^^^^^")
 			t.Fatal("mismatch!")
+		} else {
+			fmt.Printf("\nsha: %x\n", mh.Digest)
 		}
 
 		err = testNode(t, thing)
