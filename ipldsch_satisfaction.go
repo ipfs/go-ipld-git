@@ -221,9 +221,6 @@ var _ ipld.Node = &_Blob__Repr{}
 type _Blob__ReprPrototype = _Blob__Prototype
 type _Blob__ReprAssembler = _Blob__Assembler
 
-func (n _Commit) FieldDataSize() String {
-	return &n.DataSize
-}
 func (n _Commit) FieldGitTree() LinkTree {
 	return &n.GitTree
 }
@@ -287,7 +284,6 @@ func (m MaybeCommit) Must() Commit {
 }
 
 var (
-	fieldName__Commit_DataSize  = _String{"DataSize"}
 	fieldName__Commit_GitTree   = _String{"GitTree"}
 	fieldName__Commit_Parents   = _String{"Parents"}
 	fieldName__Commit_Message   = _String{"Message"}
@@ -306,8 +302,6 @@ func (Commit) Kind() ipld.Kind {
 }
 func (n Commit) LookupByString(key string) (ipld.Node, error) {
 	switch key {
-	case "DataSize":
-		return &n.DataSize, nil
 	case "GitTree":
 		return &n.GitTree, nil
 	case "Parents":
@@ -365,54 +359,51 @@ type _Commit__MapItr struct {
 }
 
 func (itr *_Commit__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 10 {
+	if itr.idx >= 9 {
 		return nil, nil, ipld.ErrIteratorOverread{}
 	}
 	switch itr.idx {
 	case 0:
-		k = &fieldName__Commit_DataSize
-		v = &itr.n.DataSize
-	case 1:
 		k = &fieldName__Commit_GitTree
 		v = &itr.n.GitTree
-	case 2:
+	case 1:
 		k = &fieldName__Commit_Parents
 		v = &itr.n.Parents
-	case 3:
+	case 2:
 		k = &fieldName__Commit_Message
 		v = &itr.n.Message
-	case 4:
+	case 3:
 		k = &fieldName__Commit_Author
 		if itr.n.Author.m == schema.Maybe_Absent {
 			v = ipld.Absent
 			break
 		}
 		v = itr.n.Author.v
-	case 5:
+	case 4:
 		k = &fieldName__Commit_Committer
 		if itr.n.Committer.m == schema.Maybe_Absent {
 			v = ipld.Absent
 			break
 		}
 		v = itr.n.Committer.v
-	case 6:
+	case 5:
 		k = &fieldName__Commit_Encoding
 		if itr.n.Encoding.m == schema.Maybe_Absent {
 			v = ipld.Absent
 			break
 		}
 		v = itr.n.Encoding.v
-	case 7:
+	case 6:
 		k = &fieldName__Commit_Sig
 		if itr.n.Sig.m == schema.Maybe_Absent {
 			v = ipld.Absent
 			break
 		}
 		v = itr.n.Sig.v
-	case 8:
+	case 7:
 		k = &fieldName__Commit_MergeTag
 		v = &itr.n.MergeTag
-	case 9:
+	case 8:
 		k = &fieldName__Commit_Other
 		v = &itr.n.Other
 	default:
@@ -422,14 +413,14 @@ func (itr *_Commit__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 	return
 }
 func (itr *_Commit__MapItr) Done() bool {
-	return itr.idx >= 10
+	return itr.idx >= 9
 }
 
 func (Commit) ListIterator() ipld.ListIterator {
 	return nil
 }
 func (Commit) Length() int64 {
-	return 10
+	return 9
 }
 func (Commit) IsAbsent() bool {
 	return false
@@ -491,7 +482,6 @@ type _Commit__Assembler struct {
 	f     int
 
 	cm           schema.Maybe
-	ca_DataSize  _String__Assembler
 	ca_GitTree   _LinkTree__Assembler
 	ca_Parents   _ListParents__Assembler
 	ca_Message   _String__Assembler
@@ -506,7 +496,6 @@ type _Commit__Assembler struct {
 func (na *_Commit__Assembler) reset() {
 	na.state = maState_initial
 	na.s = 0
-	na.ca_DataSize.reset()
 	na.ca_GitTree.reset()
 	na.ca_Parents.reset()
 	na.ca_Message.reset()
@@ -519,17 +508,16 @@ func (na *_Commit__Assembler) reset() {
 }
 
 var (
-	fieldBit__Commit_DataSize    = 1 << 0
-	fieldBit__Commit_GitTree     = 1 << 1
-	fieldBit__Commit_Parents     = 1 << 2
-	fieldBit__Commit_Message     = 1 << 3
-	fieldBit__Commit_Author      = 1 << 4
-	fieldBit__Commit_Committer   = 1 << 5
-	fieldBit__Commit_Encoding    = 1 << 6
-	fieldBit__Commit_Sig         = 1 << 7
-	fieldBit__Commit_MergeTag    = 1 << 8
-	fieldBit__Commit_Other       = 1 << 9
-	fieldBits__Commit_sufficient = 0 + 1<<0 + 1<<1 + 1<<2 + 1<<3 + 1<<8 + 1<<9
+	fieldBit__Commit_GitTree     = 1 << 0
+	fieldBit__Commit_Parents     = 1 << 1
+	fieldBit__Commit_Message     = 1 << 2
+	fieldBit__Commit_Author      = 1 << 3
+	fieldBit__Commit_Committer   = 1 << 4
+	fieldBit__Commit_Encoding    = 1 << 5
+	fieldBit__Commit_Sig         = 1 << 6
+	fieldBit__Commit_MergeTag    = 1 << 7
+	fieldBit__Commit_Other       = 1 << 8
+	fieldBits__Commit_sufficient = 0 + 1<<0 + 1<<1 + 1<<2 + 1<<7 + 1<<8
 )
 
 func (na *_Commit__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
@@ -626,7 +614,7 @@ func (ma *_Commit__Assembler) valueFinishTidy() bool {
 	case 0:
 		switch ma.cm {
 		case schema.Maybe_Value:
-			ma.ca_DataSize.w = nil
+			ma.ca_GitTree.w = nil
 			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
 			return true
@@ -636,7 +624,7 @@ func (ma *_Commit__Assembler) valueFinishTidy() bool {
 	case 1:
 		switch ma.cm {
 		case schema.Maybe_Value:
-			ma.ca_GitTree.w = nil
+			ma.ca_Parents.w = nil
 			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
 			return true
@@ -646,16 +634,6 @@ func (ma *_Commit__Assembler) valueFinishTidy() bool {
 	case 2:
 		switch ma.cm {
 		case schema.Maybe_Value:
-			ma.ca_Parents.w = nil
-			ma.cm = schema.Maybe_Absent
-			ma.state = maState_initial
-			return true
-		default:
-			return false
-		}
-	case 3:
-		switch ma.cm {
-		case schema.Maybe_Value:
 			ma.ca_Message.w = nil
 			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
@@ -663,7 +641,7 @@ func (ma *_Commit__Assembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
-	case 4:
+	case 3:
 		switch ma.w.Author.m {
 		case schema.Maybe_Value:
 			ma.w.Author.v = ma.ca_Author.w
@@ -672,7 +650,7 @@ func (ma *_Commit__Assembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
-	case 5:
+	case 4:
 		switch ma.w.Committer.m {
 		case schema.Maybe_Value:
 			ma.w.Committer.v = ma.ca_Committer.w
@@ -681,7 +659,7 @@ func (ma *_Commit__Assembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
-	case 6:
+	case 5:
 		switch ma.w.Encoding.m {
 		case schema.Maybe_Value:
 			ma.w.Encoding.v = ma.ca_Encoding.w
@@ -690,7 +668,7 @@ func (ma *_Commit__Assembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
-	case 7:
+	case 6:
 		switch ma.w.Sig.m {
 		case schema.Maybe_Value:
 			ma.w.Sig.v = ma.ca_Sig.w
@@ -699,7 +677,7 @@ func (ma *_Commit__Assembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
-	case 8:
+	case 7:
 		switch ma.cm {
 		case schema.Maybe_Value:
 			ma.ca_MergeTag.w = nil
@@ -709,7 +687,7 @@ func (ma *_Commit__Assembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
-	case 9:
+	case 8:
 		switch ma.cm {
 		case schema.Maybe_Value:
 			ma.ca_Other.w = nil
@@ -739,109 +717,98 @@ func (ma *_Commit__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
 	switch k {
-	case "DataSize":
-		if ma.s&fieldBit__Commit_DataSize != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_DataSize}
-		}
-		ma.s += fieldBit__Commit_DataSize
-		ma.state = maState_midValue
-		ma.f = 0
-		ma.ca_DataSize.w = &ma.w.DataSize
-		ma.ca_DataSize.m = &ma.cm
-		return &ma.ca_DataSize, nil
 	case "GitTree":
 		if ma.s&fieldBit__Commit_GitTree != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_GitTree}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_GitTree}
 		}
 		ma.s += fieldBit__Commit_GitTree
 		ma.state = maState_midValue
-		ma.f = 1
+		ma.f = 0
 		ma.ca_GitTree.w = &ma.w.GitTree
 		ma.ca_GitTree.m = &ma.cm
 		return &ma.ca_GitTree, nil
 	case "Parents":
 		if ma.s&fieldBit__Commit_Parents != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Parents}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Parents}
 		}
 		ma.s += fieldBit__Commit_Parents
 		ma.state = maState_midValue
-		ma.f = 2
+		ma.f = 1
 		ma.ca_Parents.w = &ma.w.Parents
 		ma.ca_Parents.m = &ma.cm
 		return &ma.ca_Parents, nil
 	case "Message":
 		if ma.s&fieldBit__Commit_Message != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Message}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Message}
 		}
 		ma.s += fieldBit__Commit_Message
 		ma.state = maState_midValue
-		ma.f = 3
+		ma.f = 2
 		ma.ca_Message.w = &ma.w.Message
 		ma.ca_Message.m = &ma.cm
 		return &ma.ca_Message, nil
 	case "Author":
 		if ma.s&fieldBit__Commit_Author != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Author}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Author}
 		}
 		ma.s += fieldBit__Commit_Author
 		ma.state = maState_midValue
-		ma.f = 4
+		ma.f = 3
 		ma.ca_Author.w = ma.w.Author.v
 		ma.ca_Author.m = &ma.w.Author.m
 		return &ma.ca_Author, nil
 	case "Committer":
 		if ma.s&fieldBit__Commit_Committer != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Committer}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Committer}
 		}
 		ma.s += fieldBit__Commit_Committer
 		ma.state = maState_midValue
-		ma.f = 5
+		ma.f = 4
 		ma.ca_Committer.w = ma.w.Committer.v
 		ma.ca_Committer.m = &ma.w.Committer.m
 		return &ma.ca_Committer, nil
 	case "Encoding":
 		if ma.s&fieldBit__Commit_Encoding != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Encoding}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Encoding}
 		}
 		ma.s += fieldBit__Commit_Encoding
 		ma.state = maState_midValue
-		ma.f = 6
+		ma.f = 5
 		ma.ca_Encoding.w = ma.w.Encoding.v
 		ma.ca_Encoding.m = &ma.w.Encoding.m
 		return &ma.ca_Encoding, nil
 	case "Sig":
 		if ma.s&fieldBit__Commit_Sig != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Sig}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Sig}
 		}
 		ma.s += fieldBit__Commit_Sig
 		ma.state = maState_midValue
-		ma.f = 7
+		ma.f = 6
 		ma.ca_Sig.w = ma.w.Sig.v
 		ma.ca_Sig.m = &ma.w.Sig.m
 		return &ma.ca_Sig, nil
 	case "MergeTag":
 		if ma.s&fieldBit__Commit_MergeTag != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_MergeTag}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_MergeTag}
 		}
 		ma.s += fieldBit__Commit_MergeTag
 		ma.state = maState_midValue
-		ma.f = 8
+		ma.f = 7
 		ma.ca_MergeTag.w = &ma.w.MergeTag
 		ma.ca_MergeTag.m = &ma.cm
 		return &ma.ca_MergeTag, nil
 	case "Other":
 		if ma.s&fieldBit__Commit_Other != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Other}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Other}
 		}
 		ma.s += fieldBit__Commit_Other
 		ma.state = maState_midValue
-		ma.f = 9
+		ma.f = 8
 		ma.ca_Other.w = &ma.w.Other
 		ma.ca_Other.m = &ma.cm
 		return &ma.ca_Other, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.Commit", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.Commit", Key: &_String{k}}
 }
 func (ma *_Commit__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -877,42 +844,38 @@ func (ma *_Commit__Assembler) AssembleValue() ipld.NodeAssembler {
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_DataSize.w = &ma.w.DataSize
-		ma.ca_DataSize.m = &ma.cm
-		return &ma.ca_DataSize
-	case 1:
 		ma.ca_GitTree.w = &ma.w.GitTree
 		ma.ca_GitTree.m = &ma.cm
 		return &ma.ca_GitTree
-	case 2:
+	case 1:
 		ma.ca_Parents.w = &ma.w.Parents
 		ma.ca_Parents.m = &ma.cm
 		return &ma.ca_Parents
-	case 3:
+	case 2:
 		ma.ca_Message.w = &ma.w.Message
 		ma.ca_Message.m = &ma.cm
 		return &ma.ca_Message
-	case 4:
+	case 3:
 		ma.ca_Author.w = ma.w.Author.v
 		ma.ca_Author.m = &ma.w.Author.m
 		return &ma.ca_Author
-	case 5:
+	case 4:
 		ma.ca_Committer.w = ma.w.Committer.v
 		ma.ca_Committer.m = &ma.w.Committer.m
 		return &ma.ca_Committer
-	case 6:
+	case 5:
 		ma.ca_Encoding.w = ma.w.Encoding.v
 		ma.ca_Encoding.m = &ma.w.Encoding.m
 		return &ma.ca_Encoding
-	case 7:
+	case 6:
 		ma.ca_Sig.w = ma.w.Sig.v
 		ma.ca_Sig.m = &ma.w.Sig.m
 		return &ma.ca_Sig
-	case 8:
+	case 7:
 		ma.ca_MergeTag.w = &ma.w.MergeTag
 		ma.ca_MergeTag.m = &ma.cm
 		return &ma.ca_MergeTag
-	case 9:
+	case 8:
 		ma.ca_Other.w = &ma.w.Other
 		ma.ca_Other.m = &ma.cm
 		return &ma.ca_Other
@@ -937,9 +900,6 @@ func (ma *_Commit__Assembler) Finish() error {
 	}
 	if ma.s&fieldBits__Commit_sufficient != fieldBits__Commit_sufficient {
 		err := ipld.ErrMissingRequiredField{Missing: make([]string, 0)}
-		if ma.s&fieldBit__Commit_DataSize == 0 {
-			err.Missing = append(err.Missing, "DataSize")
-		}
 		if ma.s&fieldBit__Commit_GitTree == 0 {
 			err.Missing = append(err.Missing, "GitTree")
 		}
@@ -993,76 +953,69 @@ func (ka *_Commit__KeyAssembler) AssignString(k string) error {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
 	switch k {
-	case "DataSize":
-		if ka.s&fieldBit__Commit_DataSize != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_DataSize}
-		}
-		ka.s += fieldBit__Commit_DataSize
-		ka.state = maState_expectValue
-		ka.f = 0
 	case "GitTree":
 		if ka.s&fieldBit__Commit_GitTree != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_GitTree}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_GitTree}
 		}
 		ka.s += fieldBit__Commit_GitTree
 		ka.state = maState_expectValue
-		ka.f = 1
+		ka.f = 0
 	case "Parents":
 		if ka.s&fieldBit__Commit_Parents != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Parents}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Parents}
 		}
 		ka.s += fieldBit__Commit_Parents
 		ka.state = maState_expectValue
-		ka.f = 2
+		ka.f = 1
 	case "Message":
 		if ka.s&fieldBit__Commit_Message != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Message}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Message}
 		}
 		ka.s += fieldBit__Commit_Message
 		ka.state = maState_expectValue
-		ka.f = 3
+		ka.f = 2
 	case "Author":
 		if ka.s&fieldBit__Commit_Author != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Author}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Author}
 		}
 		ka.s += fieldBit__Commit_Author
 		ka.state = maState_expectValue
-		ka.f = 4
+		ka.f = 3
 	case "Committer":
 		if ka.s&fieldBit__Commit_Committer != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Committer}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Committer}
 		}
 		ka.s += fieldBit__Commit_Committer
 		ka.state = maState_expectValue
-		ka.f = 5
+		ka.f = 4
 	case "Encoding":
 		if ka.s&fieldBit__Commit_Encoding != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Encoding}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Encoding}
 		}
 		ka.s += fieldBit__Commit_Encoding
 		ka.state = maState_expectValue
-		ka.f = 6
+		ka.f = 5
 	case "Sig":
 		if ka.s&fieldBit__Commit_Sig != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Sig}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Sig}
 		}
 		ka.s += fieldBit__Commit_Sig
 		ka.state = maState_expectValue
-		ka.f = 7
+		ka.f = 6
 	case "MergeTag":
 		if ka.s&fieldBit__Commit_MergeTag != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_MergeTag}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_MergeTag}
 		}
 		ka.s += fieldBit__Commit_MergeTag
 		ka.state = maState_expectValue
-		ka.f = 8
+		ka.f = 7
 	case "Other":
 		if ka.s&fieldBit__Commit_Other != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Other}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Other}
 		}
 		ka.s += fieldBit__Commit_Other
 		ka.state = maState_expectValue
-		ka.f = 9
+		ka.f = 8
 	default:
 		return ipld.ErrInvalidKey{TypeName: "ipldgit.Commit", Key: &_String{k}}
 	}
@@ -1094,7 +1047,6 @@ func (n Commit) Representation() ipld.Node {
 type _Commit__Repr _Commit
 
 var (
-	fieldName__Commit_DataSize_serial  = _String{"DataSize"}
 	fieldName__Commit_GitTree_serial   = _String{"GitTree"}
 	fieldName__Commit_Parents_serial   = _String{"Parents"}
 	fieldName__Commit_Message_serial   = _String{"Message"}
@@ -1112,8 +1064,6 @@ func (_Commit__Repr) Kind() ipld.Kind {
 }
 func (n *_Commit__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
-	case "DataSize":
-		return n.DataSize.Representation(), nil
 	case "GitTree":
 		return n.GitTree.Representation(), nil
 	case "Parents":
@@ -1122,22 +1072,22 @@ func (n *_Commit__Repr) LookupByString(key string) (ipld.Node, error) {
 		return n.Message.Representation(), nil
 	case "Author":
 		if n.Author.m == schema.Maybe_Absent {
-			return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.Author.v.Representation(), nil
 	case "Committer":
 		if n.Committer.m == schema.Maybe_Absent {
-			return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.Committer.v.Representation(), nil
 	case "Encoding":
 		if n.Encoding.m == schema.Maybe_Absent {
-			return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.Encoding.v.Representation(), nil
 	case "Sig":
 		if n.Sig.m == schema.Maybe_Absent {
-			return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.Sig.v.Representation(), nil
 	case "MergeTag":
@@ -1172,54 +1122,51 @@ type _Commit__ReprMapItr struct {
 
 func (itr *_Commit__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 advance:
-	if itr.idx >= 10 {
+	if itr.idx >= 9 {
 		return nil, nil, ipld.ErrIteratorOverread{}
 	}
 	switch itr.idx {
 	case 0:
-		k = &fieldName__Commit_DataSize_serial
-		v = itr.n.DataSize.Representation()
-	case 1:
 		k = &fieldName__Commit_GitTree_serial
 		v = itr.n.GitTree.Representation()
-	case 2:
+	case 1:
 		k = &fieldName__Commit_Parents_serial
 		v = itr.n.Parents.Representation()
-	case 3:
+	case 2:
 		k = &fieldName__Commit_Message_serial
 		v = itr.n.Message.Representation()
-	case 4:
+	case 3:
 		k = &fieldName__Commit_Author_serial
 		if itr.n.Author.m == schema.Maybe_Absent {
 			itr.idx++
 			goto advance
 		}
 		v = itr.n.Author.v.Representation()
-	case 5:
+	case 4:
 		k = &fieldName__Commit_Committer_serial
 		if itr.n.Committer.m == schema.Maybe_Absent {
 			itr.idx++
 			goto advance
 		}
 		v = itr.n.Committer.v.Representation()
-	case 6:
+	case 5:
 		k = &fieldName__Commit_Encoding_serial
 		if itr.n.Encoding.m == schema.Maybe_Absent {
 			itr.idx++
 			goto advance
 		}
 		v = itr.n.Encoding.v.Representation()
-	case 7:
+	case 6:
 		k = &fieldName__Commit_Sig_serial
 		if itr.n.Sig.m == schema.Maybe_Absent {
 			itr.idx++
 			goto advance
 		}
 		v = itr.n.Sig.v.Representation()
-	case 8:
+	case 7:
 		k = &fieldName__Commit_MergeTag_serial
 		v = itr.n.MergeTag.Representation()
-	case 9:
+	case 8:
 		k = &fieldName__Commit_Other_serial
 		v = itr.n.Other.Representation()
 	default:
@@ -1229,13 +1176,13 @@ advance:
 	return
 }
 func (itr *_Commit__ReprMapItr) Done() bool {
-	return itr.idx >= 10
+	return itr.idx >= 9
 }
 func (_Commit__Repr) ListIterator() ipld.ListIterator {
 	return nil
 }
 func (rn *_Commit__Repr) Length() int64 {
-	l := 10
+	l := 9
 	if rn.Author.m == schema.Maybe_Absent {
 		l--
 	}
@@ -1310,7 +1257,6 @@ type _Commit__ReprAssembler struct {
 	f     int
 
 	cm           schema.Maybe
-	ca_DataSize  _String__ReprAssembler
 	ca_GitTree   _LinkTree__ReprAssembler
 	ca_Parents   _ListParents__ReprAssembler
 	ca_Message   _String__ReprAssembler
@@ -1325,7 +1271,6 @@ type _Commit__ReprAssembler struct {
 func (na *_Commit__ReprAssembler) reset() {
 	na.state = maState_initial
 	na.s = 0
-	na.ca_DataSize.reset()
 	na.ca_GitTree.reset()
 	na.ca_Parents.reset()
 	na.ca_Message.reset()
@@ -1455,15 +1400,6 @@ func (ma *_Commit__ReprAssembler) valueFinishTidy() bool {
 			return false
 		}
 	case 3:
-		switch ma.cm {
-		case schema.Maybe_Value:
-			ma.cm = schema.Maybe_Absent
-			ma.state = maState_initial
-			return true
-		default:
-			return false
-		}
-	case 4:
 		switch ma.w.Author.m {
 		case schema.Maybe_Value:
 			ma.w.Author.v = ma.ca_Author.w
@@ -1472,7 +1408,7 @@ func (ma *_Commit__ReprAssembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
-	case 5:
+	case 4:
 		switch ma.w.Committer.m {
 		case schema.Maybe_Value:
 			ma.w.Committer.v = ma.ca_Committer.w
@@ -1481,7 +1417,7 @@ func (ma *_Commit__ReprAssembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
-	case 6:
+	case 5:
 		switch ma.w.Encoding.m {
 		case schema.Maybe_Value:
 			ma.w.Encoding.v = ma.ca_Encoding.w
@@ -1490,7 +1426,7 @@ func (ma *_Commit__ReprAssembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
-	case 7:
+	case 6:
 		switch ma.w.Sig.m {
 		case schema.Maybe_Value:
 			ma.w.Sig.v = ma.ca_Sig.w
@@ -1499,7 +1435,7 @@ func (ma *_Commit__ReprAssembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
-	case 8:
+	case 7:
 		switch ma.cm {
 		case schema.Maybe_Value:
 			ma.cm = schema.Maybe_Absent
@@ -1508,7 +1444,7 @@ func (ma *_Commit__ReprAssembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
-	case 9:
+	case 8:
 		switch ma.cm {
 		case schema.Maybe_Value:
 			ma.cm = schema.Maybe_Absent
@@ -1537,113 +1473,103 @@ func (ma *_Commit__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
 	switch k {
-	case "DataSize":
-		if ma.s&fieldBit__Commit_DataSize != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_DataSize_serial}
-		}
-		ma.s += fieldBit__Commit_DataSize
-		ma.state = maState_midValue
-		ma.f = 0
-		ma.ca_DataSize.w = &ma.w.DataSize
-		ma.ca_DataSize.m = &ma.cm
-		return &ma.ca_DataSize, nil
 	case "GitTree":
 		if ma.s&fieldBit__Commit_GitTree != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_GitTree_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_GitTree_serial}
 		}
 		ma.s += fieldBit__Commit_GitTree
 		ma.state = maState_midValue
-		ma.f = 1
+		ma.f = 0
 		ma.ca_GitTree.w = &ma.w.GitTree
 		ma.ca_GitTree.m = &ma.cm
 		return &ma.ca_GitTree, nil
 	case "Parents":
 		if ma.s&fieldBit__Commit_Parents != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Parents_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Parents_serial}
 		}
 		ma.s += fieldBit__Commit_Parents
 		ma.state = maState_midValue
-		ma.f = 2
+		ma.f = 1
 		ma.ca_Parents.w = &ma.w.Parents
 		ma.ca_Parents.m = &ma.cm
 		return &ma.ca_Parents, nil
 	case "Message":
 		if ma.s&fieldBit__Commit_Message != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Message_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Message_serial}
 		}
 		ma.s += fieldBit__Commit_Message
 		ma.state = maState_midValue
-		ma.f = 3
+		ma.f = 2
 		ma.ca_Message.w = &ma.w.Message
 		ma.ca_Message.m = &ma.cm
 		return &ma.ca_Message, nil
 	case "Author":
 		if ma.s&fieldBit__Commit_Author != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Author_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Author_serial}
 		}
 		ma.s += fieldBit__Commit_Author
 		ma.state = maState_midValue
-		ma.f = 4
+		ma.f = 3
 		ma.ca_Author.w = ma.w.Author.v
 		ma.ca_Author.m = &ma.w.Author.m
 
 		return &ma.ca_Author, nil
 	case "Committer":
 		if ma.s&fieldBit__Commit_Committer != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Committer_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Committer_serial}
 		}
 		ma.s += fieldBit__Commit_Committer
 		ma.state = maState_midValue
-		ma.f = 5
+		ma.f = 4
 		ma.ca_Committer.w = ma.w.Committer.v
 		ma.ca_Committer.m = &ma.w.Committer.m
 
 		return &ma.ca_Committer, nil
 	case "Encoding":
 		if ma.s&fieldBit__Commit_Encoding != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Encoding_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Encoding_serial}
 		}
 		ma.s += fieldBit__Commit_Encoding
 		ma.state = maState_midValue
-		ma.f = 6
+		ma.f = 5
 		ma.ca_Encoding.w = ma.w.Encoding.v
 		ma.ca_Encoding.m = &ma.w.Encoding.m
 
 		return &ma.ca_Encoding, nil
 	case "Sig":
 		if ma.s&fieldBit__Commit_Sig != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Sig_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Sig_serial}
 		}
 		ma.s += fieldBit__Commit_Sig
 		ma.state = maState_midValue
-		ma.f = 7
+		ma.f = 6
 		ma.ca_Sig.w = ma.w.Sig.v
 		ma.ca_Sig.m = &ma.w.Sig.m
 
 		return &ma.ca_Sig, nil
 	case "MergeTag":
 		if ma.s&fieldBit__Commit_MergeTag != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_MergeTag_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_MergeTag_serial}
 		}
 		ma.s += fieldBit__Commit_MergeTag
 		ma.state = maState_midValue
-		ma.f = 8
+		ma.f = 7
 		ma.ca_MergeTag.w = &ma.w.MergeTag
 		ma.ca_MergeTag.m = &ma.cm
 		return &ma.ca_MergeTag, nil
 	case "Other":
 		if ma.s&fieldBit__Commit_Other != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Commit_Other_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Other_serial}
 		}
 		ma.s += fieldBit__Commit_Other
 		ma.state = maState_midValue
-		ma.f = 9
+		ma.f = 8
 		ma.ca_Other.w = &ma.w.Other
 		ma.ca_Other.m = &ma.cm
 		return &ma.ca_Other, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.Commit.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.Commit.Repr", Key: &_String{k}}
 }
 func (ma *_Commit__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -1679,46 +1605,42 @@ func (ma *_Commit__ReprAssembler) AssembleValue() ipld.NodeAssembler {
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_DataSize.w = &ma.w.DataSize
-		ma.ca_DataSize.m = &ma.cm
-		return &ma.ca_DataSize
-	case 1:
 		ma.ca_GitTree.w = &ma.w.GitTree
 		ma.ca_GitTree.m = &ma.cm
 		return &ma.ca_GitTree
-	case 2:
+	case 1:
 		ma.ca_Parents.w = &ma.w.Parents
 		ma.ca_Parents.m = &ma.cm
 		return &ma.ca_Parents
-	case 3:
+	case 2:
 		ma.ca_Message.w = &ma.w.Message
 		ma.ca_Message.m = &ma.cm
 		return &ma.ca_Message
-	case 4:
+	case 3:
 		ma.ca_Author.w = ma.w.Author.v
 		ma.ca_Author.m = &ma.w.Author.m
 
 		return &ma.ca_Author
-	case 5:
+	case 4:
 		ma.ca_Committer.w = ma.w.Committer.v
 		ma.ca_Committer.m = &ma.w.Committer.m
 
 		return &ma.ca_Committer
-	case 6:
+	case 5:
 		ma.ca_Encoding.w = ma.w.Encoding.v
 		ma.ca_Encoding.m = &ma.w.Encoding.m
 
 		return &ma.ca_Encoding
-	case 7:
+	case 6:
 		ma.ca_Sig.w = ma.w.Sig.v
 		ma.ca_Sig.m = &ma.w.Sig.m
 
 		return &ma.ca_Sig
-	case 8:
+	case 7:
 		ma.ca_MergeTag.w = &ma.w.MergeTag
 		ma.ca_MergeTag.m = &ma.cm
 		return &ma.ca_MergeTag
-	case 9:
+	case 8:
 		ma.ca_Other.w = &ma.w.Other
 		ma.ca_Other.m = &ma.cm
 		return &ma.ca_Other
@@ -1743,9 +1665,6 @@ func (ma *_Commit__ReprAssembler) Finish() error {
 	}
 	if ma.s&fieldBits__Commit_sufficient != fieldBits__Commit_sufficient {
 		err := ipld.ErrMissingRequiredField{Missing: make([]string, 0)}
-		if ma.s&fieldBit__Commit_DataSize == 0 {
-			err.Missing = append(err.Missing, "DataSize")
-		}
 		if ma.s&fieldBit__Commit_GitTree == 0 {
 			err.Missing = append(err.Missing, "GitTree")
 		}
@@ -1799,80 +1718,80 @@ func (ka *_Commit__ReprKeyAssembler) AssignString(k string) error {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
 	switch k {
-	case "DataSize":
-		if ka.s&fieldBit__Commit_DataSize != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_DataSize_serial}
-		}
-		ka.s += fieldBit__Commit_DataSize
-		ka.state = maState_expectValue
-		ka.f = 0
 	case "GitTree":
 		if ka.s&fieldBit__Commit_GitTree != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_GitTree_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_GitTree_serial}
 		}
 		ka.s += fieldBit__Commit_GitTree
 		ka.state = maState_expectValue
-		ka.f = 1
+		ka.f = 0
+		return nil
 	case "Parents":
 		if ka.s&fieldBit__Commit_Parents != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Parents_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Parents_serial}
 		}
 		ka.s += fieldBit__Commit_Parents
 		ka.state = maState_expectValue
-		ka.f = 2
+		ka.f = 1
+		return nil
 	case "Message":
 		if ka.s&fieldBit__Commit_Message != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Message_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Message_serial}
 		}
 		ka.s += fieldBit__Commit_Message
 		ka.state = maState_expectValue
-		ka.f = 3
+		ka.f = 2
+		return nil
 	case "Author":
 		if ka.s&fieldBit__Commit_Author != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Author_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Author_serial}
 		}
 		ka.s += fieldBit__Commit_Author
 		ka.state = maState_expectValue
-		ka.f = 4
+		ka.f = 3
+		return nil
 	case "Committer":
 		if ka.s&fieldBit__Commit_Committer != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Committer_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Committer_serial}
 		}
 		ka.s += fieldBit__Commit_Committer
 		ka.state = maState_expectValue
-		ka.f = 5
+		ka.f = 4
+		return nil
 	case "Encoding":
 		if ka.s&fieldBit__Commit_Encoding != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Encoding_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Encoding_serial}
 		}
 		ka.s += fieldBit__Commit_Encoding
 		ka.state = maState_expectValue
-		ka.f = 6
+		ka.f = 5
+		return nil
 	case "Sig":
 		if ka.s&fieldBit__Commit_Sig != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Sig_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Sig_serial}
 		}
 		ka.s += fieldBit__Commit_Sig
 		ka.state = maState_expectValue
-		ka.f = 7
+		ka.f = 6
+		return nil
 	case "MergeTag":
 		if ka.s&fieldBit__Commit_MergeTag != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_MergeTag_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_MergeTag_serial}
 		}
 		ka.s += fieldBit__Commit_MergeTag
 		ka.state = maState_expectValue
-		ka.f = 8
+		ka.f = 7
+		return nil
 	case "Other":
 		if ka.s&fieldBit__Commit_Other != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Commit_Other_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Other_serial}
 		}
 		ka.s += fieldBit__Commit_Other
 		ka.state = maState_expectValue
-		ka.f = 9
-	default:
-		return ipld.ErrInvalidKey{TypeName: "ipldgit.Commit.Repr", Key: &_String{k}}
+		ka.f = 8
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "ipldgit.Commit.Repr", Key: &_String{k}}
 }
 func (_Commit__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"ipldgit.Commit.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -2631,7 +2550,7 @@ func (n ListParents) LookupByNode(k ipld.Node) (ipld.Node, error) {
 }
 func (n ListParents) LookupByIndex(idx int64) (ipld.Node, error) {
 	if n.Length() <= idx {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
 	}
 	v := &n.x[idx]
 	return v, nil
@@ -3238,7 +3157,7 @@ func (n ListString) LookupByNode(k ipld.Node) (ipld.Node, error) {
 }
 func (n ListString) LookupByIndex(idx int64) (ipld.Node, error) {
 	if n.Length() <= idx {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
 	}
 	v := &n.x[idx]
 	return v, nil
@@ -3845,7 +3764,7 @@ func (n ListTag) LookupByNode(k ipld.Node) (ipld.Node, error) {
 }
 func (n ListTag) LookupByIndex(idx int64) (ipld.Node, error) {
 	if n.Length() <= idx {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
 	}
 	v := &n.x[idx]
 	return v, nil
@@ -4722,7 +4641,7 @@ func (ma *_PersonInfo__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 	switch k {
 	case "Name":
 		if ma.s&fieldBit__PersonInfo_Name != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__PersonInfo_Name}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__PersonInfo_Name}
 		}
 		ma.s += fieldBit__PersonInfo_Name
 		ma.state = maState_midValue
@@ -4732,7 +4651,7 @@ func (ma *_PersonInfo__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 		return &ma.ca_Name, nil
 	case "Email":
 		if ma.s&fieldBit__PersonInfo_Email != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__PersonInfo_Email}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__PersonInfo_Email}
 		}
 		ma.s += fieldBit__PersonInfo_Email
 		ma.state = maState_midValue
@@ -4742,7 +4661,7 @@ func (ma *_PersonInfo__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 		return &ma.ca_Email, nil
 	case "Date":
 		if ma.s&fieldBit__PersonInfo_Date != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__PersonInfo_Date}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__PersonInfo_Date}
 		}
 		ma.s += fieldBit__PersonInfo_Date
 		ma.state = maState_midValue
@@ -4752,7 +4671,7 @@ func (ma *_PersonInfo__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 		return &ma.ca_Date, nil
 	case "Timezone":
 		if ma.s&fieldBit__PersonInfo_Timezone != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__PersonInfo_Timezone}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__PersonInfo_Timezone}
 		}
 		ma.s += fieldBit__PersonInfo_Timezone
 		ma.state = maState_midValue
@@ -4760,9 +4679,8 @@ func (ma *_PersonInfo__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 		ma.ca_Timezone.w = &ma.w.Timezone
 		ma.ca_Timezone.m = &ma.cm
 		return &ma.ca_Timezone, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.PersonInfo", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.PersonInfo", Key: &_String{k}}
 }
 func (ma *_PersonInfo__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -4886,28 +4804,28 @@ func (ka *_PersonInfo__KeyAssembler) AssignString(k string) error {
 	switch k {
 	case "Name":
 		if ka.s&fieldBit__PersonInfo_Name != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__PersonInfo_Name}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__PersonInfo_Name}
 		}
 		ka.s += fieldBit__PersonInfo_Name
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "Email":
 		if ka.s&fieldBit__PersonInfo_Email != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__PersonInfo_Email}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__PersonInfo_Email}
 		}
 		ka.s += fieldBit__PersonInfo_Email
 		ka.state = maState_expectValue
 		ka.f = 1
 	case "Date":
 		if ka.s&fieldBit__PersonInfo_Date != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__PersonInfo_Date}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__PersonInfo_Date}
 		}
 		ka.s += fieldBit__PersonInfo_Date
 		ka.state = maState_expectValue
 		ka.f = 2
 	case "Timezone":
 		if ka.s&fieldBit__PersonInfo_Timezone != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__PersonInfo_Timezone}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__PersonInfo_Timezone}
 		}
 		ka.s += fieldBit__PersonInfo_Timezone
 		ka.state = maState_expectValue
@@ -5358,9 +5276,6 @@ func (n _Tag) FieldTagger() PersonInfo {
 func (n _Tag) FieldText() String {
 	return &n.Text
 }
-func (n _Tag) FieldDataSize() MaybeString {
-	return &n.DataSize
-}
 
 type _Tag__Maybe struct {
 	m schema.Maybe
@@ -5397,12 +5312,11 @@ func (m MaybeTag) Must() Tag {
 }
 
 var (
-	fieldName__Tag_Object   = _String{"Object"}
-	fieldName__Tag_TagType  = _String{"TagType"}
-	fieldName__Tag_Tag      = _String{"Tag"}
-	fieldName__Tag_Tagger   = _String{"Tagger"}
-	fieldName__Tag_Text     = _String{"Text"}
-	fieldName__Tag_DataSize = _String{"DataSize"}
+	fieldName__Tag_Object  = _String{"Object"}
+	fieldName__Tag_TagType = _String{"TagType"}
+	fieldName__Tag_Tag     = _String{"Tag"}
+	fieldName__Tag_Tagger  = _String{"Tagger"}
+	fieldName__Tag_Text    = _String{"Text"}
 )
 var _ ipld.Node = (Tag)(&_Tag{})
 var _ schema.TypedNode = (Tag)(&_Tag{})
@@ -5422,11 +5336,6 @@ func (n Tag) LookupByString(key string) (ipld.Node, error) {
 		return &n.Tagger, nil
 	case "Text":
 		return &n.Text, nil
-	case "DataSize":
-		if n.DataSize.m == schema.Maybe_Absent {
-			return ipld.Absent, nil
-		}
-		return n.DataSize.v, nil
 	default:
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
 	}
@@ -5454,7 +5363,7 @@ type _Tag__MapItr struct {
 }
 
 func (itr *_Tag__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 6 {
+	if itr.idx >= 5 {
 		return nil, nil, ipld.ErrIteratorOverread{}
 	}
 	switch itr.idx {
@@ -5473,13 +5382,6 @@ func (itr *_Tag__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 	case 4:
 		k = &fieldName__Tag_Text
 		v = &itr.n.Text
-	case 5:
-		k = &fieldName__Tag_DataSize
-		if itr.n.DataSize.m == schema.Maybe_Absent {
-			v = ipld.Absent
-			break
-		}
-		v = itr.n.DataSize.v
 	default:
 		panic("unreachable")
 	}
@@ -5487,14 +5389,14 @@ func (itr *_Tag__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 	return
 }
 func (itr *_Tag__MapItr) Done() bool {
-	return itr.idx >= 6
+	return itr.idx >= 5
 }
 
 func (Tag) ListIterator() ipld.ListIterator {
 	return nil
 }
 func (Tag) Length() int64 {
-	return 6
+	return 5
 }
 func (Tag) IsAbsent() bool {
 	return false
@@ -5555,13 +5457,12 @@ type _Tag__Assembler struct {
 	s     int
 	f     int
 
-	cm          schema.Maybe
-	ca_Object   _Link__Assembler
-	ca_TagType  _String__Assembler
-	ca_Tag      _String__Assembler
-	ca_Tagger   _PersonInfo__Assembler
-	ca_Text     _String__Assembler
-	ca_DataSize _String__Assembler
+	cm         schema.Maybe
+	ca_Object  _Link__Assembler
+	ca_TagType _String__Assembler
+	ca_Tag     _String__Assembler
+	ca_Tagger  _PersonInfo__Assembler
+	ca_Text    _String__Assembler
 }
 
 func (na *_Tag__Assembler) reset() {
@@ -5572,7 +5473,6 @@ func (na *_Tag__Assembler) reset() {
 	na.ca_Tag.reset()
 	na.ca_Tagger.reset()
 	na.ca_Text.reset()
-	na.ca_DataSize.reset()
 }
 
 var (
@@ -5581,7 +5481,6 @@ var (
 	fieldBit__Tag_Tag         = 1 << 2
 	fieldBit__Tag_Tagger      = 1 << 3
 	fieldBit__Tag_Text        = 1 << 4
-	fieldBit__Tag_DataSize    = 1 << 5
 	fieldBits__Tag_sufficient = 0 + 1<<0 + 1<<1 + 1<<2 + 1<<3 + 1<<4
 )
 
@@ -5726,15 +5625,6 @@ func (ma *_Tag__Assembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
-	case 5:
-		switch ma.w.DataSize.m {
-		case schema.Maybe_Value:
-			ma.w.DataSize.v = ma.ca_DataSize.w
-			ma.state = maState_initial
-			return true
-		default:
-			return false
-		}
 	default:
 		panic("unreachable")
 	}
@@ -5757,7 +5647,7 @@ func (ma *_Tag__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
 	switch k {
 	case "Object":
 		if ma.s&fieldBit__Tag_Object != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_Object}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Object}
 		}
 		ma.s += fieldBit__Tag_Object
 		ma.state = maState_midValue
@@ -5767,7 +5657,7 @@ func (ma *_Tag__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
 		return &ma.ca_Object, nil
 	case "TagType":
 		if ma.s&fieldBit__Tag_TagType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_TagType}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_TagType}
 		}
 		ma.s += fieldBit__Tag_TagType
 		ma.state = maState_midValue
@@ -5777,7 +5667,7 @@ func (ma *_Tag__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
 		return &ma.ca_TagType, nil
 	case "Tag":
 		if ma.s&fieldBit__Tag_Tag != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_Tag}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Tag}
 		}
 		ma.s += fieldBit__Tag_Tag
 		ma.state = maState_midValue
@@ -5787,7 +5677,7 @@ func (ma *_Tag__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
 		return &ma.ca_Tag, nil
 	case "Tagger":
 		if ma.s&fieldBit__Tag_Tagger != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_Tagger}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Tagger}
 		}
 		ma.s += fieldBit__Tag_Tagger
 		ma.state = maState_midValue
@@ -5797,7 +5687,7 @@ func (ma *_Tag__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
 		return &ma.ca_Tagger, nil
 	case "Text":
 		if ma.s&fieldBit__Tag_Text != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_Text}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Text}
 		}
 		ma.s += fieldBit__Tag_Text
 		ma.state = maState_midValue
@@ -5805,19 +5695,8 @@ func (ma *_Tag__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
 		ma.ca_Text.w = &ma.w.Text
 		ma.ca_Text.m = &ma.cm
 		return &ma.ca_Text, nil
-	case "DataSize":
-		if ma.s&fieldBit__Tag_DataSize != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_DataSize}
-		}
-		ma.s += fieldBit__Tag_DataSize
-		ma.state = maState_midValue
-		ma.f = 5
-		ma.ca_DataSize.w = ma.w.DataSize.v
-		ma.ca_DataSize.m = &ma.w.DataSize.m
-		return &ma.ca_DataSize, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.Tag", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.Tag", Key: &_String{k}}
 }
 func (ma *_Tag__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -5872,10 +5751,6 @@ func (ma *_Tag__Assembler) AssembleValue() ipld.NodeAssembler {
 		ma.ca_Text.w = &ma.w.Text
 		ma.ca_Text.m = &ma.cm
 		return &ma.ca_Text
-	case 5:
-		ma.ca_DataSize.w = ma.w.DataSize.v
-		ma.ca_DataSize.m = &ma.w.DataSize.m
-		return &ma.ca_DataSize
 	default:
 		panic("unreachable")
 	}
@@ -5952,46 +5827,39 @@ func (ka *_Tag__KeyAssembler) AssignString(k string) error {
 	switch k {
 	case "Object":
 		if ka.s&fieldBit__Tag_Object != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Tag_Object}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Object}
 		}
 		ka.s += fieldBit__Tag_Object
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "TagType":
 		if ka.s&fieldBit__Tag_TagType != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Tag_TagType}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_TagType}
 		}
 		ka.s += fieldBit__Tag_TagType
 		ka.state = maState_expectValue
 		ka.f = 1
 	case "Tag":
 		if ka.s&fieldBit__Tag_Tag != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Tag_Tag}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Tag}
 		}
 		ka.s += fieldBit__Tag_Tag
 		ka.state = maState_expectValue
 		ka.f = 2
 	case "Tagger":
 		if ka.s&fieldBit__Tag_Tagger != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Tag_Tagger}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Tagger}
 		}
 		ka.s += fieldBit__Tag_Tagger
 		ka.state = maState_expectValue
 		ka.f = 3
 	case "Text":
 		if ka.s&fieldBit__Tag_Text != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Tag_Text}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Text}
 		}
 		ka.s += fieldBit__Tag_Text
 		ka.state = maState_expectValue
 		ka.f = 4
-	case "DataSize":
-		if ka.s&fieldBit__Tag_DataSize != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Tag_DataSize}
-		}
-		ka.s += fieldBit__Tag_DataSize
-		ka.state = maState_expectValue
-		ka.f = 5
 	default:
 		return ipld.ErrInvalidKey{TypeName: "ipldgit.Tag", Key: &_String{k}}
 	}
@@ -6023,12 +5891,11 @@ func (n Tag) Representation() ipld.Node {
 type _Tag__Repr _Tag
 
 var (
-	fieldName__Tag_Object_serial   = _String{"Object"}
-	fieldName__Tag_TagType_serial  = _String{"TagType"}
-	fieldName__Tag_Tag_serial      = _String{"Tag"}
-	fieldName__Tag_Tagger_serial   = _String{"Tagger"}
-	fieldName__Tag_Text_serial     = _String{"Text"}
-	fieldName__Tag_DataSize_serial = _String{"DataSize"}
+	fieldName__Tag_Object_serial  = _String{"Object"}
+	fieldName__Tag_TagType_serial = _String{"TagType"}
+	fieldName__Tag_Tag_serial     = _String{"Tag"}
+	fieldName__Tag_Tagger_serial  = _String{"Tagger"}
+	fieldName__Tag_Text_serial    = _String{"Text"}
 )
 var _ ipld.Node = &_Tag__Repr{}
 
@@ -6047,11 +5914,6 @@ func (n *_Tag__Repr) LookupByString(key string) (ipld.Node, error) {
 		return n.Tagger.Representation(), nil
 	case "Text":
 		return n.Text.Representation(), nil
-	case "DataSize":
-		if n.DataSize.m == schema.Maybe_Absent {
-			return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
-		}
-		return n.DataSize.v.Representation(), nil
 	default:
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
 	}
@@ -6070,25 +5932,16 @@ func (n _Tag__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
 }
 func (n *_Tag__Repr) MapIterator() ipld.MapIterator {
-	end := 6
-	if n.DataSize.m == schema.Maybe_Absent {
-		end = 5
-	} else {
-		goto done
-	}
-done:
-	return &_Tag__ReprMapItr{n, 0, end}
+	return &_Tag__ReprMapItr{n, 0}
 }
 
 type _Tag__ReprMapItr struct {
 	n   *_Tag__Repr
 	idx int
-	end int
 }
 
 func (itr *_Tag__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-advance:
-	if itr.idx >= 6 {
+	if itr.idx >= 5 {
 		return nil, nil, ipld.ErrIteratorOverread{}
 	}
 	switch itr.idx {
@@ -6107,13 +5960,6 @@ advance:
 	case 4:
 		k = &fieldName__Tag_Text_serial
 		v = itr.n.Text.Representation()
-	case 5:
-		k = &fieldName__Tag_DataSize_serial
-		if itr.n.DataSize.m == schema.Maybe_Absent {
-			itr.idx++
-			goto advance
-		}
-		v = itr.n.DataSize.v.Representation()
 	default:
 		panic("unreachable")
 	}
@@ -6121,16 +5967,13 @@ advance:
 	return
 }
 func (itr *_Tag__ReprMapItr) Done() bool {
-	return itr.idx >= itr.end
+	return itr.idx >= 5
 }
 func (_Tag__Repr) ListIterator() ipld.ListIterator {
 	return nil
 }
 func (rn *_Tag__Repr) Length() int64 {
-	l := 6
-	if rn.DataSize.m == schema.Maybe_Absent {
-		l--
-	}
+	l := 5
 	return int64(l)
 }
 func (_Tag__Repr) IsAbsent() bool {
@@ -6192,13 +6035,12 @@ type _Tag__ReprAssembler struct {
 	s     int
 	f     int
 
-	cm          schema.Maybe
-	ca_Object   _Link__ReprAssembler
-	ca_TagType  _String__ReprAssembler
-	ca_Tag      _String__ReprAssembler
-	ca_Tagger   _PersonInfo__ReprAssembler
-	ca_Text     _String__ReprAssembler
-	ca_DataSize _String__ReprAssembler
+	cm         schema.Maybe
+	ca_Object  _Link__ReprAssembler
+	ca_TagType _String__ReprAssembler
+	ca_Tag     _String__ReprAssembler
+	ca_Tagger  _PersonInfo__ReprAssembler
+	ca_Text    _String__ReprAssembler
 }
 
 func (na *_Tag__ReprAssembler) reset() {
@@ -6209,7 +6051,6 @@ func (na *_Tag__ReprAssembler) reset() {
 	na.ca_Tag.reset()
 	na.ca_Tagger.reset()
 	na.ca_Text.reset()
-	na.ca_DataSize.reset()
 }
 func (na *_Tag__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	switch *na.m {
@@ -6347,15 +6188,6 @@ func (ma *_Tag__ReprAssembler) valueFinishTidy() bool {
 		default:
 			return false
 		}
-	case 5:
-		switch ma.w.DataSize.m {
-		case schema.Maybe_Value:
-			ma.w.DataSize.v = ma.ca_DataSize.w
-			ma.state = maState_initial
-			return true
-		default:
-			return false
-		}
 	default:
 		panic("unreachable")
 	}
@@ -6378,7 +6210,7 @@ func (ma *_Tag__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 	switch k {
 	case "Object":
 		if ma.s&fieldBit__Tag_Object != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_Object_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Object_serial}
 		}
 		ma.s += fieldBit__Tag_Object
 		ma.state = maState_midValue
@@ -6388,7 +6220,7 @@ func (ma *_Tag__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 		return &ma.ca_Object, nil
 	case "TagType":
 		if ma.s&fieldBit__Tag_TagType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_TagType_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_TagType_serial}
 		}
 		ma.s += fieldBit__Tag_TagType
 		ma.state = maState_midValue
@@ -6398,7 +6230,7 @@ func (ma *_Tag__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 		return &ma.ca_TagType, nil
 	case "Tag":
 		if ma.s&fieldBit__Tag_Tag != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_Tag_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Tag_serial}
 		}
 		ma.s += fieldBit__Tag_Tag
 		ma.state = maState_midValue
@@ -6408,7 +6240,7 @@ func (ma *_Tag__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 		return &ma.ca_Tag, nil
 	case "Tagger":
 		if ma.s&fieldBit__Tag_Tagger != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_Tagger_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Tagger_serial}
 		}
 		ma.s += fieldBit__Tag_Tagger
 		ma.state = maState_midValue
@@ -6418,7 +6250,7 @@ func (ma *_Tag__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 		return &ma.ca_Tagger, nil
 	case "Text":
 		if ma.s&fieldBit__Tag_Text != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_Text_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Text_serial}
 		}
 		ma.s += fieldBit__Tag_Text
 		ma.state = maState_midValue
@@ -6426,20 +6258,9 @@ func (ma *_Tag__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 		ma.ca_Text.w = &ma.w.Text
 		ma.ca_Text.m = &ma.cm
 		return &ma.ca_Text, nil
-	case "DataSize":
-		if ma.s&fieldBit__Tag_DataSize != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Tag_DataSize_serial}
-		}
-		ma.s += fieldBit__Tag_DataSize
-		ma.state = maState_midValue
-		ma.f = 5
-		ma.ca_DataSize.w = ma.w.DataSize.v
-		ma.ca_DataSize.m = &ma.w.DataSize.m
-
-		return &ma.ca_DataSize, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.Tag.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.Tag.Repr", Key: &_String{k}}
 }
 func (ma *_Tag__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -6494,11 +6315,6 @@ func (ma *_Tag__ReprAssembler) AssembleValue() ipld.NodeAssembler {
 		ma.ca_Text.w = &ma.w.Text
 		ma.ca_Text.m = &ma.cm
 		return &ma.ca_Text
-	case 5:
-		ma.ca_DataSize.w = ma.w.DataSize.v
-		ma.ca_DataSize.m = &ma.w.DataSize.m
-
-		return &ma.ca_DataSize
 	default:
 		panic("unreachable")
 	}
@@ -6575,50 +6391,46 @@ func (ka *_Tag__ReprKeyAssembler) AssignString(k string) error {
 	switch k {
 	case "Object":
 		if ka.s&fieldBit__Tag_Object != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Tag_Object_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Object_serial}
 		}
 		ka.s += fieldBit__Tag_Object
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "TagType":
 		if ka.s&fieldBit__Tag_TagType != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Tag_TagType_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_TagType_serial}
 		}
 		ka.s += fieldBit__Tag_TagType
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	case "Tag":
 		if ka.s&fieldBit__Tag_Tag != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Tag_Tag_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Tag_serial}
 		}
 		ka.s += fieldBit__Tag_Tag
 		ka.state = maState_expectValue
 		ka.f = 2
+		return nil
 	case "Tagger":
 		if ka.s&fieldBit__Tag_Tagger != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Tag_Tagger_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Tagger_serial}
 		}
 		ka.s += fieldBit__Tag_Tagger
 		ka.state = maState_expectValue
 		ka.f = 3
+		return nil
 	case "Text":
 		if ka.s&fieldBit__Tag_Text != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Tag_Text_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Text_serial}
 		}
 		ka.s += fieldBit__Tag_Text
 		ka.state = maState_expectValue
 		ka.f = 4
-	case "DataSize":
-		if ka.s&fieldBit__Tag_DataSize != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Tag_DataSize_serial}
-		}
-		ka.s += fieldBit__Tag_DataSize
-		ka.state = maState_expectValue
-		ka.f = 5
-	default:
-		return ipld.ErrInvalidKey{TypeName: "ipldgit.Tag.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "ipldgit.Tag.Repr", Key: &_String{k}}
 }
 func (_Tag__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"ipldgit.Tag.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -6731,7 +6543,7 @@ func (n Tree) LookupByNode(k ipld.Node) (ipld.Node, error) {
 }
 func (n Tree) LookupByIndex(idx int64) (ipld.Node, error) {
 	if n.Length() <= idx {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
 	}
 	v := &n.x[idx]
 	return v, nil
@@ -7586,7 +7398,7 @@ func (ma *_TreeEntry__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, er
 	switch k {
 	case "Mode":
 		if ma.s&fieldBit__TreeEntry_Mode != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TreeEntry_Mode}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TreeEntry_Mode}
 		}
 		ma.s += fieldBit__TreeEntry_Mode
 		ma.state = maState_midValue
@@ -7596,7 +7408,7 @@ func (ma *_TreeEntry__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, er
 		return &ma.ca_Mode, nil
 	case "Name":
 		if ma.s&fieldBit__TreeEntry_Name != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TreeEntry_Name}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TreeEntry_Name}
 		}
 		ma.s += fieldBit__TreeEntry_Name
 		ma.state = maState_midValue
@@ -7606,7 +7418,7 @@ func (ma *_TreeEntry__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, er
 		return &ma.ca_Name, nil
 	case "Hash":
 		if ma.s&fieldBit__TreeEntry_Hash != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TreeEntry_Hash}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TreeEntry_Hash}
 		}
 		ma.s += fieldBit__TreeEntry_Hash
 		ma.state = maState_midValue
@@ -7614,9 +7426,8 @@ func (ma *_TreeEntry__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, er
 		ma.ca_Hash.w = &ma.w.Hash
 		ma.ca_Hash.m = &ma.cm
 		return &ma.ca_Hash, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.TreeEntry", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.TreeEntry", Key: &_String{k}}
 }
 func (ma *_TreeEntry__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -7733,21 +7544,21 @@ func (ka *_TreeEntry__KeyAssembler) AssignString(k string) error {
 	switch k {
 	case "Mode":
 		if ka.s&fieldBit__TreeEntry_Mode != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TreeEntry_Mode}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TreeEntry_Mode}
 		}
 		ka.s += fieldBit__TreeEntry_Mode
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "Name":
 		if ka.s&fieldBit__TreeEntry_Name != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TreeEntry_Name}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TreeEntry_Name}
 		}
 		ka.s += fieldBit__TreeEntry_Name
 		ka.state = maState_expectValue
 		ka.f = 1
 	case "Hash":
 		if ka.s&fieldBit__TreeEntry_Hash != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TreeEntry_Hash}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TreeEntry_Hash}
 		}
 		ka.s += fieldBit__TreeEntry_Hash
 		ka.state = maState_expectValue
