@@ -10,11 +10,11 @@ import (
 )
 
 var (
-	_ ipld.Decoder = Decoder
-	_ ipld.Encoder = Encoder
+	_ ipld.Decoder = Decode
+	_ ipld.Encoder = Encode
 )
 
 func init() {
-	mc.EncoderRegistry[cid.GitRaw] = Encoder
-	mc.DecoderRegistry[cid.GitRaw] = Decoder
+	mc.RegisterEncoder(cid.GitRaw, Encode)
+	mc.RegisterDecoder(cid.GitRaw, Decode)
 }

@@ -8,8 +8,8 @@ import (
 	"github.com/ipld/go-ipld-prime"
 )
 
-// Decoder reads from a reader to fill a NodeAssembler
-func Decoder(na ipld.NodeAssembler, r io.Reader) error {
+// Decode reads from a reader to fill a NodeAssembler
+func Decode(na ipld.NodeAssembler, r io.Reader) error {
 	rd := bufio.NewReader(r)
 
 	typ, err := rd.ReadString(' ')

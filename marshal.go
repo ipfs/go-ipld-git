@@ -7,8 +7,8 @@ import (
 	"github.com/ipld/go-ipld-prime"
 )
 
-// Encoder serializes a git node to a raw binary form.
-func Encoder(n ipld.Node, w io.Writer) error {
+// Encode serializes a git node to a raw binary form.
+func Encode(n ipld.Node, w io.Writer) error {
 	switch n.Prototype() {
 	case Type.Blob, Type.Blob__Repr:
 		return encodeBlob(n, w)
