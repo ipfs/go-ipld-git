@@ -166,7 +166,7 @@ func TestArchiveObjectParse(t *testing.T) {
 				fmt.Printf("%#v\n", thing)
 				fmt.Println("vvvvvv")
 				buf := bytes.NewBuffer([]byte{})
-				Encoder(thing, buf)
+				Encode(thing, buf)
 				fmt.Println(string(buf.Bytes()))
 				fmt.Println("^^^^^^")
 				t.Fatal("mismatch!")
@@ -424,7 +424,7 @@ func BenchmarkRawData(b *testing.B) {
 				return err
 			}
 			buf := bytes.NewBuffer([]byte{})
-			return Encoder(thing, buf)
+			return Encode(thing, buf)
 		})
 		if err != nil {
 			b.Fatal(err)
