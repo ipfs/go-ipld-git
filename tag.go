@@ -108,25 +108,67 @@ func readMergeTag(hash []byte, rd *bufio.Reader) (Tag, []byte, error) {
 }
 
 func encodeTag(n ipld.Node, w io.Writer) error {
-	t, ok := n.(Tag)
-	if !ok {
-		return fmt.Errorf("not a Commit: %T", n)
+	obj, err := n.LookupByString("Object")
+	if err != nil {
+		return err
+	}
+	objLnk, err := obj.AsLink()
+	if err != nil {
+		return err
 	}
 
-	buf := new(bytes.Buffer)
-	fmt.Fprintf(buf, "object %s\n", hex.EncodeToString(t.Object.sha()))
-	fmt.Fprintf(buf, "type %s\n", t.TagType.x)
-	fmt.Fprintf(buf, "tag %s\n", t.Tag.x)
-	if !t.Tagger.IsNull() {
-		fmt.Fprintf(buf, "tagger %s\n", t.Tagger.GitString())
+	tt, err := n.LookupByString("TagType")
+	if err != nil {
+		return err
 	}
-	if t.Text.x != "" {
-		fmt.Fprintf(buf, "\n%s", t.Text.x)
+	ttStr, err := tt.AsString()
+	if err != nil {
+		return err
+	}
+
+	tag, err := n.LookupByString("Tag")
+	if err != nil {
+		return err
+	}
+	tagStr, err := tag.AsString()
+	if err != nil {
+		return err
+	}
+
+	text, err := n.LookupByString("Text")
+	if err != nil {
+		return err
+	}
+	textStr, err := text.AsString()
+	if err != nil {
+		return err
+	}
+
+	tagger, taggerErr := n.LookupByString("Tagger")
+
+	buf := new(bytes.Buffer)
+	fmt.Fprintf(buf, "object %s\n", hex.EncodeToString(sha(objLnk)))
+	fmt.Fprintf(buf, "type %s\n", ttStr)
+	fmt.Fprintf(buf, "tag %s\n", tagStr)
+	if taggerErr == nil && !tagger.IsNull() {
+		pi := Type.PersonInfo__Repr.NewBuilder()
+		if err := pi.AssignNode(tagger); err != nil {
+			return err
+		}
+		piN := pi.Build()
+		parsed, ok := piN.(*_PersonInfo)
+		if !ok {
+			return fmt.Errorf("Could not parse tagger person info %v", tagger)
+		}
+		fmt.Fprintf(buf, "tagger %s\n", parsed.GitString())
+	}
+	if textStr != "" {
+		fmt.Fprintf(buf, "\n%s", textStr)
 	}
 
 	if _, err := fmt.Fprintf(w, "tag %d\x00", buf.Len()); err != nil {
 		return err
 	}
-	_, err := buf.WriteTo(w)
+	_, err = buf.WriteTo(w)
 	return err
 }

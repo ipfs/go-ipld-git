@@ -151,7 +151,12 @@ func decodeGpgSig(rd *bufio.Reader) (GpgSig, error) {
 func encodeCommit(n ipld.Node, w io.Writer) error {
 	c, ok := n.(Commit)
 	if !ok {
-		return fmt.Errorf("not a Commit: %T", n)
+		ci := Type.Commit__Repr.NewBuilder()
+		if err := ci.AssignNode(n); err != nil {
+			return fmt.Errorf("not a Commit: %T %w", n, err)
+		}
+		ciN := ci.Build()
+		c, ok = ciN.(Commit)
 	}
 
 	buf := new(bytes.Buffer)
