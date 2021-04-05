@@ -2,39 +2,33 @@ package ipldgit
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
-	"strconv"
 
 	"github.com/ipld/go-ipld-prime"
 )
 
 // DecodeBlob fills a NodeAssembler (from `Type.Blob__Repr.NewBuilder()`) from a stream of bytes
 func DecodeBlob(na ipld.NodeAssembler, rd *bufio.Reader) error {
-	size, err := rd.ReadString(0)
+	sizen, err := readNullTerminatedNumber(rd)
 	if err != nil {
 		return err
 	}
 
-	sizen, err := strconv.Atoi(size[:len(size)-1])
+	prefix := fmt.Sprintf("blob %d\x00", sizen)
+	buf := make([]byte, len(prefix)+sizen)
+	copy(buf, prefix)
+
+	n, err := io.ReadFull(rd, buf[len(prefix):])
 	if err != nil {
 		return err
 	}
 
-	buf := new(bytes.Buffer)
-	fmt.Fprintf(buf, "blob %d\x00", sizen)
-
-	n, err := io.Copy(buf, rd)
-	if err != nil {
-		return err
-	}
-
-	if n != int64(sizen) {
+	if n != sizen {
 		return fmt.Errorf("blob size was not accurate")
 	}
 
-	return na.AssignBytes(buf.Bytes())
+	return na.AssignBytes(buf)
 }
 
 func encodeBlob(n ipld.Node, w io.Writer) error {
@@ -43,6 +37,6 @@ func encodeBlob(n ipld.Node, w io.Writer) error {
 		return err
 	}
 
-	_, err = bytes.NewBuffer(b).WriteTo(w)
+	_, err = w.Write(b)
 	return err
 }

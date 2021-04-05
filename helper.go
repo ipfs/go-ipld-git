@@ -1,10 +1,12 @@
 package ipldgit
 
 import (
+	"bufio"
 	"bytes"
 	"compress/zlib"
 	"errors"
 	"io"
+	"strconv"
 
 	blocks "github.com/ipfs/go-block-format"
 	"github.com/ipfs/go-cid"
@@ -13,6 +15,7 @@ import (
 )
 
 // DecodeBlock attempts to parse a serialized ipfs block into an ipld node dag
+// Deprecated: Parse ifrom data instead.
 func DecodeBlock(block blocks.Block) (ipld.Node, error) {
 	prefix := block.Cid().Prefix()
 
@@ -37,4 +40,14 @@ func ParseCompressedObject(r io.Reader) (ipld.Node, error) {
 // ParseObjectFromBuffer is like ParseObject, but with a fully in-memory stream
 func ParseObjectFromBuffer(b []byte) (ipld.Node, error) {
 	return ParseObject(bytes.NewReader(b))
+}
+
+func readNullTerminatedNumber(rd *bufio.Reader) (int, error) {
+	lstr, err := rd.ReadString(0)
+	if err != nil {
+		return 0, err
+	}
+	lstr = lstr[:len(lstr)-1]
+
+	return strconv.Atoi(lstr)
 }

@@ -14,10 +14,11 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
+const prefixMergetag = 16 // the length of "mergetag object "
+
 // DecodeCommit fills a NodeAssembler (from `Type.Commit__Repr.NewBuilder()`) from a stream of bytes
 func DecodeCommit(na ipld.NodeAssembler, rd *bufio.Reader) error {
-	_, err := rd.ReadString(0)
-	if err != nil {
+	if _, err := readNullTerminatedNumber(rd); err != nil {
 		return err
 	}
 
@@ -77,7 +78,7 @@ func decodeCommitLine(c Commit, line []byte, rd *bufio.Reader) error {
 	case bytes.HasPrefix(line, []byte("encoding ")):
 		c.Encoding = _String__Maybe{m: schema.Maybe_Value, v: &_String{string(line[9:])}}
 	case bytes.HasPrefix(line, []byte("mergetag object ")):
-		sha, err := hex.DecodeString(string(line)[16:])
+		sha, err := hex.DecodeString(string(line)[prefixMergetag:])
 		if err != nil {
 			return err
 		}
@@ -149,15 +150,11 @@ func decodeGpgSig(rd *bufio.Reader) (GpgSig, error) {
 }
 
 func encodeCommit(n ipld.Node, w io.Writer) error {
-	c, ok := n.(Commit)
-	if !ok {
-		ci := Type.Commit__Repr.NewBuilder()
-		if err := ci.AssignNode(n); err != nil {
-			return fmt.Errorf("not a Commit: %T %w", n, err)
-		}
-		ciN := ci.Build()
-		c, ok = ciN.(Commit)
+	ci := Type.Commit__Repr.NewBuilder()
+	if err := ci.AssignNode(n); err != nil {
+		return fmt.Errorf("not a Commit: %T %w", n, err)
 	}
+	c := ci.Build().(Commit)
 
 	buf := new(bytes.Buffer)
 

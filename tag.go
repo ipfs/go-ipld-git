@@ -12,6 +12,10 @@ import (
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
+const tagObjectPrefixLen = 7 // "prefix 'object '"
+const tagTagPrefixLen = 4    // "prefix 'tag '"
+const tagTypePrefixLen = 5   // "prefix 'type '"
+
 // DecodeTag fills a NodeAssembler (from `Type.Tag__Repr.NewBuilder()`) from a stream of bytes
 func DecodeTag(na ipld.NodeAssembler, rd *bufio.Reader) error {
 	_, err := rd.ReadString(0)
@@ -32,14 +36,14 @@ func DecodeTag(na ipld.NodeAssembler, rd *bufio.Reader) error {
 
 		switch {
 		case bytes.HasPrefix(line, []byte("object ")):
-			sha, err := hex.DecodeString(string(line[7:]))
+			sha, err := hex.DecodeString(string(line[tagObjectPrefixLen:]))
 			if err != nil {
 				return err
 			}
 
 			out.Object = _Link{cidlink.Link{Cid: shaToCid(sha)}}
 		case bytes.HasPrefix(line, []byte("tag ")):
-			out.Tag = _String{string(line[4:])}
+			out.Tag = _String{string(line[tagTagPrefixLen:])}
 		case bytes.HasPrefix(line, []byte("tagger ")):
 			c, err := parsePersonInfo(line)
 			if err != nil {
@@ -48,7 +52,7 @@ func DecodeTag(na ipld.NodeAssembler, rd *bufio.Reader) error {
 
 			out.Tagger = *c
 		case bytes.HasPrefix(line, []byte("type ")):
-			out.TagType = _String{string(line[5:])}
+			out.TagType = _String{string(line[tagTypePrefixLen:])}
 		case len(line) == 0:
 			rest, err := ioutil.ReadAll(rd)
 			if err != nil {
@@ -80,9 +84,9 @@ func readMergeTag(hash []byte, rd *bufio.Reader) (Tag, []byte, error) {
 
 		switch {
 		case bytes.HasPrefix(line, []byte(" type ")):
-			out.TagType = _String{string(line[6:])}
+			out.TagType = _String{string(line[1+tagTypePrefixLen:])}
 		case bytes.HasPrefix(line, []byte(" tag ")):
-			out.Tag = _String{string(line[5:])}
+			out.Tag = _String{string(line[1+tagTagPrefixLen:])}
 		case bytes.HasPrefix(line, []byte(" tagger ")):
 			tagger, err := parsePersonInfo(line[1:])
 			if err != nil {
