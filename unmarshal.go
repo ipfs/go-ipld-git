@@ -43,26 +43,26 @@ func ParseObject(r io.Reader) (ipld.Node, error) {
 	typ = typ[:len(typ)-1]
 
 	var na ipld.NodeBuilder
-	var f func(ipld.NodeAssembler, *bufio.Reader) error
+	var decode func(ipld.NodeAssembler, *bufio.Reader) error
 	switch typ {
 	case "tree":
 		na = Type.Tree.NewBuilder()
-		f = DecodeTree
+		decode = DecodeTree
 	case "commit":
 		na = Type.Commit.NewBuilder()
-		f = DecodeCommit
+		decode = DecodeCommit
 	case "blob":
 		na = Type.Blob.NewBuilder()
-		f = DecodeBlob
+		decode = DecodeBlob
 	case "tag":
 		na = Type.Tag.NewBuilder()
-		f = DecodeTag
+		decode = DecodeTag
 	default:
 		return nil, fmt.Errorf("unrecognized object type: %s", typ)
 	}
 	fmt.Printf("type %s\n", typ)
 
-	if err := f(na, rd); err != nil {
+	if err := decode(na, rd); err != nil {
 		return nil, err
 	}
 	return na.Build(), nil

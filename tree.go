@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"strconv"
 
 	"github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
@@ -13,14 +12,7 @@ import (
 
 // DecodeTree fills a NodeAssembler (from `Type.Tree__Repr.NewBuilder()`) from a stream of bytes
 func DecodeTree(na ipld.NodeAssembler, rd *bufio.Reader) error {
-	lstr, err := rd.ReadString(0)
-	if err != nil {
-		return err
-	}
-	lstr = lstr[:len(lstr)-1]
-
-	_, err = strconv.Atoi(lstr)
-	if err != nil {
+	if _, err := readNullTerminatedNumber(rd); err != nil {
 		return err
 	}
 
@@ -37,7 +29,9 @@ func DecodeTree(na ipld.NodeAssembler, rd *bufio.Reader) error {
 			}
 			return err
 		}
-		la.AssembleValue().AssignNode(node)
+		if err := la.AssembleValue().AssignNode(node); err != nil {
+			return err
+		}
 	}
 	if err := la.Finish(); err != nil {
 		return err
