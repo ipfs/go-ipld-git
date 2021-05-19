@@ -30,8 +30,15 @@ func (t *Tag) Cid() cid.Cid {
 }
 
 func (t *Tag) Copy() node.Node {
-	nt := *t
-	return &nt
+	return &Tag{
+		Object:   t.Object,
+		Type:     t.Type,
+		Tag:      t.Tag,
+		Tagger:   t.Tagger,
+		Message:  t.Message,
+		dataSize: t.dataSize,
+		cid:      t.cid,
+	}
 }
 
 func (t *Tag) Links() []*node.Link {
