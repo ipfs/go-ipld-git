@@ -131,7 +131,7 @@ func (t *Tree) Resolve(p []string) (interface{}, []string, error) {
 	}
 }
 
-func (t Tree) ResolveLink(path []string) (*node.Link, []string, error) {
+func (t *Tree) ResolveLink(path []string) (*node.Link, []string, error) {
 	out, rest, err := t.Resolve(path)
 	if err != nil {
 		return nil, nil, err

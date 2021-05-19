@@ -124,8 +124,19 @@ func (c *Commit) Cid() cid.Cid {
 }
 
 func (c *Commit) Copy() node.Node {
-	nc := *c
-	return &nc
+	return &Commit{
+		DataSize:  c.DataSize,
+		GitTree:   c.GitTree,
+		Parents:   c.Parents,
+		Message:   c.Message,
+		Author:    c.Author,
+		Committer: c.Committer,
+		Encoding:  c.Encoding,
+		Sig:       c.Sig,
+		MergeTag:  c.MergeTag,
+		Other:     c.Other,
+		cid:       c.cid,
+	}
 }
 
 func (c *Commit) Links() []*node.Link {
