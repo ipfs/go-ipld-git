@@ -153,7 +153,7 @@ func (t *Tree) Stat() (*node.NodeStat, error) {
 	return &node.NodeStat{}, nil
 }
 
-func (te *TreeEntry) WriteTo(w io.Writer) (int, error) {
+func (te *TreeEntry) WriteTo(w io.Writer) (int64, error) {
 	n, err := fmt.Fprintf(w, "%s %s\x00", te.Mode, te.name)
 	if err != nil {
 		return 0, err
@@ -161,10 +161,10 @@ func (te *TreeEntry) WriteTo(w io.Writer) (int, error) {
 
 	nn, err := w.Write(cidToSha(te.Hash))
 	if err != nil {
-		return n, err
+		return int64(n), err
 	}
 
-	return n + nn, nil
+	return int64(n + nn), nil
 }
 
 var _ node.Node = (*Tree)(nil)
