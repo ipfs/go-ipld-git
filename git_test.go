@@ -190,9 +190,11 @@ func testNode(t *testing.T, nd node.Node) error {
 		assert(t, lnk != nil || err.Error() == "index out of range")
 		assert(t, len(rest) == 0)
 
-		mt, rest, err := commit.Resolve([]string{"mergetag"})
+		mt, _, err := commit.Resolve([]string{"mergetag"})
+		assert(t, err == nil)
 		if len(mt.([]*MergeTag)) > 0 {
-			mtag, rest, err := commit.Resolve([]string{"mergetag", "0"})
+			mtag, _, err := commit.Resolve([]string{"mergetag", "0"})
+			assert(t, err == nil)
 			tag, ok := mtag.(*MergeTag)
 			if !ok {
 				t.Fatal("Invalid mergetag")
@@ -240,6 +242,7 @@ func testNode(t *testing.T, nd node.Node) error {
 		assert(t, obj != nil)
 		assert(t, rest != nil)
 		assert(t, len(rest) == 1)
+		//lint:ignore SA5011 see lines above
 		assert(t, rest[0] == "aoeu")
 	case "[git tree object]":
 		tree, ok := nd.(*Tree)
@@ -344,21 +347,30 @@ func TestParsePersonInfo(t *testing.T) {
 	assert(t, pi.String() == "Someone <some.one@some.where>")
 
 	pi, err = parsePersonInfo([]byte("prefix Łukasz Magiera <magik6k@users.noreply.github.com> 1546187652 +0100"))
+	assert(t, err == nil)
 	piJSON, err := pi.MarshalJSON()
+	assert(t, err == nil)
 	date, _, err := pi.resolve([]string{"date"})
+	assert(t, err == nil)
 	assert(t, string(piJSON) == `{"date":"2018-12-30T17:34:12+01:00","email":"magik6k@users.noreply.github.com","name":"Łukasz Magiera"}`)
 	assert(t, date == "2018-12-30T17:34:12+01:00")
 
 	pi, err = parsePersonInfo([]byte("prefix Sameer <sameer@users.noreply.github.com> 1545162499 -0500"))
+	assert(t, err == nil)
 	piJSON, err = pi.MarshalJSON()
+	assert(t, err == nil)
 	assert(t, string(piJSON) == `{"date":"2018-12-18T14:48:19-05:00","email":"sameer@users.noreply.github.com","name":"Sameer"}`)
 
 	pi, err = parsePersonInfo([]byte("prefix Łukasz Magiera <magik6k@users.noreply.github.com> 1546187652 +0122"))
+	assert(t, err == nil)
 	piJSON, err = pi.MarshalJSON()
+	assert(t, err == nil)
 	assert(t, string(piJSON) == `{"date":"2018-12-30T17:56:12+01:22","email":"magik6k@users.noreply.github.com","name":"Łukasz Magiera"}`)
 
 	pi, err = parsePersonInfo([]byte("prefix Sameer <sameer@users.noreply.github.com> 1545162499 -0545"))
+	assert(t, err == nil)
 	piJSON, err = pi.MarshalJSON()
+	assert(t, err == nil)
 	assert(t, string(piJSON) == `{"date":"2018-12-18T14:03:19-05:45","email":"sameer@users.noreply.github.com","name":"Sameer"}`)
 }
 

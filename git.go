@@ -357,7 +357,7 @@ func parsePersonInfo(line []byte) (*PersonInfo, error) {
 
 	for {
 		if at == len(parts) {
-			return nil, fmt.Errorf("invalid personInfo: %s\n", line)
+			return nil, fmt.Errorf("invalid personInfo: %s", line)
 		}
 		part := parts[at]
 		if len(part) != 0 {
@@ -377,7 +377,7 @@ func parsePersonInfo(line []byte) (*PersonInfo, error) {
 	var email string
 	for {
 		if at == len(parts) {
-			return nil, fmt.Errorf("invalid personInfo: %s\n", line)
+			return nil, fmt.Errorf("invalid personInfo: %s", line)
 		}
 		part := parts[at]
 		if part[0] == '<' {
