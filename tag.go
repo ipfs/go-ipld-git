@@ -41,25 +41,25 @@ func DecodeTag(na ipld.NodeAssembler, rd *bufio.Reader) error {
 				return err
 			}
 
-			out.Object = _Link{cidlink.Link{Cid: shaToCid(sha)}}
+			out.object = _Link{cidlink.Link{Cid: shaToCid(sha)}}
 		case bytes.HasPrefix(line, []byte("tag ")):
-			out.Tag = _String{string(line[tagTagPrefixLen:])}
+			out.tag = _String{string(line[tagTagPrefixLen:])}
 		case bytes.HasPrefix(line, []byte("tagger ")):
 			c, err := parsePersonInfo(line)
 			if err != nil {
 				return err
 			}
 
-			out.Tagger = *c
+			out.tagger = *c
 		case bytes.HasPrefix(line, []byte("type ")):
-			out.TagType = _String{string(line[tagTypePrefixLen:])}
+			out.tagType = _String{string(line[tagTypePrefixLen:])}
 		case len(line) == 0:
 			rest, err := ioutil.ReadAll(rd)
 			if err != nil {
 				return err
 			}
 
-			out.Text = _String{string(rest)}
+			out.text = _String{string(rest)}
 		default:
 			fmt.Println("unhandled line: ", string(line))
 		}
@@ -72,7 +72,7 @@ func DecodeTag(na ipld.NodeAssembler, rd *bufio.Reader) error {
 func readMergeTag(hash []byte, rd *bufio.Reader) (Tag, []byte, error) {
 	out := _Tag{}
 
-	out.Object = _Link{cidlink.Link{Cid: shaToCid(hash)}}
+	out.object = _Link{cidlink.Link{Cid: shaToCid(hash)}}
 	for {
 		line, _, err := rd.ReadLine()
 		if err != nil {
@@ -84,15 +84,15 @@ func readMergeTag(hash []byte, rd *bufio.Reader) (Tag, []byte, error) {
 
 		switch {
 		case bytes.HasPrefix(line, []byte(" type ")):
-			out.TagType = _String{string(line[1+tagTypePrefixLen:])}
+			out.tagType = _String{string(line[1+tagTypePrefixLen:])}
 		case bytes.HasPrefix(line, []byte(" tag ")):
-			out.Tag = _String{string(line[1+tagTagPrefixLen:])}
+			out.tag = _String{string(line[1+tagTagPrefixLen:])}
 		case bytes.HasPrefix(line, []byte(" tagger ")):
 			tagger, err := parsePersonInfo(line[1:])
 			if err != nil {
 				return nil, nil, err
 			}
-			out.Tagger = *tagger
+			out.tagger = *tagger
 		case string(line) == " ":
 			for {
 				line, _, err := rd.ReadLine()
@@ -104,7 +104,7 @@ func readMergeTag(hash []byte, rd *bufio.Reader) (Tag, []byte, error) {
 					return &out, line, nil
 				}
 
-				out.Text.x += string(line) + "\n"
+				out.text.x += string(line) + "\n"
 			}
 		}
 	}
@@ -112,7 +112,7 @@ func readMergeTag(hash []byte, rd *bufio.Reader) (Tag, []byte, error) {
 }
 
 func encodeTag(n ipld.Node, w io.Writer) error {
-	obj, err := n.LookupByString("Object")
+	obj, err := n.LookupByString("object")
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func encodeTag(n ipld.Node, w io.Writer) error {
 		return err
 	}
 
-	tt, err := n.LookupByString("TagType")
+	tt, err := n.LookupByString("tagType")
 	if err != nil {
 		return err
 	}
@@ -130,7 +130,7 @@ func encodeTag(n ipld.Node, w io.Writer) error {
 		return err
 	}
 
-	tag, err := n.LookupByString("Tag")
+	tag, err := n.LookupByString("tag")
 	if err != nil {
 		return err
 	}
@@ -139,7 +139,7 @@ func encodeTag(n ipld.Node, w io.Writer) error {
 		return err
 	}
 
-	text, err := n.LookupByString("Text")
+	text, err := n.LookupByString("text")
 	if err != nil {
 		return err
 	}
@@ -148,7 +148,7 @@ func encodeTag(n ipld.Node, w io.Writer) error {
 		return err
 	}
 
-	tagger, taggerErr := n.LookupByString("Tagger")
+	tagger, taggerErr := n.LookupByString("tagger")
 
 	buf := new(bytes.Buffer)
 	fmt.Fprintf(buf, "object %s\n", hex.EncodeToString(sha(objLnk)))

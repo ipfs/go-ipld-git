@@ -34,7 +34,7 @@ func parsePersonInfo(line []byte) (PersonInfo, error) {
 		at++
 	}
 	if len(name) != 0 {
-		pi.Name = _String{name[:len(name)-1]}
+		pi.name = _String{name[:len(name)-1]}
 	}
 
 	var email string
@@ -54,32 +54,32 @@ func parsePersonInfo(line []byte) (PersonInfo, error) {
 		}
 		email += string(part) + " "
 	}
-	pi.Email = _String{email}
+	pi.email = _String{email}
 
 	if at == len(parts) {
 		return &pi, nil
 	}
-	pi.Date = _String{string(parts[at])}
+	pi.date = _String{string(parts[at])}
 
 	at++
 	if at == len(parts) {
 		return &pi, nil
 	}
-	pi.Timezone = _String{string(parts[at])}
+	pi.timezone = _String{string(parts[at])}
 	return &pi, nil
 }
 
 func (p _PersonInfo) GitString() string {
 	f := "%s <%s>"
-	arg := []interface{}{p.Name.x, p.Email.x}
-	if p.Date.x != "" {
+	arg := []interface{}{p.name.x, p.email.x}
+	if p.date.x != "" {
 		f = f + " %s"
-		arg = append(arg, p.Date.x)
+		arg = append(arg, p.date.x)
 	}
 
-	if p.Timezone.x != "" {
+	if p.timezone.x != "" {
 		f = f + " %s"
-		arg = append(arg, p.Timezone.x)
+		arg = append(arg, p.timezone.x)
 	}
 	return fmt.Sprintf(f, arg...)
 }

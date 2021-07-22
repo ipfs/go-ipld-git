@@ -18,41 +18,39 @@ func main() {
 	ts.Accumulate(schema.SpawnList("ListString", "String", false))
 	ts.Accumulate(schema.SpawnLink("Link"))
 	ts.Accumulate(schema.SpawnStruct("PersonInfo", []schema.StructField{
-		schema.SpawnStructField("Name", "String", false, false),
-		schema.SpawnStructField("Email", "String", false, false),
-		schema.SpawnStructField("Date", "String", false, false),
-		schema.SpawnStructField("Timezone", "String", false, false),
-	}, schema.SpawnStructRepresentationStringjoin(" ")))
+		schema.SpawnStructField("name", "String", false, false),
+		schema.SpawnStructField("email", "String", false, false),
+		schema.SpawnStructField("date", "String", false, false),
+		schema.SpawnStructField("timezone", "String", false, false),
+	}, schema.SpawnStructRepresentationMap(map[string]string{})))
 	ts.Accumulate(schema.SpawnString("GpgSig"))
 	ts.Accumulate(schema.SpawnStruct("Tag", []schema.StructField{
-		schema.SpawnStructField("Object", "Link", false, false),
-		schema.SpawnStructField("TagType", "String", false, false),
-		schema.SpawnStructField("Tag", "String", false, false),
-		schema.SpawnStructField("Tagger", "PersonInfo", false, false),
-		schema.SpawnStructField("Text", "String", false, false),
-	}, schema.SpawnStructRepresentationMap(map[string]string{"Type": "TagType"})))
+		schema.SpawnStructField("object", "Link", false, false),
+		schema.SpawnStructField("tagType", "String", false, false),
+		schema.SpawnStructField("tag", "String", false, false),
+		schema.SpawnStructField("tagger", "PersonInfo", false, false),
+		schema.SpawnStructField("text", "String", false, false),
+	}, schema.SpawnStructRepresentationMap(map[string]string{})))
 	ts.Accumulate(schema.SpawnList("ListTag", "Tag", false))
 	ts.Accumulate(schema.SpawnList("ListParents", "Link", false)) //Todo: type 'Parents' links
 	ts.Accumulate(schema.SpawnStruct("Commit", []schema.StructField{
-		schema.SpawnStructField("GitTree", "LinkTree", false, false),
-		schema.SpawnStructField("Parents", "ListParents", false, false),
-		schema.SpawnStructField("Message", "String", false, false),
-		schema.SpawnStructField("Author", "PersonInfo", true, false),
-		schema.SpawnStructField("Committer", "PersonInfo", true, false),
-		schema.SpawnStructField("Encoding", "String", true, false),
-		schema.SpawnStructField("Sig", "GpgSig", true, false),
-		schema.SpawnStructField("MergeTag", "ListTag", false, false),
-		schema.SpawnStructField("Other", "ListString", false, false),
+		schema.SpawnStructField("tree", "LinkTree", false, false),
+		schema.SpawnStructField("parents", "ListParents", false, false),
+		schema.SpawnStructField("message", "String", false, false),
+		schema.SpawnStructField("author", "PersonInfo", true, false),
+		schema.SpawnStructField("committer", "PersonInfo", true, false),
+		schema.SpawnStructField("encoding", "String", true, false),
+		schema.SpawnStructField("signature", "GpgSig", true, false),
+		schema.SpawnStructField("mergeTag", "ListTag", false, false),
+		schema.SpawnStructField("other", "ListString", false, false),
 	}, schema.SpawnStructRepresentationMap(map[string]string{})))
 	ts.Accumulate(schema.SpawnBytes("Blob"))
-
-	ts.Accumulate(schema.SpawnList("Tree", "TreeEntry", false))
+	ts.Accumulate(schema.SpawnMap("Tree", "String", "TreeEntry", false))
 	ts.Accumulate(schema.SpawnLinkReference("LinkTree", "Tree"))
 	ts.Accumulate(schema.SpawnStruct("TreeEntry", []schema.StructField{
-		schema.SpawnStructField("Mode", "String", false, false),
-		schema.SpawnStructField("Name", "String", false, false),
-		schema.SpawnStructField("Hash", "Link", false, false),
-	}, schema.SpawnStructRepresentationStringjoin(" ")))
+		schema.SpawnStructField("mode", "String", false, false),
+		schema.SpawnStructField("hash", "Link", false, false),
+	}, schema.SpawnStructRepresentationMap(map[string]string{})))
 
 	if errs := ts.ValidateGraph(); errs != nil {
 		for _, err := range errs {

@@ -18,7 +18,7 @@ import (
 )
 
 func TestObjectParse(t *testing.T) {
-	lb := cidlink.LinkPrototype{cid.Prefix{
+	lb := cidlink.LinkPrototype{Prefix: cid.Prefix{
 		Version:  1,
 		Codec:    cid.GitRaw,
 		MhType:   0x11,
@@ -93,7 +93,7 @@ func TestObjectParse(t *testing.T) {
 }
 
 func TestArchiveObjectParse(t *testing.T) {
-	lb := cidlink.LinkPrototype{cid.Prefix{
+	lb := cidlink.LinkPrototype{Prefix: cid.Prefix{
 		Version:  1,
 		Codec:    cid.GitRaw,
 		MhType:   0x11,
@@ -201,18 +201,18 @@ func testNode(t *testing.T, nd ipld.Node) error {
 			t.Fatalf("Commit is not a commit")
 		}
 
-		assert(t, !commit.GitTree.IsNull())
+		assert(t, !commit.tree.IsNull())
 	case Type.Tag:
 		tag, ok := nd.(Tag)
 		if !ok {
 			t.Fatalf("Tag is not a tag")
 		}
 
-		tt, err := tag.TagType.AsString()
+		tt, err := tag.tagType.AsString()
 		assert(t, err == nil)
 
 		assert(t, tt == "commit" || tt == "tree" || tt == "blob" || tt == "tag")
-		assert(t, !tag.Object.IsNull())
+		assert(t, !tag.object.IsNull())
 
 	case Type.Tree:
 		tree, ok := nd.(Tree)
@@ -220,7 +220,7 @@ func testNode(t *testing.T, nd ipld.Node) error {
 			t.Fatalf("Tree is not a tree")
 		}
 
-		assert(t, len(tree.x) > 0)
+		assert(t, len(tree.m) > 0)
 	}
 	return nil
 }
@@ -235,25 +235,25 @@ func TestParsePersonInfo(t *testing.T) {
 		t.Fatal("not equal:", string(p1), "vs: ", pi.GitString())
 	}
 
-	if d, err := pi.LookupByString("Date"); err != nil {
+	if d, err := pi.LookupByString("date"); err != nil {
 		t.Fatalf("invalid date, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "123456" {
 		t.Fatalf("invalid date, got %s\n", ds)
 	}
 
-	if d, err := pi.LookupByString("Timezone"); err != nil {
+	if d, err := pi.LookupByString("timezone"); err != nil {
 		t.Fatalf("invalid timezone, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "+0123" {
 		t.Fatalf("invalid timezone, got %s\n", ds)
 	}
 
-	if d, err := pi.LookupByString("Email"); err != nil {
+	if d, err := pi.LookupByString("email"); err != nil {
 		t.Fatalf("invalid email, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "some@one.somewhere" {
 		t.Fatalf("invalid email, got %s\n", ds)
 	}
 
-	if d, err := pi.LookupByString("Name"); err != nil {
+	if d, err := pi.LookupByString("name"); err != nil {
 		t.Fatalf("invalid name, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "Someone" {
 		t.Fatalf("invalid name, got %s\n", ds)
@@ -268,7 +268,7 @@ func TestParsePersonInfo(t *testing.T) {
 		t.Fatal("not equal", p2, pi.GitString())
 	}
 
-	if d, err := pi.LookupByString("Name"); err != nil {
+	if d, err := pi.LookupByString("name"); err != nil {
 		t.Fatalf("invalid name, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "So Me One" {
 		t.Fatalf("invalid name, got %s\n", ds)
@@ -282,25 +282,25 @@ func TestParsePersonInfo(t *testing.T) {
 	if !bytes.Equal([]byte(pi.GitString()), p3[7:]) {
 		t.Fatal("not equal", p3, pi.GitString())
 	}
-	if d, err := pi.LookupByString("Date"); err != nil {
+	if d, err := pi.LookupByString("date"); err != nil {
 		t.Fatalf("invalid date, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "987654" {
 		t.Fatalf("invalid date, got %s\n", ds)
 	}
 
-	if d, err := pi.LookupByString("Timezone"); err != nil {
+	if d, err := pi.LookupByString("timezone"); err != nil {
 		t.Fatalf("invalid tz, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "+4321" {
 		t.Fatalf("invalid tz, got %s\n", ds)
 	}
 
-	if d, err := pi.LookupByString("Email"); err != nil {
+	if d, err := pi.LookupByString("email"); err != nil {
 		t.Fatalf("invalid email, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "some@one.somewhere, other@one.elsewhere" {
 		t.Fatalf("invalid email, got %s\n", ds)
 	}
 
-	if d, err := pi.LookupByString("Name"); err != nil {
+	if d, err := pi.LookupByString("name"); err != nil {
 		t.Fatalf("invalid name, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "Some One & Other One" {
 		t.Fatalf("invalid name, got %s\n", ds)
@@ -315,25 +315,25 @@ func TestParsePersonInfo(t *testing.T) {
 		t.Fatal("not equal", p4, pi.GitString())
 	}
 
-	if d, err := pi.LookupByString("Name"); err != nil {
+	if d, err := pi.LookupByString("name"); err != nil {
 		t.Fatalf("invalid name, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "" {
 		t.Fatalf("invalid name, got %s\n", ds)
 	}
 
-	if d, err := pi.LookupByString("Email"); err != nil {
+	if d, err := pi.LookupByString("email"); err != nil {
 		t.Fatalf("invalid email, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "some@one.somewhere" {
 		t.Fatalf("invalid email, got %s\n", ds)
 	}
 
-	if d, err := pi.LookupByString("Date"); err != nil {
+	if d, err := pi.LookupByString("date"); err != nil {
 		t.Fatalf("invalid date, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "987654" {
 		t.Fatalf("invalid date, got %s\n", ds)
 	}
 
-	if d, err := pi.LookupByString("Timezone"); err != nil {
+	if d, err := pi.LookupByString("timezone"); err != nil {
 		t.Fatalf("invalid tz, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "+4321" {
 		t.Fatalf("invalid tz, got %s\n", ds)
@@ -348,7 +348,7 @@ func TestParsePersonInfo(t *testing.T) {
 		t.Fatal("not equal", p5, pi.GitString())
 	}
 
-	if d, err := pi.LookupByString("Name"); err != nil {
+	if d, err := pi.LookupByString("name"); err != nil {
 		t.Fatalf("invalid name, got %s\n", err)
 	} else if ds, _ := d.AsString(); ds != "Someone " {
 		t.Fatalf("invalid name, got %s\n", ds)
@@ -433,7 +433,7 @@ func BenchmarkRawData(b *testing.B) {
 }
 
 func BenchmarkCid(b *testing.B) {
-	lb := cidlink.LinkPrototype{cid.Prefix{
+	lb := cidlink.LinkPrototype{Prefix: cid.Prefix{
 		Version:  1,
 		Codec:    cid.GitRaw,
 		MhType:   0x11,

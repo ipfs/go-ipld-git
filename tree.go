@@ -17,66 +17,73 @@ func DecodeTree(na ipld.NodeAssembler, rd *bufio.Reader) error {
 	}
 
 	t := Type.Tree__Repr.NewBuilder()
-	la, err := t.BeginList(-1)
+	ma, err := t.BeginMap(-1)
 	if err != nil {
 		return err
 	}
 	for {
-		node, err := DecodeTreeEntry(rd)
+		name, node, err := DecodeTreeEntry(rd)
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
 			return err
 		}
-		if err := la.AssembleValue().AssignNode(node); err != nil {
+		ee, err := ma.AssembleEntry(name)
+		if err != nil {
+			return err
+		}
+		if err = ee.AssignNode(node); err != nil {
 			return err
 		}
 	}
-	if err := la.Finish(); err != nil {
+	if err := ma.Finish(); err != nil {
 		return err
 	}
 	return na.AssignNode(t.Build())
 }
 
 // DecodeTreeEntry fills a NodeAssembler (from `Type.TreeEntry__Repr.NewBuilder()`) from a stream of bytes
-func DecodeTreeEntry(rd *bufio.Reader) (ipld.Node, error) {
+func DecodeTreeEntry(rd *bufio.Reader) (string, ipld.Node, error) {
 	data, err := rd.ReadString(' ')
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 	data = data[:len(data)-1]
 
 	name, err := rd.ReadString(0)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 	name = name[:len(name)-1]
 
 	sha := make([]byte, 20)
 	_, err = io.ReadFull(rd, sha)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 
 	te := _TreeEntry{
-		Mode: _String{data},
-		Name: _String{name},
-		Hash: _Link{cidlink.Link{Cid: shaToCid(sha)}},
+		mode: _String{data},
+		hash: _Link{cidlink.Link{Cid: shaToCid(sha)}},
 	}
-	return &te, nil
+	return name, &te, nil
 }
 
 func encodeTree(n ipld.Node, w io.Writer) error {
 	buf := new(bytes.Buffer)
 
-	li := n.ListIterator()
-	for !li.Done() {
-		_, te, err := li.Next()
+	mi := n.MapIterator()
+	for !mi.Done() {
+		key, te, err := mi.Next()
 		if err != nil {
 			return err
 		}
-		if err := encodeTreeEntry(te, buf); err != nil {
+		name, err := key.AsString()
+		if err != nil {
+			return err
+		}
+		if err := encodeTreeEntry(name, te, buf); err != nil {
 			return err
 		}
 	}
@@ -89,8 +96,8 @@ func encodeTree(n ipld.Node, w io.Writer) error {
 	return err
 }
 
-func encodeTreeEntry(n ipld.Node, w io.Writer) error {
-	m, err := n.LookupByString("Mode")
+func encodeTreeEntry(name string, n ipld.Node, w io.Writer) error {
+	m, err := n.LookupByString("mode")
 	if err != nil {
 		return err
 	}
@@ -98,19 +105,11 @@ func encodeTreeEntry(n ipld.Node, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	na, err := n.LookupByString("Name")
+	ha, err := n.LookupByString("hash")
 	if err != nil {
 		return err
 	}
-	ns, err := na.AsString()
-	if err != nil {
-		return err
-	}
-	ha, err := n.LookupByString("Hash")
-	if err != nil {
-		return err
-	}
-	_, err = fmt.Fprintf(w, "%s %s\x00", ms, ns)
+	_, err = fmt.Fprintf(w, "%s %s\x00", ms, name)
 	if err != nil {
 		return err
 	}

@@ -57,15 +57,15 @@ type _Blob struct{ x []byte }
 // Commit matches the IPLD Schema type "Commit".  It has Struct type-kind, and may be interrogated like map kind.
 type Commit = *_Commit
 type _Commit struct {
-	GitTree   _LinkTree
-	Parents   _ListParents
-	Message   _String
-	Author    _PersonInfo__Maybe
-	Committer _PersonInfo__Maybe
-	Encoding  _String__Maybe
-	Sig       _GpgSig__Maybe
-	MergeTag  _ListTag
-	Other     _ListString
+	tree      _LinkTree
+	parents   _ListParents
+	message   _String
+	author    _PersonInfo__Maybe
+	committer _PersonInfo__Maybe
+	encoding  _String__Maybe
+	signature _GpgSig__Maybe
+	mergeTag  _ListTag
+	other     _ListString
 }
 
 // GpgSig matches the IPLD Schema type "GpgSig".  It has string kind.
@@ -101,10 +101,10 @@ type _ListTag struct {
 // PersonInfo matches the IPLD Schema type "PersonInfo".  It has Struct type-kind, and may be interrogated like map kind.
 type PersonInfo = *_PersonInfo
 type _PersonInfo struct {
-	Name     _String
-	Email    _String
-	Date     _String
-	Timezone _String
+	name     _String
+	email    _String
+	date     _String
+	timezone _String
 }
 
 // String matches the IPLD Schema type "String".  It has string kind.
@@ -114,23 +114,27 @@ type _String struct{ x string }
 // Tag matches the IPLD Schema type "Tag".  It has Struct type-kind, and may be interrogated like map kind.
 type Tag = *_Tag
 type _Tag struct {
-	Object  _Link
-	TagType _String
-	Tag     _String
-	Tagger  _PersonInfo
-	Text    _String
+	object  _Link
+	tagType _String
+	tag     _String
+	tagger  _PersonInfo
+	text    _String
 }
 
-// Tree matches the IPLD Schema type "Tree".  It has list kind.
+// Tree matches the IPLD Schema type "Tree".  It has map kind.
 type Tree = *_Tree
 type _Tree struct {
-	x []_TreeEntry
+	m map[_String]*_TreeEntry
+	t []_Tree__entry
+}
+type _Tree__entry struct {
+	k _String
+	v _TreeEntry
 }
 
 // TreeEntry matches the IPLD Schema type "TreeEntry".  It has Struct type-kind, and may be interrogated like map kind.
 type TreeEntry = *_TreeEntry
 type _TreeEntry struct {
-	Mode _String
-	Name _String
-	Hash _Link
+	mode _String
+	hash _Link
 }

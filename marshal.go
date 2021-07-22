@@ -36,11 +36,11 @@ func Encode(n ipld.Node, w io.Writer) error {
 		}
 		switch repKey {
 		case
-			"Object",
-			"TagType",
-			"Tag",
-			"Tagger",
-			"Text":
+			"object",
+			"tagType",
+			"tag",
+			"tagger",
+			"text":
 			return encodeTag(n, w)
 		default:
 			return encodeCommit(n, w)
