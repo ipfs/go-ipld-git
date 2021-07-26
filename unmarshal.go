@@ -60,7 +60,7 @@ func ParseObject(r io.Reader) (ipld.Node, error) {
 	default:
 		return nil, fmt.Errorf("unrecognized object type: %s", typ)
 	}
-	fmt.Printf("type %s\n", typ)
+	// fmt.Printf("type %s\n", typ)
 
 	if err := decode(na, rd); err != nil {
 		return nil, err

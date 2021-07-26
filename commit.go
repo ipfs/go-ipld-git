@@ -76,7 +76,7 @@ func decodeCommitLine(c Commit, line []byte, rd *bufio.Reader) error {
 
 		c.committer = _PersonInfo__Maybe{m: schema.Maybe_Value, v: com}
 	case bytes.HasPrefix(line, []byte("encoding ")):
-		c.encoding = _String__Maybe{m: schema.Maybe_Value, v: &_String{string(line[9:])}}
+		c.encoding = _String__Maybe{m: schema.Maybe_Value, v: _String{string(line[9:])}}
 	case bytes.HasPrefix(line, []byte("mergetag object ")):
 		sha, err := hex.DecodeString(string(line)[prefixMergetag:])
 		if err != nil {
@@ -115,19 +115,19 @@ func decodeCommitLine(c Commit, line []byte, rd *bufio.Reader) error {
 	return nil
 }
 
-func decodeGpgSig(rd *bufio.Reader) (GpgSig, error) {
+func decodeGpgSig(rd *bufio.Reader) (_GpgSig, error) {
+	out := _GpgSig{}
+
 	line, _, err := rd.ReadLine()
 	if err != nil {
-		return nil, err
+		return out, err
 	}
-
-	out := _GpgSig{}
 
 	if string(line) != " " {
 		if strings.HasPrefix(string(line), " Version: ") || strings.HasPrefix(string(line), " Comment: ") {
 			out.x += string(line) + "\n"
 		} else {
-			return nil, fmt.Errorf("expected first line of sig to be a single space or version")
+			return out, fmt.Errorf("expected first line of sig to be a single space or version")
 		}
 	} else {
 		out.x += " \n"
@@ -136,7 +136,7 @@ func decodeGpgSig(rd *bufio.Reader) (GpgSig, error) {
 	for {
 		line, _, err := rd.ReadLine()
 		if err != nil {
-			return nil, err
+			return out, err
 		}
 
 		if bytes.Equal(line, []byte(" -----END PGP SIGNATURE-----")) {
@@ -146,7 +146,7 @@ func decodeGpgSig(rd *bufio.Reader) (GpgSig, error) {
 		out.x += string(line) + "\n"
 	}
 
-	return &out, nil
+	return out, nil
 }
 
 func encodeCommit(n ipld.Node, w io.Writer) error {
@@ -184,7 +184,7 @@ func encodeCommit(n ipld.Node, w io.Writer) error {
 	}
 	fmt.Fprintf(buf, "\n%s", c.message.x)
 
-	fmt.Printf("encode commit len: %d \n", buf.Len())
+	// fmt.Printf("encode commit len: %d \n", buf.Len())
 	//	fmt.Printf("out: %s\n", string(buf.Bytes()))
 	_, err := fmt.Fprintf(w, "commit %d\x00", buf.Len())
 	if err != nil {
