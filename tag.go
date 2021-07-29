@@ -59,7 +59,7 @@ func DecodeTag(na ipld.NodeAssembler, rd *bufio.Reader) error {
 				return err
 			}
 
-			out.text = _String{string(rest)}
+			out.message = _String{string(rest)}
 		default:
 			fmt.Println("unhandled line: ", string(line))
 		}
@@ -104,7 +104,7 @@ func readMergeTag(hash []byte, rd *bufio.Reader) (Tag, []byte, error) {
 					return &out, line, nil
 				}
 
-				out.text.x += string(line) + "\n"
+				out.message.x += string(line) + "\n"
 			}
 		}
 	}
@@ -139,11 +139,11 @@ func encodeTag(n ipld.Node, w io.Writer) error {
 		return err
 	}
 
-	text, err := n.LookupByString("text")
+	message, err := n.LookupByString("message")
 	if err != nil {
 		return err
 	}
-	textStr, err := text.AsString()
+	messageStr, err := message.AsString()
 	if err != nil {
 		return err
 	}
@@ -166,8 +166,8 @@ func encodeTag(n ipld.Node, w io.Writer) error {
 		}
 		fmt.Fprintf(buf, "tagger %s\n", parsed.GitString())
 	}
-	if textStr != "" {
-		fmt.Fprintf(buf, "\n%s", textStr)
+	if messageStr != "" {
+		fmt.Fprintf(buf, "\n%s", messageStr)
 	}
 
 	if _, err := fmt.Fprintf(w, "tag %d\x00", buf.Len()); err != nil {

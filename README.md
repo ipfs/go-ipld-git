@@ -3,17 +3,8 @@ Git ipld format
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
-[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
-[![Coverage Status](https://codecov.io/gh/ipfs/go-ipld-git/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/go-ipld-git/branch/master)
-[![Travis CI](https://travis-ci.org/ipfs/go-ipld-git.svg?branch=master)](https://travis-ci.org/ipfs/go-ipld-git)
 
-> An ipld codec for git objects allowing path traversals across the git graph!
-
-Note: This is WIP and may not be an entirely correct parser.
-
-## Lead Maintainer
-
-[Łukasz Magiera](https://github.com/magik6k)
+> An IPLD codec for git objects allowing path traversals across the git graph.
 
 ## Table of Contents
 
@@ -29,19 +20,49 @@ go get github.com/ipfs/go-ipld-git
 ```
 
 ## About
-This is an IPLD codec which handles git objects. Objects are transformed
-into IPLD graph in the following way:
 
-* Commit:
+This is an IPLD codec which handles git objects. Objects are transformed
+into IPLD graph as detailed below. Objects are demonstrated here using both
+[IPLD Schemas](https://ipld.io/docs/schemas/) and example JSON forms.
+
+### Commit
+
+```ipldsch
+type GpgSig string
+
+type PersonInfo struct {
+  date String
+  timezone String
+  email String
+  name String
+}
+
+type Commit struct {
+  author optional PersonInfo
+  committer optional PersonInfo
+  message String
+  parents [&Commit]
+  tree &Tree # see "Tree" section below
+  encoding optional String
+  signature optional GpgSig
+  mergeTag [Tag]
+  other [String]
+}
+```
+
+As JSON, real data would look something like:
+
 ```json
 {
   "author": {
-    "date": "1503667703 +0200",
+    "date": "1503667703",
+    "timezone": "+0200",
     "email": "author@mail",
     "name": "Author Name"
   },
   "committer": {
-    "date": "1503667703 +0200",
+    "date": "1503667703",
+    "timezone": "+0200",
     "email": "author@mail",
     "name": "Author Name"
   },
@@ -51,10 +72,22 @@ into IPLD graph in the following way:
   ],
   "tree": <LINK>
 }
-
 ```
 
-* Tag:
+### Tag
+
+```ipldsch
+type Tag struct {
+  message String
+  object &Any
+  tag String
+  tagger PersonInfo
+  tagType String
+}
+```
+
+As JSON, real data would look something like:
+
 ```json
 {
   "message": "message\n",
@@ -67,12 +100,23 @@ into IPLD graph in the following way:
     "email": "author@mail",
     "name": "Author Name"
   },
-  "type": "commit"
+  "tagType": "commit"
 }
-
 ```
 
-* Tree:
+### Tree
+
+```ipldsch
+type Tree {String:TreeEntry}
+
+type TreeEntry struct {
+  mode String
+  hash &Any
+}
+```
+
+As JSON, real data would look something like:
+
 ```json
 {
   "file.name": {
@@ -87,11 +131,18 @@ into IPLD graph in the following way:
 }
 ```
 
+### Blob
 
-* Blob:
+```ipldsch
+type Blob bytes
+```
+
+As JSON, real data would look something like:
+
 ```json
 "<base64 of 'blob <size>\0<data>'>"
 ```
+
 ## Contribute
 
 PRs are welcome!

@@ -172,7 +172,7 @@ func encodeCommit(n ipld.Node, w io.Writer) error {
 		fmt.Fprintf(buf, " type %s\n", mtag.tagType.x)
 		fmt.Fprintf(buf, " tag %s\n", mtag.tag.x)
 		fmt.Fprintf(buf, " tagger %s\n \n", mtag.tagger.GitString())
-		fmt.Fprintf(buf, "%s", mtag.text.x)
+		fmt.Fprintf(buf, "%s", mtag.message.x)
 	}
 	if c.signature.m == schema.Maybe_Value {
 		fmt.Fprintln(buf, "gpgsig -----BEGIN PGP SIGNATURE-----")
