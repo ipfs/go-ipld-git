@@ -950,6 +950,7 @@ func (ka *_Commit__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Commit_Tree
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "parents":
 		if ka.s&fieldBit__Commit_Parents != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Parents}
@@ -957,6 +958,7 @@ func (ka *_Commit__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Commit_Parents
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	case "message":
 		if ka.s&fieldBit__Commit_Message != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Message}
@@ -964,6 +966,7 @@ func (ka *_Commit__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Commit_Message
 		ka.state = maState_expectValue
 		ka.f = 2
+		return nil
 	case "author":
 		if ka.s&fieldBit__Commit_Author != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Author}
@@ -971,6 +974,7 @@ func (ka *_Commit__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Commit_Author
 		ka.state = maState_expectValue
 		ka.f = 3
+		return nil
 	case "committer":
 		if ka.s&fieldBit__Commit_Committer != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Committer}
@@ -978,6 +982,7 @@ func (ka *_Commit__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Commit_Committer
 		ka.state = maState_expectValue
 		ka.f = 4
+		return nil
 	case "encoding":
 		if ka.s&fieldBit__Commit_Encoding != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Encoding}
@@ -985,6 +990,7 @@ func (ka *_Commit__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Commit_Encoding
 		ka.state = maState_expectValue
 		ka.f = 5
+		return nil
 	case "signature":
 		if ka.s&fieldBit__Commit_Signature != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Signature}
@@ -992,6 +998,7 @@ func (ka *_Commit__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Commit_Signature
 		ka.state = maState_expectValue
 		ka.f = 6
+		return nil
 	case "mergeTag":
 		if ka.s&fieldBit__Commit_MergeTag != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_MergeTag}
@@ -999,6 +1006,7 @@ func (ka *_Commit__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Commit_MergeTag
 		ka.state = maState_expectValue
 		ka.f = 7
+		return nil
 	case "other":
 		if ka.s&fieldBit__Commit_Other != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Other}
@@ -1006,10 +1014,10 @@ func (ka *_Commit__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Commit_Other
 		ka.state = maState_expectValue
 		ka.f = 8
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "ipldgit.Commit", Key: &_String{k}}
 	}
-	return nil
 }
 func (_Commit__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "ipldgit.Commit.KeyAssembler"}.AssignBytes(nil)
@@ -4725,6 +4733,7 @@ func (ka *_PersonInfo__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__PersonInfo_Name
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "email":
 		if ka.s&fieldBit__PersonInfo_Email != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__PersonInfo_Email}
@@ -4732,6 +4741,7 @@ func (ka *_PersonInfo__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__PersonInfo_Email
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	case "date":
 		if ka.s&fieldBit__PersonInfo_Date != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__PersonInfo_Date}
@@ -4739,6 +4749,7 @@ func (ka *_PersonInfo__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__PersonInfo_Date
 		ka.state = maState_expectValue
 		ka.f = 2
+		return nil
 	case "timezone":
 		if ka.s&fieldBit__PersonInfo_Timezone != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__PersonInfo_Timezone}
@@ -4746,10 +4757,10 @@ func (ka *_PersonInfo__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__PersonInfo_Timezone
 		ka.state = maState_expectValue
 		ka.f = 3
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "ipldgit.PersonInfo", Key: &_String{k}}
 	}
-	return nil
 }
 func (_PersonInfo__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "ipldgit.PersonInfo.KeyAssembler"}.AssignBytes(nil)
@@ -6073,6 +6084,7 @@ func (ka *_Tag__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Tag_Object
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "tagType":
 		if ka.s&fieldBit__Tag_TagType != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_TagType}
@@ -6080,6 +6092,7 @@ func (ka *_Tag__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Tag_TagType
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	case "tag":
 		if ka.s&fieldBit__Tag_Tag != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Tag}
@@ -6087,6 +6100,7 @@ func (ka *_Tag__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Tag_Tag
 		ka.state = maState_expectValue
 		ka.f = 2
+		return nil
 	case "tagger":
 		if ka.s&fieldBit__Tag_Tagger != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Tagger}
@@ -6094,6 +6108,7 @@ func (ka *_Tag__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Tag_Tagger
 		ka.state = maState_expectValue
 		ka.f = 3
+		return nil
 	case "text":
 		if ka.s&fieldBit__Tag_Text != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Text}
@@ -6101,10 +6116,10 @@ func (ka *_Tag__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Tag_Text
 		ka.state = maState_expectValue
 		ka.f = 4
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "ipldgit.Tag", Key: &_String{k}}
 	}
-	return nil
 }
 func (_Tag__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "ipldgit.Tag.KeyAssembler"}.AssignBytes(nil)
@@ -7897,6 +7912,7 @@ func (ka *_TreeEntry__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TreeEntry_Mode
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "hash":
 		if ka.s&fieldBit__TreeEntry_Hash != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__TreeEntry_Hash}
@@ -7904,10 +7920,10 @@ func (ka *_TreeEntry__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TreeEntry_Hash
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "ipldgit.TreeEntry", Key: &_String{k}}
 	}
-	return nil
 }
 func (_TreeEntry__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "ipldgit.TreeEntry.KeyAssembler"}.AssignBytes(nil)

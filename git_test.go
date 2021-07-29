@@ -167,7 +167,7 @@ func TestArchiveObjectParse(t *testing.T) {
 				fmt.Println("vvvvvv")
 				buf := bytes.NewBuffer([]byte{})
 				Encode(thing, buf)
-				fmt.Println(string(buf.Bytes()))
+				fmt.Println(buf.String())
 				fmt.Println("^^^^^^")
 				t.Fatal("mismatch!")
 			}

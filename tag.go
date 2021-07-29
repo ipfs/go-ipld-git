@@ -162,7 +162,7 @@ func encodeTag(n ipld.Node, w io.Writer) error {
 		piN := pi.Build()
 		parsed, ok := piN.(*_PersonInfo)
 		if !ok {
-			return fmt.Errorf("Could not parse tagger person info %v", tagger)
+			return fmt.Errorf("could not parse tagger person info %v", tagger)
 		}
 		fmt.Fprintf(buf, "tagger %s\n", parsed.GitString())
 	}
