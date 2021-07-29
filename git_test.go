@@ -13,6 +13,7 @@ import (
 
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/multiformats/go-multihash"
 )
@@ -362,34 +363,35 @@ func TestParsePersonInfo(t *testing.T) {
 
 	assert(t, pi.GitString() == "Someone <some.one@some.where>")
 
-	/* TODO: json
+	buf := new(bytes.Buffer)
+
 	pi, err = parsePersonInfo([]byte("prefix Łukasz Magiera <magik6k@users.noreply.github.com> 1546187652 +0100"))
 	assert(t, err == nil)
-	piJSON, err := pi.MarshalJSON()
+	buf.Reset()
+	err = dagjson.Encode(pi, buf)
 	assert(t, err == nil)
-	date, _, err := pi.resolve([]string{"date"})
-	assert(t, err == nil)
-	assert(t, string(piJSON) == `{"date":"2018-12-30T17:34:12+01:00","email":"magik6k@users.noreply.github.com","name":"Łukasz Magiera"}`)
-	assert(t, date == "2018-12-30T17:34:12+01:00")
+	assert(t, buf.String() == `{"date":"1546187652","email":"magik6k@users.noreply.github.com","name":"Łukasz Magiera","timezone":"+0100"}`)
 
 	pi, err = parsePersonInfo([]byte("prefix Sameer <sameer@users.noreply.github.com> 1545162499 -0500"))
 	assert(t, err == nil)
-	piJSON, err = pi.MarshalJSON()
+	buf.Reset()
+	err = dagjson.Encode(pi, buf)
 	assert(t, err == nil)
-	assert(t, string(piJSON) == `{"date":"2018-12-18T14:48:19-05:00","email":"sameer@users.noreply.github.com","name":"Sameer"}`)
+	assert(t, buf.String() == `{"date":"1545162499","email":"sameer@users.noreply.github.com","name":"Sameer","timezone":"-0500"}`)
 
 	pi, err = parsePersonInfo([]byte("prefix Łukasz Magiera <magik6k@users.noreply.github.com> 1546187652 +0122"))
 	assert(t, err == nil)
-	piJSON, err = pi.MarshalJSON()
+	buf.Reset()
+	err = dagjson.Encode(pi, buf)
 	assert(t, err == nil)
-	assert(t, string(piJSON) == `{"date":"2018-12-30T17:56:12+01:22","email":"magik6k@users.noreply.github.com","name":"Łukasz Magiera"}`)
+	assert(t, buf.String() == `{"date":"1546187652","email":"magik6k@users.noreply.github.com","name":"Łukasz Magiera","timezone":"+0122"}`)
 
 	pi, err = parsePersonInfo([]byte("prefix Sameer <sameer@users.noreply.github.com> 1545162499 -0545"))
 	assert(t, err == nil)
-	piJSON, err = pi.MarshalJSON()
+	buf.Reset()
+	err = dagjson.Encode(pi, buf)
 	assert(t, err == nil)
-	assert(t, string(piJSON) == `{"date":"2018-12-18T14:03:19-05:45","email":"sameer@users.noreply.github.com","name":"Sameer"}`)
-	*/
+	assert(t, buf.String() == `{"date":"1545162499","email":"sameer@users.noreply.github.com","name":"Sameer","timezone":"-0545"}`)
 }
 
 func assert(t *testing.T, ok bool) {
