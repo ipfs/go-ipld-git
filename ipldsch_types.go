@@ -28,6 +28,8 @@ type typeSlab struct {
 	GpgSig__Repr      _GpgSig__ReprPrototype
 	Link              _Link__Prototype
 	Link__Repr        _Link__ReprPrototype
+	LinkCommit        _LinkCommit__Prototype
+	LinkCommit__Repr  _LinkCommit__ReprPrototype
 	LinkTree          _LinkTree__Prototype
 	LinkTree__Repr    _LinkTree__ReprPrototype
 	ListParents       _ListParents__Prototype
@@ -76,6 +78,10 @@ type _GpgSig struct{ x string }
 type Link = *_Link
 type _Link struct{ x ipld.Link }
 
+// LinkCommit matches the IPLD Schema type "LinkCommit".  It has link kind.
+type LinkCommit = *_LinkCommit
+type _LinkCommit struct{ x ipld.Link }
+
 // LinkTree matches the IPLD Schema type "LinkTree".  It has link kind.
 type LinkTree = *_LinkTree
 type _LinkTree struct{ x ipld.Link }
@@ -83,7 +89,7 @@ type _LinkTree struct{ x ipld.Link }
 // ListParents matches the IPLD Schema type "ListParents".  It has list kind.
 type ListParents = *_ListParents
 type _ListParents struct {
-	x []_Link
+	x []_LinkCommit
 }
 
 // ListString matches the IPLD Schema type "ListString".  It has list kind.

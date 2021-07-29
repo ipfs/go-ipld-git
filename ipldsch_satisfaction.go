@@ -2220,6 +2220,214 @@ var _ ipld.Node = &_Link__Repr{}
 type _Link__ReprPrototype = _Link__Prototype
 type _Link__ReprAssembler = _Link__Assembler
 
+func (n LinkCommit) Link() ipld.Link {
+	return n.x
+}
+func (_LinkCommit__Prototype) FromLink(v ipld.Link) (LinkCommit, error) {
+	n := _LinkCommit{v}
+	return &n, nil
+}
+
+type _LinkCommit__Maybe struct {
+	m schema.Maybe
+	v _LinkCommit
+}
+type MaybeLinkCommit = *_LinkCommit__Maybe
+
+func (m MaybeLinkCommit) IsNull() bool {
+	return m.m == schema.Maybe_Null
+}
+func (m MaybeLinkCommit) IsAbsent() bool {
+	return m.m == schema.Maybe_Absent
+}
+func (m MaybeLinkCommit) Exists() bool {
+	return m.m == schema.Maybe_Value
+}
+func (m MaybeLinkCommit) AsNode() ipld.Node {
+	switch m.m {
+	case schema.Maybe_Absent:
+		return ipld.Absent
+	case schema.Maybe_Null:
+		return ipld.Null
+	case schema.Maybe_Value:
+		return &m.v
+	default:
+		panic("unreachable")
+	}
+}
+func (m MaybeLinkCommit) Must() LinkCommit {
+	if !m.Exists() {
+		panic("unbox of a maybe rejected")
+	}
+	return &m.v
+}
+
+var _ ipld.Node = (LinkCommit)(&_LinkCommit{})
+var _ schema.TypedNode = (LinkCommit)(&_LinkCommit{})
+
+func (LinkCommit) Kind() ipld.Kind {
+	return ipld.Kind_Link
+}
+func (LinkCommit) LookupByString(string) (ipld.Node, error) {
+	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.LookupByString("")
+}
+func (LinkCommit) LookupByNode(ipld.Node) (ipld.Node, error) {
+	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.LookupByNode(nil)
+}
+func (LinkCommit) LookupByIndex(idx int64) (ipld.Node, error) {
+	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.LookupByIndex(0)
+}
+func (LinkCommit) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.LookupBySegment(seg)
+}
+func (LinkCommit) MapIterator() ipld.MapIterator {
+	return nil
+}
+func (LinkCommit) ListIterator() ipld.ListIterator {
+	return nil
+}
+func (LinkCommit) Length() int64 {
+	return -1
+}
+func (LinkCommit) IsAbsent() bool {
+	return false
+}
+func (LinkCommit) IsNull() bool {
+	return false
+}
+func (LinkCommit) AsBool() (bool, error) {
+	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.AsBool()
+}
+func (LinkCommit) AsInt() (int64, error) {
+	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.AsInt()
+}
+func (LinkCommit) AsFloat() (float64, error) {
+	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.AsFloat()
+}
+func (LinkCommit) AsString() (string, error) {
+	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.AsString()
+}
+func (LinkCommit) AsBytes() ([]byte, error) {
+	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.AsBytes()
+}
+func (n LinkCommit) AsLink() (ipld.Link, error) {
+	return n.x, nil
+}
+func (LinkCommit) Prototype() ipld.NodePrototype {
+	return _LinkCommit__Prototype{}
+}
+
+type _LinkCommit__Prototype struct{}
+
+func (_LinkCommit__Prototype) NewBuilder() ipld.NodeBuilder {
+	var nb _LinkCommit__Builder
+	nb.Reset()
+	return &nb
+}
+
+type _LinkCommit__Builder struct {
+	_LinkCommit__Assembler
+}
+
+func (nb *_LinkCommit__Builder) Build() ipld.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_LinkCommit__Builder) Reset() {
+	var w _LinkCommit
+	var m schema.Maybe
+	*nb = _LinkCommit__Builder{_LinkCommit__Assembler{w: &w, m: &m}}
+}
+
+type _LinkCommit__Assembler struct {
+	w *_LinkCommit
+	m *schema.Maybe
+}
+
+func (na *_LinkCommit__Assembler) reset() {}
+func (_LinkCommit__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.BeginMap(0)
+}
+func (_LinkCommit__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.BeginList(0)
+}
+func (na *_LinkCommit__Assembler) AssignNull() error {
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	panic("unreachable")
+}
+func (_LinkCommit__Assembler) AssignBool(bool) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.AssignBool(false)
+}
+func (_LinkCommit__Assembler) AssignInt(int64) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.AssignInt(0)
+}
+func (_LinkCommit__Assembler) AssignFloat(float64) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.AssignFloat(0)
+}
+func (_LinkCommit__Assembler) AssignString(string) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.AssignString("")
+}
+func (_LinkCommit__Assembler) AssignBytes([]byte) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.AssignBytes(nil)
+}
+func (na *_LinkCommit__Assembler) AssignLink(v ipld.Link) error {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	na.w.x = v
+	*na.m = schema.Maybe_Value
+	return nil
+}
+func (na *_LinkCommit__Assembler) AssignNode(v ipld.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_LinkCommit); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	if v2, err := v.AsLink(); err != nil {
+		return err
+	} else {
+		return na.AssignLink(v2)
+	}
+}
+func (_LinkCommit__Assembler) Prototype() ipld.NodePrototype {
+	return _LinkCommit__Prototype{}
+}
+func (LinkCommit) Type() schema.Type {
+	return nil /*TODO:typelit*/
+}
+func (LinkCommit) LinkTargetNodePrototype() ipld.NodePrototype {
+	return Type.Commit__Repr
+}
+func (n LinkCommit) Representation() ipld.Node {
+	return (*_LinkCommit__Repr)(n)
+}
+
+type _LinkCommit__Repr = _LinkCommit
+
+var _ ipld.Node = &_LinkCommit__Repr{}
+
+type _LinkCommit__ReprPrototype = _LinkCommit__Prototype
+type _LinkCommit__ReprAssembler = _LinkCommit__Assembler
+
 func (n LinkTree) Link() ipld.Link {
 	return n.x
 }
@@ -2428,25 +2636,25 @@ var _ ipld.Node = &_LinkTree__Repr{}
 type _LinkTree__ReprPrototype = _LinkTree__Prototype
 type _LinkTree__ReprAssembler = _LinkTree__Assembler
 
-func (n *_ListParents) Lookup(idx int64) Link {
+func (n *_ListParents) Lookup(idx int64) LinkCommit {
 	if n.Length() <= idx {
 		return nil
 	}
 	v := &n.x[idx]
 	return v
 }
-func (n *_ListParents) LookupMaybe(idx int64) MaybeLink {
+func (n *_ListParents) LookupMaybe(idx int64) MaybeLinkCommit {
 	if n.Length() <= idx {
 		return nil
 	}
 	v := &n.x[idx]
-	return &_Link__Maybe{
+	return &_LinkCommit__Maybe{
 		m: schema.Maybe_Value,
 		v: *v,
 	}
 }
 
-var _ListParents__valueAbsent = _Link__Maybe{m: schema.Maybe_Absent}
+var _ListParents__valueAbsent = _LinkCommit__Maybe{m: schema.Maybe_Absent}
 
 func (n ListParents) Iterator() *ListParents__Itr {
 	return &ListParents__Itr{n, 0}
@@ -2457,7 +2665,7 @@ type ListParents__Itr struct {
 	idx int
 }
 
-func (itr *ListParents__Itr) Next() (idx int64, v Link) {
+func (itr *ListParents__Itr) Next() (idx int64, v LinkCommit) {
 	if itr.idx >= len(itr.n.x) {
 		return -1, nil
 	}
@@ -2621,7 +2829,7 @@ type _ListParents__Assembler struct {
 	state laState
 
 	cm schema.Maybe
-	va _Link__Assembler
+	va _LinkCommit__Assembler
 }
 
 func (na *_ListParents__Assembler) reset() {
@@ -2643,7 +2851,7 @@ func (na *_ListParents__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler
 		sizeHint = 0
 	}
 	if sizeHint > 0 {
-		na.w.x = make([]_Link, 0, sizeHint)
+		na.w.x = make([]_LinkCommit, 0, sizeHint)
 	}
 	return na, nil
 }
@@ -2735,7 +2943,7 @@ func (la *_ListParents__Assembler) AssembleValue() ipld.NodeAssembler {
 	case laState_finished:
 		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
 	}
-	la.w.x = append(la.w.x, _Link{})
+	la.w.x = append(la.w.x, _LinkCommit{})
 	la.state = laState_midValue
 	row := &la.w.x[len(la.w.x)-1]
 	la.va.w = row
@@ -2758,7 +2966,7 @@ func (la *_ListParents__Assembler) Finish() error {
 	return nil
 }
 func (la *_ListParents__Assembler) ValuePrototype(_ int64) ipld.NodePrototype {
-	return _Link__Prototype{}
+	return _LinkCommit__Prototype{}
 }
 func (ListParents) Type() schema.Type {
 	return nil /*TODO:typelit*/
@@ -2782,14 +2990,14 @@ func (nr *_ListParents__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	if err != nil || v == ipld.Null {
 		return v, err
 	}
-	return v.(Link).Representation(), nil
+	return v.(LinkCommit).Representation(), nil
 }
 func (nr *_ListParents__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
 	v, err := (ListParents)(nr).LookupByIndex(idx)
 	if err != nil || v == ipld.Null {
 		return v, err
 	}
-	return v.(Link).Representation(), nil
+	return v.(LinkCommit).Representation(), nil
 }
 func (n _ListParents__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	i, err := seg.Index()
@@ -2812,7 +3020,7 @@ func (itr *_ListParents__ReprListItr) Next() (idx int64, v ipld.Node, err error)
 	if err != nil || v == ipld.Null {
 		return
 	}
-	return idx, v.(Link).Representation(), nil
+	return idx, v.(LinkCommit).Representation(), nil
 }
 func (itr *_ListParents__ReprListItr) Done() bool {
 	return (*_ListParents__ListItr)(itr).Done()
@@ -2879,7 +3087,7 @@ type _ListParents__ReprAssembler struct {
 	state laState
 
 	cm schema.Maybe
-	va _Link__ReprAssembler
+	va _LinkCommit__ReprAssembler
 }
 
 func (na *_ListParents__ReprAssembler) reset() {
@@ -2901,7 +3109,7 @@ func (na *_ListParents__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssem
 		sizeHint = 0
 	}
 	if sizeHint > 0 {
-		na.w.x = make([]_Link, 0, sizeHint)
+		na.w.x = make([]_LinkCommit, 0, sizeHint)
 	}
 	return na, nil
 }
@@ -2993,7 +3201,7 @@ func (la *_ListParents__ReprAssembler) AssembleValue() ipld.NodeAssembler {
 	case laState_finished:
 		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
 	}
-	la.w.x = append(la.w.x, _Link{})
+	la.w.x = append(la.w.x, _LinkCommit{})
 	la.state = laState_midValue
 	row := &la.w.x[len(la.w.x)-1]
 	la.va.w = row
@@ -3016,7 +3224,7 @@ func (la *_ListParents__ReprAssembler) Finish() error {
 	return nil
 }
 func (la *_ListParents__ReprAssembler) ValuePrototype(_ int64) ipld.NodePrototype {
-	return _Link__ReprPrototype{}
+	return _LinkCommit__ReprPrototype{}
 }
 
 func (n *_ListString) Lookup(idx int64) String {

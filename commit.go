@@ -23,7 +23,7 @@ func DecodeCommit(na ipld.NodeAssembler, rd *bufio.Reader) error {
 	}
 
 	c := _Commit{
-		parents:  _ListParents{[]_Link{}},
+		parents:  _ListParents{[]_LinkCommit{}},
 		mergeTag: _ListTag{[]_Tag{}},
 		other:    _ListString{[]_String{}},
 	}
@@ -60,7 +60,7 @@ func decodeCommitLine(c Commit, line []byte, rd *bufio.Reader) error {
 			return err
 		}
 
-		c.parents.x = append(c.parents.x, _Link{cidlink.Link{Cid: shaToCid(psha)}})
+		c.parents.x = append(c.parents.x, _LinkCommit{cidlink.Link{Cid: shaToCid(psha)}})
 	case bytes.HasPrefix(line, []byte("author ")):
 		a, err := parsePersonInfo(line)
 		if err != nil {

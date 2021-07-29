@@ -32,7 +32,8 @@ func main() {
 		schema.SpawnStructField("text", "String", false, false),
 	}, schema.SpawnStructRepresentationMap(map[string]string{})))
 	ts.Accumulate(schema.SpawnList("ListTag", "Tag", false))
-	ts.Accumulate(schema.SpawnList("ListParents", "Link", false)) //Todo: type 'Parents' links
+	ts.Accumulate(schema.SpawnLinkReference("LinkCommit", "Commit"))
+	ts.Accumulate(schema.SpawnList("ListParents", "LinkCommit", false))
 	ts.Accumulate(schema.SpawnStruct("Commit", []schema.StructField{
 		schema.SpawnStructField("tree", "LinkTree", false, false),
 		schema.SpawnStructField("parents", "ListParents", false, false),
