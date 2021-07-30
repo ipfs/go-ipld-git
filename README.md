@@ -143,6 +143,11 @@ As JSON, real data would look something like:
 "<base64 of 'blob <size>\0<data>'>"
 ```
 
+## Lead Maintainers
+
+[Will Scott](https://github.com/willscott)
+[Rod Vagg](https://github.com/rvagg)
+
 ## Contribute
 
 PRs are welcome!
