@@ -52,7 +52,7 @@ func DecodeTag(na ipld.NodeAssembler, rd *bufio.Reader) error {
 
 			out.tagger = *c
 		case bytes.HasPrefix(line, []byte("type ")):
-			out.tagType = _String{string(line[tagTypePrefixLen:])}
+			out.typ = _String{string(line[tagTypePrefixLen:])}
 		case len(line) == 0:
 			rest, err := ioutil.ReadAll(rd)
 			if err != nil {
@@ -84,7 +84,7 @@ func readMergeTag(hash []byte, rd *bufio.Reader) (Tag, []byte, error) {
 
 		switch {
 		case bytes.HasPrefix(line, []byte(" type ")):
-			out.tagType = _String{string(line[1+tagTypePrefixLen:])}
+			out.typ = _String{string(line[1+tagTypePrefixLen:])}
 		case bytes.HasPrefix(line, []byte(" tag ")):
 			out.tag = _String{string(line[1+tagTagPrefixLen:])}
 		case bytes.HasPrefix(line, []byte(" tagger ")):
@@ -121,7 +121,7 @@ func encodeTag(n ipld.Node, w io.Writer) error {
 		return err
 	}
 
-	tt, err := n.LookupByString("tagType")
+	tt, err := n.LookupByString("type")
 	if err != nil {
 		return err
 	}

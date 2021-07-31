@@ -38,14 +38,14 @@ type PersonInfo struct {
 }
 
 type Commit struct {
+  tree &Tree # see "Tree" section below
+  parents [&Commit]
+  message String
   author optional PersonInfo
   committer optional PersonInfo
-  message String
-  parents [&Commit]
-  tree &Tree # see "Tree" section below
   encoding optional String
   signature optional GpgSig
-  mergeTag [Tag]
+  mergetag [Tag]
   other [String]
 }
 ```
@@ -78,11 +78,11 @@ As JSON, real data would look something like:
 
 ```ipldsch
 type Tag struct {
-  message String
   object &Any
+  type String
   tag String
   tagger PersonInfo
-  tagType String
+  message String
 }
 ```
 
@@ -145,8 +145,8 @@ As JSON, real data would look something like:
 
 ## Lead Maintainers
 
-[Will Scott](https://github.com/willscott)
-[Rod Vagg](https://github.com/rvagg)
+* [Will Scott](https://github.com/willscott)
+* [Rod Vagg](https://github.com/rvagg)
 
 ## Contribute
 

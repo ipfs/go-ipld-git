@@ -23,9 +23,7 @@ func DecodeCommit(na ipld.NodeAssembler, rd *bufio.Reader) error {
 	}
 
 	c := _Commit{
-		parents:  _ListParents{[]_LinkCommit{}},
-		mergeTag: _ListTag{[]_Tag{}},
-		other:    _ListString{[]_String{}},
+		parents: _Commit_Link_List{[]_Commit_Link{}},
 	}
 	for {
 		line, _, err := rd.ReadLine()
@@ -53,14 +51,14 @@ func decodeCommitLine(c Commit, line []byte, rd *bufio.Reader) error {
 			return err
 		}
 
-		c.tree = _LinkTree{cidlink.Link{Cid: shaToCid(sha)}}
+		c.tree = _Tree_Link{cidlink.Link{Cid: shaToCid(sha)}}
 	case bytes.HasPrefix(line, []byte("parent ")):
 		psha, err := hex.DecodeString(string(line[7:]))
 		if err != nil {
 			return err
 		}
 
-		c.parents.x = append(c.parents.x, _LinkCommit{cidlink.Link{Cid: shaToCid(psha)}})
+		c.parents.x = append(c.parents.x, _Commit_Link{cidlink.Link{Cid: shaToCid(psha)}})
 	case bytes.HasPrefix(line, []byte("author ")):
 		a, err := parsePersonInfo(line)
 		if err != nil {
@@ -88,7 +86,7 @@ func decodeCommitLine(c Commit, line []byte, rd *bufio.Reader) error {
 			return err
 		}
 
-		c.mergeTag.x = append(c.mergeTag.x, *mt)
+		c.mergetag.x = append(c.mergetag.x, *mt)
 
 		if rest != nil {
 			err = decodeCommitLine(c, rest, rd)
@@ -167,9 +165,9 @@ func encodeCommit(n ipld.Node, w io.Writer) error {
 	if c.encoding.m == schema.Maybe_Value {
 		fmt.Fprintf(buf, "encoding %s\n", c.encoding.v.x)
 	}
-	for _, mtag := range c.mergeTag.x {
+	for _, mtag := range c.mergetag.x {
 		fmt.Fprintf(buf, "mergetag object %s\n", hex.EncodeToString(mtag.object.sha()))
-		fmt.Fprintf(buf, " type %s\n", mtag.tagType.x)
+		fmt.Fprintf(buf, " type %s\n", mtag.typ.x)
 		fmt.Fprintf(buf, " tag %s\n", mtag.tag.x)
 		fmt.Fprintf(buf, " tagger %s\n \n", mtag.tagger.GitString())
 		fmt.Fprintf(buf, "%s", mtag.message.x)

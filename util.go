@@ -33,7 +33,7 @@ func (l Link) sha() []byte {
 	return cidToSha(cl.Cid)
 }
 
-func (l LinkTree) sha() []byte {
+func (l Tree_Link) sha() []byte {
 	cl, ok := l.x.(cidlink.Link)
 	if !ok {
 		return nil
@@ -41,7 +41,7 @@ func (l LinkTree) sha() []byte {
 	return cidToSha(cl.Cid)
 }
 
-func (l LinkCommit) sha() []byte {
+func (l Commit_Link) sha() []byte {
 	cl, ok := l.x.(cidlink.Link)
 	if !ok {
 		return nil

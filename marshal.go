@@ -37,7 +37,7 @@ func Encode(n ipld.Node, w io.Writer) error {
 		switch repKey {
 		case
 			"object",
-			"tagType",
+			"type",
 			"tag",
 			"tagger",
 			"text":

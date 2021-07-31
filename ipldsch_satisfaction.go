@@ -213,20 +213,20 @@ var _ ipld.Node = &_Blob__Repr{}
 type _Blob__ReprPrototype = _Blob__Prototype
 type _Blob__ReprAssembler = _Blob__Assembler
 
+func (n _Commit) FieldTree() Tree_Link {
+	return &n.tree
+}
+func (n _Commit) FieldParents() Commit_Link_List {
+	return &n.parents
+}
+func (n _Commit) FieldMessage() String {
+	return &n.message
+}
 func (n _Commit) FieldAuthor() MaybePersonInfo {
 	return &n.author
 }
 func (n _Commit) FieldCommitter() MaybePersonInfo {
 	return &n.committer
-}
-func (n _Commit) FieldMessage() String {
-	return &n.message
-}
-func (n _Commit) FieldParents() ListParents {
-	return &n.parents
-}
-func (n _Commit) FieldTree() LinkTree {
-	return &n.tree
 }
 func (n _Commit) FieldEncoding() MaybeString {
 	return &n.encoding
@@ -234,10 +234,10 @@ func (n _Commit) FieldEncoding() MaybeString {
 func (n _Commit) FieldSignature() MaybeGpgSig {
 	return &n.signature
 }
-func (n _Commit) FieldMergeTag() ListTag {
-	return &n.mergeTag
+func (n _Commit) FieldMergetag() Tag_List {
+	return &n.mergetag
 }
-func (n _Commit) FieldOther() ListString {
+func (n _Commit) FieldOther() String_List {
 	return &n.other
 }
 
@@ -276,14 +276,14 @@ func (m MaybeCommit) Must() Commit {
 }
 
 var (
+	fieldName__Commit_Tree      = _String{"tree"}
+	fieldName__Commit_Parents   = _String{"parents"}
+	fieldName__Commit_Message   = _String{"message"}
 	fieldName__Commit_Author    = _String{"author"}
 	fieldName__Commit_Committer = _String{"committer"}
-	fieldName__Commit_Message   = _String{"message"}
-	fieldName__Commit_Parents   = _String{"parents"}
-	fieldName__Commit_Tree      = _String{"tree"}
 	fieldName__Commit_Encoding  = _String{"encoding"}
 	fieldName__Commit_Signature = _String{"signature"}
-	fieldName__Commit_MergeTag  = _String{"mergeTag"}
+	fieldName__Commit_Mergetag  = _String{"mergetag"}
 	fieldName__Commit_Other     = _String{"other"}
 )
 var _ ipld.Node = (Commit)(&_Commit{})
@@ -294,6 +294,12 @@ func (Commit) Kind() ipld.Kind {
 }
 func (n Commit) LookupByString(key string) (ipld.Node, error) {
 	switch key {
+	case "tree":
+		return &n.tree, nil
+	case "parents":
+		return &n.parents, nil
+	case "message":
+		return &n.message, nil
 	case "author":
 		if n.author.m == schema.Maybe_Absent {
 			return ipld.Absent, nil
@@ -304,12 +310,6 @@ func (n Commit) LookupByString(key string) (ipld.Node, error) {
 			return ipld.Absent, nil
 		}
 		return n.committer.v, nil
-	case "message":
-		return &n.message, nil
-	case "parents":
-		return &n.parents, nil
-	case "tree":
-		return &n.tree, nil
 	case "encoding":
 		if n.encoding.m == schema.Maybe_Absent {
 			return ipld.Absent, nil
@@ -320,8 +320,8 @@ func (n Commit) LookupByString(key string) (ipld.Node, error) {
 			return ipld.Absent, nil
 		}
 		return &n.signature.v, nil
-	case "mergeTag":
-		return &n.mergeTag, nil
+	case "mergetag":
+		return &n.mergetag, nil
 	case "other":
 		return &n.other, nil
 	default:
@@ -356,28 +356,28 @@ func (itr *_Commit__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 	}
 	switch itr.idx {
 	case 0:
+		k = &fieldName__Commit_Tree
+		v = &itr.n.tree
+	case 1:
+		k = &fieldName__Commit_Parents
+		v = &itr.n.parents
+	case 2:
+		k = &fieldName__Commit_Message
+		v = &itr.n.message
+	case 3:
 		k = &fieldName__Commit_Author
 		if itr.n.author.m == schema.Maybe_Absent {
 			v = ipld.Absent
 			break
 		}
 		v = itr.n.author.v
-	case 1:
+	case 4:
 		k = &fieldName__Commit_Committer
 		if itr.n.committer.m == schema.Maybe_Absent {
 			v = ipld.Absent
 			break
 		}
 		v = itr.n.committer.v
-	case 2:
-		k = &fieldName__Commit_Message
-		v = &itr.n.message
-	case 3:
-		k = &fieldName__Commit_Parents
-		v = &itr.n.parents
-	case 4:
-		k = &fieldName__Commit_Tree
-		v = &itr.n.tree
 	case 5:
 		k = &fieldName__Commit_Encoding
 		if itr.n.encoding.m == schema.Maybe_Absent {
@@ -393,8 +393,8 @@ func (itr *_Commit__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 		}
 		v = &itr.n.signature.v
 	case 7:
-		k = &fieldName__Commit_MergeTag
-		v = &itr.n.mergeTag
+		k = &fieldName__Commit_Mergetag
+		v = &itr.n.mergetag
 	case 8:
 		k = &fieldName__Commit_Other
 		v = &itr.n.other
@@ -474,42 +474,42 @@ type _Commit__Assembler struct {
 	f     int
 
 	cm           schema.Maybe
+	ca_tree      _Tree_Link__Assembler
+	ca_parents   _Commit_Link_List__Assembler
+	ca_message   _String__Assembler
 	ca_author    _PersonInfo__Assembler
 	ca_committer _PersonInfo__Assembler
-	ca_message   _String__Assembler
-	ca_parents   _ListParents__Assembler
-	ca_tree      _LinkTree__Assembler
 	ca_encoding  _String__Assembler
 	ca_signature _GpgSig__Assembler
-	ca_mergeTag  _ListTag__Assembler
-	ca_other     _ListString__Assembler
+	ca_mergetag  _Tag_List__Assembler
+	ca_other     _String_List__Assembler
 }
 
 func (na *_Commit__Assembler) reset() {
 	na.state = maState_initial
 	na.s = 0
+	na.ca_tree.reset()
+	na.ca_parents.reset()
+	na.ca_message.reset()
 	na.ca_author.reset()
 	na.ca_committer.reset()
-	na.ca_message.reset()
-	na.ca_parents.reset()
-	na.ca_tree.reset()
 	na.ca_encoding.reset()
 	na.ca_signature.reset()
-	na.ca_mergeTag.reset()
+	na.ca_mergetag.reset()
 	na.ca_other.reset()
 }
 
 var (
-	fieldBit__Commit_Author      = 1 << 0
-	fieldBit__Commit_Committer   = 1 << 1
+	fieldBit__Commit_Tree        = 1 << 0
+	fieldBit__Commit_Parents     = 1 << 1
 	fieldBit__Commit_Message     = 1 << 2
-	fieldBit__Commit_Parents     = 1 << 3
-	fieldBit__Commit_Tree        = 1 << 4
+	fieldBit__Commit_Author      = 1 << 3
+	fieldBit__Commit_Committer   = 1 << 4
 	fieldBit__Commit_Encoding    = 1 << 5
 	fieldBit__Commit_Signature   = 1 << 6
-	fieldBit__Commit_MergeTag    = 1 << 7
+	fieldBit__Commit_Mergetag    = 1 << 7
 	fieldBit__Commit_Other       = 1 << 8
-	fieldBits__Commit_sufficient = 0 + 1<<2 + 1<<3 + 1<<4 + 1<<7 + 1<<8
+	fieldBits__Commit_sufficient = 0 + 1<<0 + 1<<1 + 1<<2 + 1<<7 + 1<<8
 )
 
 func (na *_Commit__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
@@ -604,18 +604,20 @@ func (_Commit__Assembler) Prototype() ipld.NodePrototype {
 func (ma *_Commit__Assembler) valueFinishTidy() bool {
 	switch ma.f {
 	case 0:
-		switch ma.w.author.m {
+		switch ma.cm {
 		case schema.Maybe_Value:
-			ma.w.author.v = ma.ca_author.w
+			ma.ca_tree.w = nil
+			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
 			return true
 		default:
 			return false
 		}
 	case 1:
-		switch ma.w.committer.m {
+		switch ma.cm {
 		case schema.Maybe_Value:
-			ma.w.committer.v = ma.ca_committer.w
+			ma.ca_parents.w = nil
+			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
 			return true
 		default:
@@ -632,20 +634,18 @@ func (ma *_Commit__Assembler) valueFinishTidy() bool {
 			return false
 		}
 	case 3:
-		switch ma.cm {
+		switch ma.w.author.m {
 		case schema.Maybe_Value:
-			ma.ca_parents.w = nil
-			ma.cm = schema.Maybe_Absent
+			ma.w.author.v = ma.ca_author.w
 			ma.state = maState_initial
 			return true
 		default:
 			return false
 		}
 	case 4:
-		switch ma.cm {
+		switch ma.w.committer.m {
 		case schema.Maybe_Value:
-			ma.ca_tree.w = nil
-			ma.cm = schema.Maybe_Absent
+			ma.w.committer.v = ma.ca_committer.w
 			ma.state = maState_initial
 			return true
 		default:
@@ -670,7 +670,7 @@ func (ma *_Commit__Assembler) valueFinishTidy() bool {
 	case 7:
 		switch ma.cm {
 		case schema.Maybe_Value:
-			ma.ca_mergeTag.w = nil
+			ma.ca_mergetag.w = nil
 			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
 			return true
@@ -707,26 +707,26 @@ func (ma *_Commit__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
 	switch k {
-	case "author":
-		if ma.s&fieldBit__Commit_Author != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Author}
+	case "tree":
+		if ma.s&fieldBit__Commit_Tree != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Tree}
 		}
-		ma.s += fieldBit__Commit_Author
+		ma.s += fieldBit__Commit_Tree
 		ma.state = maState_midValue
 		ma.f = 0
-		ma.ca_author.w = ma.w.author.v
-		ma.ca_author.m = &ma.w.author.m
-		return &ma.ca_author, nil
-	case "committer":
-		if ma.s&fieldBit__Commit_Committer != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Committer}
+		ma.ca_tree.w = &ma.w.tree
+		ma.ca_tree.m = &ma.cm
+		return &ma.ca_tree, nil
+	case "parents":
+		if ma.s&fieldBit__Commit_Parents != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Parents}
 		}
-		ma.s += fieldBit__Commit_Committer
+		ma.s += fieldBit__Commit_Parents
 		ma.state = maState_midValue
 		ma.f = 1
-		ma.ca_committer.w = ma.w.committer.v
-		ma.ca_committer.m = &ma.w.committer.m
-		return &ma.ca_committer, nil
+		ma.ca_parents.w = &ma.w.parents
+		ma.ca_parents.m = &ma.cm
+		return &ma.ca_parents, nil
 	case "message":
 		if ma.s&fieldBit__Commit_Message != 0 {
 			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Message}
@@ -737,26 +737,26 @@ func (ma *_Commit__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error
 		ma.ca_message.w = &ma.w.message
 		ma.ca_message.m = &ma.cm
 		return &ma.ca_message, nil
-	case "parents":
-		if ma.s&fieldBit__Commit_Parents != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Parents}
+	case "author":
+		if ma.s&fieldBit__Commit_Author != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Author}
 		}
-		ma.s += fieldBit__Commit_Parents
+		ma.s += fieldBit__Commit_Author
 		ma.state = maState_midValue
 		ma.f = 3
-		ma.ca_parents.w = &ma.w.parents
-		ma.ca_parents.m = &ma.cm
-		return &ma.ca_parents, nil
-	case "tree":
-		if ma.s&fieldBit__Commit_Tree != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Tree}
+		ma.ca_author.w = ma.w.author.v
+		ma.ca_author.m = &ma.w.author.m
+		return &ma.ca_author, nil
+	case "committer":
+		if ma.s&fieldBit__Commit_Committer != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Committer}
 		}
-		ma.s += fieldBit__Commit_Tree
+		ma.s += fieldBit__Commit_Committer
 		ma.state = maState_midValue
 		ma.f = 4
-		ma.ca_tree.w = &ma.w.tree
-		ma.ca_tree.m = &ma.cm
-		return &ma.ca_tree, nil
+		ma.ca_committer.w = ma.w.committer.v
+		ma.ca_committer.m = &ma.w.committer.m
+		return &ma.ca_committer, nil
 	case "encoding":
 		if ma.s&fieldBit__Commit_Encoding != 0 {
 			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Encoding}
@@ -777,16 +777,16 @@ func (ma *_Commit__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error
 		ma.ca_signature.w = &ma.w.signature.v
 		ma.ca_signature.m = &ma.w.signature.m
 		return &ma.ca_signature, nil
-	case "mergeTag":
-		if ma.s&fieldBit__Commit_MergeTag != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_MergeTag}
+	case "mergetag":
+		if ma.s&fieldBit__Commit_Mergetag != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Mergetag}
 		}
-		ma.s += fieldBit__Commit_MergeTag
+		ma.s += fieldBit__Commit_Mergetag
 		ma.state = maState_midValue
 		ma.f = 7
-		ma.ca_mergeTag.w = &ma.w.mergeTag
-		ma.ca_mergeTag.m = &ma.cm
-		return &ma.ca_mergeTag, nil
+		ma.ca_mergetag.w = &ma.w.mergetag
+		ma.ca_mergetag.m = &ma.cm
+		return &ma.ca_mergetag, nil
 	case "other":
 		if ma.s&fieldBit__Commit_Other != 0 {
 			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Other}
@@ -834,25 +834,25 @@ func (ma *_Commit__Assembler) AssembleValue() ipld.NodeAssembler {
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_author.w = ma.w.author.v
-		ma.ca_author.m = &ma.w.author.m
-		return &ma.ca_author
+		ma.ca_tree.w = &ma.w.tree
+		ma.ca_tree.m = &ma.cm
+		return &ma.ca_tree
 	case 1:
-		ma.ca_committer.w = ma.w.committer.v
-		ma.ca_committer.m = &ma.w.committer.m
-		return &ma.ca_committer
+		ma.ca_parents.w = &ma.w.parents
+		ma.ca_parents.m = &ma.cm
+		return &ma.ca_parents
 	case 2:
 		ma.ca_message.w = &ma.w.message
 		ma.ca_message.m = &ma.cm
 		return &ma.ca_message
 	case 3:
-		ma.ca_parents.w = &ma.w.parents
-		ma.ca_parents.m = &ma.cm
-		return &ma.ca_parents
+		ma.ca_author.w = ma.w.author.v
+		ma.ca_author.m = &ma.w.author.m
+		return &ma.ca_author
 	case 4:
-		ma.ca_tree.w = &ma.w.tree
-		ma.ca_tree.m = &ma.cm
-		return &ma.ca_tree
+		ma.ca_committer.w = ma.w.committer.v
+		ma.ca_committer.m = &ma.w.committer.m
+		return &ma.ca_committer
 	case 5:
 		ma.ca_encoding.w = &ma.w.encoding.v
 		ma.ca_encoding.m = &ma.w.encoding.m
@@ -862,9 +862,9 @@ func (ma *_Commit__Assembler) AssembleValue() ipld.NodeAssembler {
 		ma.ca_signature.m = &ma.w.signature.m
 		return &ma.ca_signature
 	case 7:
-		ma.ca_mergeTag.w = &ma.w.mergeTag
-		ma.ca_mergeTag.m = &ma.cm
-		return &ma.ca_mergeTag
+		ma.ca_mergetag.w = &ma.w.mergetag
+		ma.ca_mergetag.m = &ma.cm
+		return &ma.ca_mergetag
 	case 8:
 		ma.ca_other.w = &ma.w.other
 		ma.ca_other.m = &ma.cm
@@ -890,17 +890,17 @@ func (ma *_Commit__Assembler) Finish() error {
 	}
 	if ma.s&fieldBits__Commit_sufficient != fieldBits__Commit_sufficient {
 		err := ipld.ErrMissingRequiredField{Missing: make([]string, 0)}
-		if ma.s&fieldBit__Commit_Message == 0 {
-			err.Missing = append(err.Missing, "message")
+		if ma.s&fieldBit__Commit_Tree == 0 {
+			err.Missing = append(err.Missing, "tree")
 		}
 		if ma.s&fieldBit__Commit_Parents == 0 {
 			err.Missing = append(err.Missing, "parents")
 		}
-		if ma.s&fieldBit__Commit_Tree == 0 {
-			err.Missing = append(err.Missing, "tree")
+		if ma.s&fieldBit__Commit_Message == 0 {
+			err.Missing = append(err.Missing, "message")
 		}
-		if ma.s&fieldBit__Commit_MergeTag == 0 {
-			err.Missing = append(err.Missing, "mergeTag")
+		if ma.s&fieldBit__Commit_Mergetag == 0 {
+			err.Missing = append(err.Missing, "mergetag")
 		}
 		if ma.s&fieldBit__Commit_Other == 0 {
 			err.Missing = append(err.Missing, "other")
@@ -943,19 +943,19 @@ func (ka *_Commit__KeyAssembler) AssignString(k string) error {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
 	switch k {
-	case "author":
-		if ka.s&fieldBit__Commit_Author != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Author}
+	case "tree":
+		if ka.s&fieldBit__Commit_Tree != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Tree}
 		}
-		ka.s += fieldBit__Commit_Author
+		ka.s += fieldBit__Commit_Tree
 		ka.state = maState_expectValue
 		ka.f = 0
 		return nil
-	case "committer":
-		if ka.s&fieldBit__Commit_Committer != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Committer}
+	case "parents":
+		if ka.s&fieldBit__Commit_Parents != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Parents}
 		}
-		ka.s += fieldBit__Commit_Committer
+		ka.s += fieldBit__Commit_Parents
 		ka.state = maState_expectValue
 		ka.f = 1
 		return nil
@@ -967,19 +967,19 @@ func (ka *_Commit__KeyAssembler) AssignString(k string) error {
 		ka.state = maState_expectValue
 		ka.f = 2
 		return nil
-	case "parents":
-		if ka.s&fieldBit__Commit_Parents != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Parents}
+	case "author":
+		if ka.s&fieldBit__Commit_Author != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Author}
 		}
-		ka.s += fieldBit__Commit_Parents
+		ka.s += fieldBit__Commit_Author
 		ka.state = maState_expectValue
 		ka.f = 3
 		return nil
-	case "tree":
-		if ka.s&fieldBit__Commit_Tree != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Tree}
+	case "committer":
+		if ka.s&fieldBit__Commit_Committer != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Committer}
 		}
-		ka.s += fieldBit__Commit_Tree
+		ka.s += fieldBit__Commit_Committer
 		ka.state = maState_expectValue
 		ka.f = 4
 		return nil
@@ -999,11 +999,11 @@ func (ka *_Commit__KeyAssembler) AssignString(k string) error {
 		ka.state = maState_expectValue
 		ka.f = 6
 		return nil
-	case "mergeTag":
-		if ka.s&fieldBit__Commit_MergeTag != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_MergeTag}
+	case "mergetag":
+		if ka.s&fieldBit__Commit_Mergetag != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Mergetag}
 		}
-		ka.s += fieldBit__Commit_MergeTag
+		ka.s += fieldBit__Commit_Mergetag
 		ka.state = maState_expectValue
 		ka.f = 7
 		return nil
@@ -1045,14 +1045,14 @@ func (n Commit) Representation() ipld.Node {
 type _Commit__Repr _Commit
 
 var (
+	fieldName__Commit_Tree_serial      = _String{"tree"}
+	fieldName__Commit_Parents_serial   = _String{"parents"}
+	fieldName__Commit_Message_serial   = _String{"message"}
 	fieldName__Commit_Author_serial    = _String{"author"}
 	fieldName__Commit_Committer_serial = _String{"committer"}
-	fieldName__Commit_Message_serial   = _String{"message"}
-	fieldName__Commit_Parents_serial   = _String{"parents"}
-	fieldName__Commit_Tree_serial      = _String{"tree"}
 	fieldName__Commit_Encoding_serial  = _String{"encoding"}
 	fieldName__Commit_Signature_serial = _String{"signature"}
-	fieldName__Commit_MergeTag_serial  = _String{"mergeTag"}
+	fieldName__Commit_Mergetag_serial  = _String{"mergetag"}
 	fieldName__Commit_Other_serial     = _String{"other"}
 )
 var _ ipld.Node = &_Commit__Repr{}
@@ -1062,6 +1062,12 @@ func (_Commit__Repr) Kind() ipld.Kind {
 }
 func (n *_Commit__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
+	case "tree":
+		return n.tree.Representation(), nil
+	case "parents":
+		return n.parents.Representation(), nil
+	case "message":
+		return n.message.Representation(), nil
 	case "author":
 		if n.author.m == schema.Maybe_Absent {
 			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
@@ -1072,12 +1078,6 @@ func (n *_Commit__Repr) LookupByString(key string) (ipld.Node, error) {
 			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.committer.v.Representation(), nil
-	case "message":
-		return n.message.Representation(), nil
-	case "parents":
-		return n.parents.Representation(), nil
-	case "tree":
-		return n.tree.Representation(), nil
 	case "encoding":
 		if n.encoding.m == schema.Maybe_Absent {
 			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
@@ -1088,8 +1088,8 @@ func (n *_Commit__Repr) LookupByString(key string) (ipld.Node, error) {
 			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.signature.v.Representation(), nil
-	case "mergeTag":
-		return n.mergeTag.Representation(), nil
+	case "mergetag":
+		return n.mergetag.Representation(), nil
 	case "other":
 		return n.other.Representation(), nil
 	default:
@@ -1125,28 +1125,28 @@ advance:
 	}
 	switch itr.idx {
 	case 0:
+		k = &fieldName__Commit_Tree_serial
+		v = itr.n.tree.Representation()
+	case 1:
+		k = &fieldName__Commit_Parents_serial
+		v = itr.n.parents.Representation()
+	case 2:
+		k = &fieldName__Commit_Message_serial
+		v = itr.n.message.Representation()
+	case 3:
 		k = &fieldName__Commit_Author_serial
 		if itr.n.author.m == schema.Maybe_Absent {
 			itr.idx++
 			goto advance
 		}
 		v = itr.n.author.v.Representation()
-	case 1:
+	case 4:
 		k = &fieldName__Commit_Committer_serial
 		if itr.n.committer.m == schema.Maybe_Absent {
 			itr.idx++
 			goto advance
 		}
 		v = itr.n.committer.v.Representation()
-	case 2:
-		k = &fieldName__Commit_Message_serial
-		v = itr.n.message.Representation()
-	case 3:
-		k = &fieldName__Commit_Parents_serial
-		v = itr.n.parents.Representation()
-	case 4:
-		k = &fieldName__Commit_Tree_serial
-		v = itr.n.tree.Representation()
 	case 5:
 		k = &fieldName__Commit_Encoding_serial
 		if itr.n.encoding.m == schema.Maybe_Absent {
@@ -1162,8 +1162,8 @@ advance:
 		}
 		v = itr.n.signature.v.Representation()
 	case 7:
-		k = &fieldName__Commit_MergeTag_serial
-		v = itr.n.mergeTag.Representation()
+		k = &fieldName__Commit_Mergetag_serial
+		v = itr.n.mergetag.Representation()
 	case 8:
 		k = &fieldName__Commit_Other_serial
 		v = itr.n.other.Representation()
@@ -1255,28 +1255,28 @@ type _Commit__ReprAssembler struct {
 	f     int
 
 	cm           schema.Maybe
+	ca_tree      _Tree_Link__ReprAssembler
+	ca_parents   _Commit_Link_List__ReprAssembler
+	ca_message   _String__ReprAssembler
 	ca_author    _PersonInfo__ReprAssembler
 	ca_committer _PersonInfo__ReprAssembler
-	ca_message   _String__ReprAssembler
-	ca_parents   _ListParents__ReprAssembler
-	ca_tree      _LinkTree__ReprAssembler
 	ca_encoding  _String__ReprAssembler
 	ca_signature _GpgSig__ReprAssembler
-	ca_mergeTag  _ListTag__ReprAssembler
-	ca_other     _ListString__ReprAssembler
+	ca_mergetag  _Tag_List__ReprAssembler
+	ca_other     _String_List__ReprAssembler
 }
 
 func (na *_Commit__ReprAssembler) reset() {
 	na.state = maState_initial
 	na.s = 0
+	na.ca_tree.reset()
+	na.ca_parents.reset()
+	na.ca_message.reset()
 	na.ca_author.reset()
 	na.ca_committer.reset()
-	na.ca_message.reset()
-	na.ca_parents.reset()
-	na.ca_tree.reset()
 	na.ca_encoding.reset()
 	na.ca_signature.reset()
-	na.ca_mergeTag.reset()
+	na.ca_mergetag.reset()
 	na.ca_other.reset()
 }
 func (na *_Commit__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
@@ -1371,18 +1371,18 @@ func (_Commit__ReprAssembler) Prototype() ipld.NodePrototype {
 func (ma *_Commit__ReprAssembler) valueFinishTidy() bool {
 	switch ma.f {
 	case 0:
-		switch ma.w.author.m {
+		switch ma.cm {
 		case schema.Maybe_Value:
-			ma.w.author.v = ma.ca_author.w
+			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
 			return true
 		default:
 			return false
 		}
 	case 1:
-		switch ma.w.committer.m {
+		switch ma.cm {
 		case schema.Maybe_Value:
-			ma.w.committer.v = ma.ca_committer.w
+			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
 			return true
 		default:
@@ -1398,18 +1398,18 @@ func (ma *_Commit__ReprAssembler) valueFinishTidy() bool {
 			return false
 		}
 	case 3:
-		switch ma.cm {
+		switch ma.w.author.m {
 		case schema.Maybe_Value:
-			ma.cm = schema.Maybe_Absent
+			ma.w.author.v = ma.ca_author.w
 			ma.state = maState_initial
 			return true
 		default:
 			return false
 		}
 	case 4:
-		switch ma.cm {
+		switch ma.w.committer.m {
 		case schema.Maybe_Value:
-			ma.cm = schema.Maybe_Absent
+			ma.w.committer.v = ma.ca_committer.w
 			ma.state = maState_initial
 			return true
 		default:
@@ -1469,28 +1469,26 @@ func (ma *_Commit__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
 	switch k {
-	case "author":
-		if ma.s&fieldBit__Commit_Author != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Author_serial}
+	case "tree":
+		if ma.s&fieldBit__Commit_Tree != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Tree_serial}
 		}
-		ma.s += fieldBit__Commit_Author
+		ma.s += fieldBit__Commit_Tree
 		ma.state = maState_midValue
 		ma.f = 0
-		ma.ca_author.w = ma.w.author.v
-		ma.ca_author.m = &ma.w.author.m
-
-		return &ma.ca_author, nil
-	case "committer":
-		if ma.s&fieldBit__Commit_Committer != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Committer_serial}
+		ma.ca_tree.w = &ma.w.tree
+		ma.ca_tree.m = &ma.cm
+		return &ma.ca_tree, nil
+	case "parents":
+		if ma.s&fieldBit__Commit_Parents != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Parents_serial}
 		}
-		ma.s += fieldBit__Commit_Committer
+		ma.s += fieldBit__Commit_Parents
 		ma.state = maState_midValue
 		ma.f = 1
-		ma.ca_committer.w = ma.w.committer.v
-		ma.ca_committer.m = &ma.w.committer.m
-
-		return &ma.ca_committer, nil
+		ma.ca_parents.w = &ma.w.parents
+		ma.ca_parents.m = &ma.cm
+		return &ma.ca_parents, nil
 	case "message":
 		if ma.s&fieldBit__Commit_Message != 0 {
 			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Message_serial}
@@ -1501,26 +1499,28 @@ func (ma *_Commit__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 		ma.ca_message.w = &ma.w.message
 		ma.ca_message.m = &ma.cm
 		return &ma.ca_message, nil
-	case "parents":
-		if ma.s&fieldBit__Commit_Parents != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Parents_serial}
+	case "author":
+		if ma.s&fieldBit__Commit_Author != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Author_serial}
 		}
-		ma.s += fieldBit__Commit_Parents
+		ma.s += fieldBit__Commit_Author
 		ma.state = maState_midValue
 		ma.f = 3
-		ma.ca_parents.w = &ma.w.parents
-		ma.ca_parents.m = &ma.cm
-		return &ma.ca_parents, nil
-	case "tree":
-		if ma.s&fieldBit__Commit_Tree != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Tree_serial}
+		ma.ca_author.w = ma.w.author.v
+		ma.ca_author.m = &ma.w.author.m
+
+		return &ma.ca_author, nil
+	case "committer":
+		if ma.s&fieldBit__Commit_Committer != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Committer_serial}
 		}
-		ma.s += fieldBit__Commit_Tree
+		ma.s += fieldBit__Commit_Committer
 		ma.state = maState_midValue
 		ma.f = 4
-		ma.ca_tree.w = &ma.w.tree
-		ma.ca_tree.m = &ma.cm
-		return &ma.ca_tree, nil
+		ma.ca_committer.w = ma.w.committer.v
+		ma.ca_committer.m = &ma.w.committer.m
+
+		return &ma.ca_committer, nil
 	case "encoding":
 		if ma.s&fieldBit__Commit_Encoding != 0 {
 			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Encoding_serial}
@@ -1543,16 +1543,16 @@ func (ma *_Commit__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 		ma.ca_signature.m = &ma.w.signature.m
 
 		return &ma.ca_signature, nil
-	case "mergeTag":
-		if ma.s&fieldBit__Commit_MergeTag != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_MergeTag_serial}
+	case "mergetag":
+		if ma.s&fieldBit__Commit_Mergetag != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Mergetag_serial}
 		}
-		ma.s += fieldBit__Commit_MergeTag
+		ma.s += fieldBit__Commit_Mergetag
 		ma.state = maState_midValue
 		ma.f = 7
-		ma.ca_mergeTag.w = &ma.w.mergeTag
-		ma.ca_mergeTag.m = &ma.cm
-		return &ma.ca_mergeTag, nil
+		ma.ca_mergetag.w = &ma.w.mergetag
+		ma.ca_mergetag.m = &ma.cm
+		return &ma.ca_mergetag, nil
 	case "other":
 		if ma.s&fieldBit__Commit_Other != 0 {
 			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Other_serial}
@@ -1601,27 +1601,27 @@ func (ma *_Commit__ReprAssembler) AssembleValue() ipld.NodeAssembler {
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_author.w = ma.w.author.v
-		ma.ca_author.m = &ma.w.author.m
-
-		return &ma.ca_author
+		ma.ca_tree.w = &ma.w.tree
+		ma.ca_tree.m = &ma.cm
+		return &ma.ca_tree
 	case 1:
-		ma.ca_committer.w = ma.w.committer.v
-		ma.ca_committer.m = &ma.w.committer.m
-
-		return &ma.ca_committer
+		ma.ca_parents.w = &ma.w.parents
+		ma.ca_parents.m = &ma.cm
+		return &ma.ca_parents
 	case 2:
 		ma.ca_message.w = &ma.w.message
 		ma.ca_message.m = &ma.cm
 		return &ma.ca_message
 	case 3:
-		ma.ca_parents.w = &ma.w.parents
-		ma.ca_parents.m = &ma.cm
-		return &ma.ca_parents
+		ma.ca_author.w = ma.w.author.v
+		ma.ca_author.m = &ma.w.author.m
+
+		return &ma.ca_author
 	case 4:
-		ma.ca_tree.w = &ma.w.tree
-		ma.ca_tree.m = &ma.cm
-		return &ma.ca_tree
+		ma.ca_committer.w = ma.w.committer.v
+		ma.ca_committer.m = &ma.w.committer.m
+
+		return &ma.ca_committer
 	case 5:
 		ma.ca_encoding.w = &ma.w.encoding.v
 		ma.ca_encoding.m = &ma.w.encoding.m
@@ -1633,9 +1633,9 @@ func (ma *_Commit__ReprAssembler) AssembleValue() ipld.NodeAssembler {
 
 		return &ma.ca_signature
 	case 7:
-		ma.ca_mergeTag.w = &ma.w.mergeTag
-		ma.ca_mergeTag.m = &ma.cm
-		return &ma.ca_mergeTag
+		ma.ca_mergetag.w = &ma.w.mergetag
+		ma.ca_mergetag.m = &ma.cm
+		return &ma.ca_mergetag
 	case 8:
 		ma.ca_other.w = &ma.w.other
 		ma.ca_other.m = &ma.cm
@@ -1661,17 +1661,17 @@ func (ma *_Commit__ReprAssembler) Finish() error {
 	}
 	if ma.s&fieldBits__Commit_sufficient != fieldBits__Commit_sufficient {
 		err := ipld.ErrMissingRequiredField{Missing: make([]string, 0)}
-		if ma.s&fieldBit__Commit_Message == 0 {
-			err.Missing = append(err.Missing, "message")
+		if ma.s&fieldBit__Commit_Tree == 0 {
+			err.Missing = append(err.Missing, "tree")
 		}
 		if ma.s&fieldBit__Commit_Parents == 0 {
 			err.Missing = append(err.Missing, "parents")
 		}
-		if ma.s&fieldBit__Commit_Tree == 0 {
-			err.Missing = append(err.Missing, "tree")
+		if ma.s&fieldBit__Commit_Message == 0 {
+			err.Missing = append(err.Missing, "message")
 		}
-		if ma.s&fieldBit__Commit_MergeTag == 0 {
-			err.Missing = append(err.Missing, "mergeTag")
+		if ma.s&fieldBit__Commit_Mergetag == 0 {
+			err.Missing = append(err.Missing, "mergetag")
 		}
 		if ma.s&fieldBit__Commit_Other == 0 {
 			err.Missing = append(err.Missing, "other")
@@ -1714,19 +1714,19 @@ func (ka *_Commit__ReprKeyAssembler) AssignString(k string) error {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
 	switch k {
-	case "author":
-		if ka.s&fieldBit__Commit_Author != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Author_serial}
+	case "tree":
+		if ka.s&fieldBit__Commit_Tree != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Tree_serial}
 		}
-		ka.s += fieldBit__Commit_Author
+		ka.s += fieldBit__Commit_Tree
 		ka.state = maState_expectValue
 		ka.f = 0
 		return nil
-	case "committer":
-		if ka.s&fieldBit__Commit_Committer != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Committer_serial}
+	case "parents":
+		if ka.s&fieldBit__Commit_Parents != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Parents_serial}
 		}
-		ka.s += fieldBit__Commit_Committer
+		ka.s += fieldBit__Commit_Parents
 		ka.state = maState_expectValue
 		ka.f = 1
 		return nil
@@ -1738,19 +1738,19 @@ func (ka *_Commit__ReprKeyAssembler) AssignString(k string) error {
 		ka.state = maState_expectValue
 		ka.f = 2
 		return nil
-	case "parents":
-		if ka.s&fieldBit__Commit_Parents != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Parents_serial}
+	case "author":
+		if ka.s&fieldBit__Commit_Author != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Author_serial}
 		}
-		ka.s += fieldBit__Commit_Parents
+		ka.s += fieldBit__Commit_Author
 		ka.state = maState_expectValue
 		ka.f = 3
 		return nil
-	case "tree":
-		if ka.s&fieldBit__Commit_Tree != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Tree_serial}
+	case "committer":
+		if ka.s&fieldBit__Commit_Committer != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Committer_serial}
 		}
-		ka.s += fieldBit__Commit_Tree
+		ka.s += fieldBit__Commit_Committer
 		ka.state = maState_expectValue
 		ka.f = 4
 		return nil
@@ -1770,11 +1770,11 @@ func (ka *_Commit__ReprKeyAssembler) AssignString(k string) error {
 		ka.state = maState_expectValue
 		ka.f = 6
 		return nil
-	case "mergeTag":
-		if ka.s&fieldBit__Commit_MergeTag != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_MergeTag_serial}
+	case "mergetag":
+		if ka.s&fieldBit__Commit_Mergetag != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Commit_Mergetag_serial}
 		}
-		ka.s += fieldBit__Commit_MergeTag
+		ka.s += fieldBit__Commit_Mergetag
 		ka.state = maState_expectValue
 		ka.f = 7
 		return nil
@@ -1804,6 +1804,805 @@ func (ka *_Commit__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 }
 func (_Commit__ReprKeyAssembler) Prototype() ipld.NodePrototype {
 	return _String__Prototype{}
+}
+
+func (n Commit_Link) Link() ipld.Link {
+	return n.x
+}
+func (_Commit_Link__Prototype) FromLink(v ipld.Link) (Commit_Link, error) {
+	n := _Commit_Link{v}
+	return &n, nil
+}
+
+type _Commit_Link__Maybe struct {
+	m schema.Maybe
+	v _Commit_Link
+}
+type MaybeCommit_Link = *_Commit_Link__Maybe
+
+func (m MaybeCommit_Link) IsNull() bool {
+	return m.m == schema.Maybe_Null
+}
+func (m MaybeCommit_Link) IsAbsent() bool {
+	return m.m == schema.Maybe_Absent
+}
+func (m MaybeCommit_Link) Exists() bool {
+	return m.m == schema.Maybe_Value
+}
+func (m MaybeCommit_Link) AsNode() ipld.Node {
+	switch m.m {
+	case schema.Maybe_Absent:
+		return ipld.Absent
+	case schema.Maybe_Null:
+		return ipld.Null
+	case schema.Maybe_Value:
+		return &m.v
+	default:
+		panic("unreachable")
+	}
+}
+func (m MaybeCommit_Link) Must() Commit_Link {
+	if !m.Exists() {
+		panic("unbox of a maybe rejected")
+	}
+	return &m.v
+}
+
+var _ ipld.Node = (Commit_Link)(&_Commit_Link{})
+var _ schema.TypedNode = (Commit_Link)(&_Commit_Link{})
+
+func (Commit_Link) Kind() ipld.Kind {
+	return ipld.Kind_Link
+}
+func (Commit_Link) LookupByString(string) (ipld.Node, error) {
+	return mixins.Link{TypeName: "ipldgit.Commit_Link"}.LookupByString("")
+}
+func (Commit_Link) LookupByNode(ipld.Node) (ipld.Node, error) {
+	return mixins.Link{TypeName: "ipldgit.Commit_Link"}.LookupByNode(nil)
+}
+func (Commit_Link) LookupByIndex(idx int64) (ipld.Node, error) {
+	return mixins.Link{TypeName: "ipldgit.Commit_Link"}.LookupByIndex(0)
+}
+func (Commit_Link) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return mixins.Link{TypeName: "ipldgit.Commit_Link"}.LookupBySegment(seg)
+}
+func (Commit_Link) MapIterator() ipld.MapIterator {
+	return nil
+}
+func (Commit_Link) ListIterator() ipld.ListIterator {
+	return nil
+}
+func (Commit_Link) Length() int64 {
+	return -1
+}
+func (Commit_Link) IsAbsent() bool {
+	return false
+}
+func (Commit_Link) IsNull() bool {
+	return false
+}
+func (Commit_Link) AsBool() (bool, error) {
+	return mixins.Link{TypeName: "ipldgit.Commit_Link"}.AsBool()
+}
+func (Commit_Link) AsInt() (int64, error) {
+	return mixins.Link{TypeName: "ipldgit.Commit_Link"}.AsInt()
+}
+func (Commit_Link) AsFloat() (float64, error) {
+	return mixins.Link{TypeName: "ipldgit.Commit_Link"}.AsFloat()
+}
+func (Commit_Link) AsString() (string, error) {
+	return mixins.Link{TypeName: "ipldgit.Commit_Link"}.AsString()
+}
+func (Commit_Link) AsBytes() ([]byte, error) {
+	return mixins.Link{TypeName: "ipldgit.Commit_Link"}.AsBytes()
+}
+func (n Commit_Link) AsLink() (ipld.Link, error) {
+	return n.x, nil
+}
+func (Commit_Link) Prototype() ipld.NodePrototype {
+	return _Commit_Link__Prototype{}
+}
+
+type _Commit_Link__Prototype struct{}
+
+func (_Commit_Link__Prototype) NewBuilder() ipld.NodeBuilder {
+	var nb _Commit_Link__Builder
+	nb.Reset()
+	return &nb
+}
+
+type _Commit_Link__Builder struct {
+	_Commit_Link__Assembler
+}
+
+func (nb *_Commit_Link__Builder) Build() ipld.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_Commit_Link__Builder) Reset() {
+	var w _Commit_Link
+	var m schema.Maybe
+	*nb = _Commit_Link__Builder{_Commit_Link__Assembler{w: &w, m: &m}}
+}
+
+type _Commit_Link__Assembler struct {
+	w *_Commit_Link
+	m *schema.Maybe
+}
+
+func (na *_Commit_Link__Assembler) reset() {}
+func (_Commit_Link__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Commit_Link"}.BeginMap(0)
+}
+func (_Commit_Link__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Commit_Link"}.BeginList(0)
+}
+func (na *_Commit_Link__Assembler) AssignNull() error {
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.LinkAssembler{TypeName: "ipldgit.Commit_Link"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	panic("unreachable")
+}
+func (_Commit_Link__Assembler) AssignBool(bool) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Commit_Link"}.AssignBool(false)
+}
+func (_Commit_Link__Assembler) AssignInt(int64) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Commit_Link"}.AssignInt(0)
+}
+func (_Commit_Link__Assembler) AssignFloat(float64) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Commit_Link"}.AssignFloat(0)
+}
+func (_Commit_Link__Assembler) AssignString(string) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Commit_Link"}.AssignString("")
+}
+func (_Commit_Link__Assembler) AssignBytes([]byte) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Commit_Link"}.AssignBytes(nil)
+}
+func (na *_Commit_Link__Assembler) AssignLink(v ipld.Link) error {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	na.w.x = v
+	*na.m = schema.Maybe_Value
+	return nil
+}
+func (na *_Commit_Link__Assembler) AssignNode(v ipld.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_Commit_Link); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	if v2, err := v.AsLink(); err != nil {
+		return err
+	} else {
+		return na.AssignLink(v2)
+	}
+}
+func (_Commit_Link__Assembler) Prototype() ipld.NodePrototype {
+	return _Commit_Link__Prototype{}
+}
+func (Commit_Link) Type() schema.Type {
+	return nil /*TODO:typelit*/
+}
+func (Commit_Link) LinkTargetNodePrototype() ipld.NodePrototype {
+	return Type.Commit__Repr
+}
+func (n Commit_Link) Representation() ipld.Node {
+	return (*_Commit_Link__Repr)(n)
+}
+
+type _Commit_Link__Repr = _Commit_Link
+
+var _ ipld.Node = &_Commit_Link__Repr{}
+
+type _Commit_Link__ReprPrototype = _Commit_Link__Prototype
+type _Commit_Link__ReprAssembler = _Commit_Link__Assembler
+
+func (n *_Commit_Link_List) Lookup(idx int64) Commit_Link {
+	if n.Length() <= idx {
+		return nil
+	}
+	v := &n.x[idx]
+	return v
+}
+func (n *_Commit_Link_List) LookupMaybe(idx int64) MaybeCommit_Link {
+	if n.Length() <= idx {
+		return nil
+	}
+	v := &n.x[idx]
+	return &_Commit_Link__Maybe{
+		m: schema.Maybe_Value,
+		v: *v,
+	}
+}
+
+var _Commit_Link_List__valueAbsent = _Commit_Link__Maybe{m: schema.Maybe_Absent}
+
+func (n Commit_Link_List) Iterator() *Commit_Link_List__Itr {
+	return &Commit_Link_List__Itr{n, 0}
+}
+
+type Commit_Link_List__Itr struct {
+	n   Commit_Link_List
+	idx int
+}
+
+func (itr *Commit_Link_List__Itr) Next() (idx int64, v Commit_Link) {
+	if itr.idx >= len(itr.n.x) {
+		return -1, nil
+	}
+	idx = int64(itr.idx)
+	v = &itr.n.x[itr.idx]
+	itr.idx++
+	return
+}
+func (itr *Commit_Link_List__Itr) Done() bool {
+	return itr.idx >= len(itr.n.x)
+}
+
+type _Commit_Link_List__Maybe struct {
+	m schema.Maybe
+	v _Commit_Link_List
+}
+type MaybeCommit_Link_List = *_Commit_Link_List__Maybe
+
+func (m MaybeCommit_Link_List) IsNull() bool {
+	return m.m == schema.Maybe_Null
+}
+func (m MaybeCommit_Link_List) IsAbsent() bool {
+	return m.m == schema.Maybe_Absent
+}
+func (m MaybeCommit_Link_List) Exists() bool {
+	return m.m == schema.Maybe_Value
+}
+func (m MaybeCommit_Link_List) AsNode() ipld.Node {
+	switch m.m {
+	case schema.Maybe_Absent:
+		return ipld.Absent
+	case schema.Maybe_Null:
+		return ipld.Null
+	case schema.Maybe_Value:
+		return &m.v
+	default:
+		panic("unreachable")
+	}
+}
+func (m MaybeCommit_Link_List) Must() Commit_Link_List {
+	if !m.Exists() {
+		panic("unbox of a maybe rejected")
+	}
+	return &m.v
+}
+
+var _ ipld.Node = (Commit_Link_List)(&_Commit_Link_List{})
+var _ schema.TypedNode = (Commit_Link_List)(&_Commit_Link_List{})
+
+func (Commit_Link_List) Kind() ipld.Kind {
+	return ipld.Kind_List
+}
+func (Commit_Link_List) LookupByString(string) (ipld.Node, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List"}.LookupByString("")
+}
+func (n Commit_Link_List) LookupByNode(k ipld.Node) (ipld.Node, error) {
+	idx, err := k.AsInt()
+	if err != nil {
+		return nil, err
+	}
+	return n.LookupByIndex(idx)
+}
+func (n Commit_Link_List) LookupByIndex(idx int64) (ipld.Node, error) {
+	if n.Length() <= idx {
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
+	}
+	v := &n.x[idx]
+	return v, nil
+}
+func (n Commit_Link_List) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	i, err := seg.Index()
+	if err != nil {
+		return nil, ipld.ErrInvalidSegmentForList{TypeName: "ipldgit.Commit_Link_List", TroubleSegment: seg, Reason: err}
+	}
+	return n.LookupByIndex(i)
+}
+func (Commit_Link_List) MapIterator() ipld.MapIterator {
+	return nil
+}
+func (n Commit_Link_List) ListIterator() ipld.ListIterator {
+	return &_Commit_Link_List__ListItr{n, 0}
+}
+
+type _Commit_Link_List__ListItr struct {
+	n   Commit_Link_List
+	idx int
+}
+
+func (itr *_Commit_Link_List__ListItr) Next() (idx int64, v ipld.Node, _ error) {
+	if itr.idx >= len(itr.n.x) {
+		return -1, nil, ipld.ErrIteratorOverread{}
+	}
+	idx = int64(itr.idx)
+	x := &itr.n.x[itr.idx]
+	v = x
+	itr.idx++
+	return
+}
+func (itr *_Commit_Link_List__ListItr) Done() bool {
+	return itr.idx >= len(itr.n.x)
+}
+
+func (n Commit_Link_List) Length() int64 {
+	return int64(len(n.x))
+}
+func (Commit_Link_List) IsAbsent() bool {
+	return false
+}
+func (Commit_Link_List) IsNull() bool {
+	return false
+}
+func (Commit_Link_List) AsBool() (bool, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List"}.AsBool()
+}
+func (Commit_Link_List) AsInt() (int64, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List"}.AsInt()
+}
+func (Commit_Link_List) AsFloat() (float64, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List"}.AsFloat()
+}
+func (Commit_Link_List) AsString() (string, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List"}.AsString()
+}
+func (Commit_Link_List) AsBytes() ([]byte, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List"}.AsBytes()
+}
+func (Commit_Link_List) AsLink() (ipld.Link, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List"}.AsLink()
+}
+func (Commit_Link_List) Prototype() ipld.NodePrototype {
+	return _Commit_Link_List__Prototype{}
+}
+
+type _Commit_Link_List__Prototype struct{}
+
+func (_Commit_Link_List__Prototype) NewBuilder() ipld.NodeBuilder {
+	var nb _Commit_Link_List__Builder
+	nb.Reset()
+	return &nb
+}
+
+type _Commit_Link_List__Builder struct {
+	_Commit_Link_List__Assembler
+}
+
+func (nb *_Commit_Link_List__Builder) Build() ipld.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_Commit_Link_List__Builder) Reset() {
+	var w _Commit_Link_List
+	var m schema.Maybe
+	*nb = _Commit_Link_List__Builder{_Commit_Link_List__Assembler{w: &w, m: &m}}
+}
+
+type _Commit_Link_List__Assembler struct {
+	w     *_Commit_Link_List
+	m     *schema.Maybe
+	state laState
+
+	cm schema.Maybe
+	va _Commit_Link__Assembler
+}
+
+func (na *_Commit_Link_List__Assembler) reset() {
+	na.state = laState_initial
+	na.va.reset()
+}
+func (_Commit_Link_List__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List"}.BeginMap(0)
+}
+func (na *_Commit_Link_List__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
+	}
+	*na.m = midvalue
+	if sizeHint < 0 {
+		sizeHint = 0
+	}
+	if sizeHint > 0 {
+		na.w.x = make([]_Commit_Link, 0, sizeHint)
+	}
+	return na, nil
+}
+func (na *_Commit_Link_List__Assembler) AssignNull() error {
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+	}
+	panic("unreachable")
+}
+func (_Commit_Link_List__Assembler) AssignBool(bool) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List"}.AssignBool(false)
+}
+func (_Commit_Link_List__Assembler) AssignInt(int64) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List"}.AssignInt(0)
+}
+func (_Commit_Link_List__Assembler) AssignFloat(float64) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List"}.AssignFloat(0)
+}
+func (_Commit_Link_List__Assembler) AssignString(string) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List"}.AssignString("")
+}
+func (_Commit_Link_List__Assembler) AssignBytes([]byte) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List"}.AssignBytes(nil)
+}
+func (_Commit_Link_List__Assembler) AssignLink(ipld.Link) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List"}.AssignLink(nil)
+}
+func (na *_Commit_Link_List__Assembler) AssignNode(v ipld.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_Commit_Link_List); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		case midvalue:
+			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	if v.Kind() != ipld.Kind_List {
+		return ipld.ErrWrongKind{TypeName: "ipldgit.Commit_Link_List", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
+	}
+	itr := v.ListIterator()
+	for !itr.Done() {
+		_, v, err := itr.Next()
+		if err != nil {
+			return err
+		}
+		if err := na.AssembleValue().AssignNode(v); err != nil {
+			return err
+		}
+	}
+	return na.Finish()
+}
+func (_Commit_Link_List__Assembler) Prototype() ipld.NodePrototype {
+	return _Commit_Link_List__Prototype{}
+}
+func (la *_Commit_Link_List__Assembler) valueFinishTidy() bool {
+	switch la.cm {
+	case schema.Maybe_Value:
+		la.va.w = nil
+		la.cm = schema.Maybe_Absent
+		la.state = laState_initial
+		la.va.reset()
+		return true
+	default:
+		return false
+	}
+}
+func (la *_Commit_Link_List__Assembler) AssembleValue() ipld.NodeAssembler {
+	switch la.state {
+	case laState_initial:
+		// carry on
+	case laState_midValue:
+		if !la.valueFinishTidy() {
+			panic("invalid state: AssembleValue cannot be called when still in the middle of assembling the previous value")
+		} // if tidy success: carry on
+	case laState_finished:
+		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
+	}
+	la.w.x = append(la.w.x, _Commit_Link{})
+	la.state = laState_midValue
+	row := &la.w.x[len(la.w.x)-1]
+	la.va.w = row
+	la.va.m = &la.cm
+	return &la.va
+}
+func (la *_Commit_Link_List__Assembler) Finish() error {
+	switch la.state {
+	case laState_initial:
+		// carry on
+	case laState_midValue:
+		if !la.valueFinishTidy() {
+			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on
+	case laState_finished:
+		panic("invalid state: Finish cannot be called on an assembler that's already finished")
+	}
+	la.state = laState_finished
+	*la.m = schema.Maybe_Value
+	return nil
+}
+func (la *_Commit_Link_List__Assembler) ValuePrototype(_ int64) ipld.NodePrototype {
+	return _Commit_Link__Prototype{}
+}
+func (Commit_Link_List) Type() schema.Type {
+	return nil /*TODO:typelit*/
+}
+func (n Commit_Link_List) Representation() ipld.Node {
+	return (*_Commit_Link_List__Repr)(n)
+}
+
+type _Commit_Link_List__Repr _Commit_Link_List
+
+var _ ipld.Node = &_Commit_Link_List__Repr{}
+
+func (_Commit_Link_List__Repr) Kind() ipld.Kind {
+	return ipld.Kind_List
+}
+func (_Commit_Link_List__Repr) LookupByString(string) (ipld.Node, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List.Repr"}.LookupByString("")
+}
+func (nr *_Commit_Link_List__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
+	v, err := (Commit_Link_List)(nr).LookupByNode(k)
+	if err != nil || v == ipld.Null {
+		return v, err
+	}
+	return v.(Commit_Link).Representation(), nil
+}
+func (nr *_Commit_Link_List__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
+	v, err := (Commit_Link_List)(nr).LookupByIndex(idx)
+	if err != nil || v == ipld.Null {
+		return v, err
+	}
+	return v.(Commit_Link).Representation(), nil
+}
+func (n _Commit_Link_List__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	i, err := seg.Index()
+	if err != nil {
+		return nil, ipld.ErrInvalidSegmentForList{TypeName: "ipldgit.Commit_Link_List.Repr", TroubleSegment: seg, Reason: err}
+	}
+	return n.LookupByIndex(i)
+}
+func (_Commit_Link_List__Repr) MapIterator() ipld.MapIterator {
+	return nil
+}
+func (nr *_Commit_Link_List__Repr) ListIterator() ipld.ListIterator {
+	return &_Commit_Link_List__ReprListItr{(Commit_Link_List)(nr), 0}
+}
+
+type _Commit_Link_List__ReprListItr _Commit_Link_List__ListItr
+
+func (itr *_Commit_Link_List__ReprListItr) Next() (idx int64, v ipld.Node, err error) {
+	idx, v, err = (*_Commit_Link_List__ListItr)(itr).Next()
+	if err != nil || v == ipld.Null {
+		return
+	}
+	return idx, v.(Commit_Link).Representation(), nil
+}
+func (itr *_Commit_Link_List__ReprListItr) Done() bool {
+	return (*_Commit_Link_List__ListItr)(itr).Done()
+}
+
+func (rn *_Commit_Link_List__Repr) Length() int64 {
+	return int64(len(rn.x))
+}
+func (_Commit_Link_List__Repr) IsAbsent() bool {
+	return false
+}
+func (_Commit_Link_List__Repr) IsNull() bool {
+	return false
+}
+func (_Commit_Link_List__Repr) AsBool() (bool, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List.Repr"}.AsBool()
+}
+func (_Commit_Link_List__Repr) AsInt() (int64, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List.Repr"}.AsInt()
+}
+func (_Commit_Link_List__Repr) AsFloat() (float64, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List.Repr"}.AsFloat()
+}
+func (_Commit_Link_List__Repr) AsString() (string, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List.Repr"}.AsString()
+}
+func (_Commit_Link_List__Repr) AsBytes() ([]byte, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List.Repr"}.AsBytes()
+}
+func (_Commit_Link_List__Repr) AsLink() (ipld.Link, error) {
+	return mixins.List{TypeName: "ipldgit.Commit_Link_List.Repr"}.AsLink()
+}
+func (_Commit_Link_List__Repr) Prototype() ipld.NodePrototype {
+	return _Commit_Link_List__ReprPrototype{}
+}
+
+type _Commit_Link_List__ReprPrototype struct{}
+
+func (_Commit_Link_List__ReprPrototype) NewBuilder() ipld.NodeBuilder {
+	var nb _Commit_Link_List__ReprBuilder
+	nb.Reset()
+	return &nb
+}
+
+type _Commit_Link_List__ReprBuilder struct {
+	_Commit_Link_List__ReprAssembler
+}
+
+func (nb *_Commit_Link_List__ReprBuilder) Build() ipld.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_Commit_Link_List__ReprBuilder) Reset() {
+	var w _Commit_Link_List
+	var m schema.Maybe
+	*nb = _Commit_Link_List__ReprBuilder{_Commit_Link_List__ReprAssembler{w: &w, m: &m}}
+}
+
+type _Commit_Link_List__ReprAssembler struct {
+	w     *_Commit_Link_List
+	m     *schema.Maybe
+	state laState
+
+	cm schema.Maybe
+	va _Commit_Link__ReprAssembler
+}
+
+func (na *_Commit_Link_List__ReprAssembler) reset() {
+	na.state = laState_initial
+	na.va.reset()
+}
+func (_Commit_Link_List__ReprAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List.Repr"}.BeginMap(0)
+}
+func (na *_Commit_Link_List__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
+	}
+	*na.m = midvalue
+	if sizeHint < 0 {
+		sizeHint = 0
+	}
+	if sizeHint > 0 {
+		na.w.x = make([]_Commit_Link, 0, sizeHint)
+	}
+	return na, nil
+}
+func (na *_Commit_Link_List__ReprAssembler) AssignNull() error {
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List.Repr.Repr"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+	}
+	panic("unreachable")
+}
+func (_Commit_Link_List__ReprAssembler) AssignBool(bool) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List.Repr"}.AssignBool(false)
+}
+func (_Commit_Link_List__ReprAssembler) AssignInt(int64) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List.Repr"}.AssignInt(0)
+}
+func (_Commit_Link_List__ReprAssembler) AssignFloat(float64) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List.Repr"}.AssignFloat(0)
+}
+func (_Commit_Link_List__ReprAssembler) AssignString(string) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List.Repr"}.AssignString("")
+}
+func (_Commit_Link_List__ReprAssembler) AssignBytes([]byte) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List.Repr"}.AssignBytes(nil)
+}
+func (_Commit_Link_List__ReprAssembler) AssignLink(ipld.Link) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Commit_Link_List.Repr"}.AssignLink(nil)
+}
+func (na *_Commit_Link_List__ReprAssembler) AssignNode(v ipld.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_Commit_Link_List); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		case midvalue:
+			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	if v.Kind() != ipld.Kind_List {
+		return ipld.ErrWrongKind{TypeName: "ipldgit.Commit_Link_List.Repr", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
+	}
+	itr := v.ListIterator()
+	for !itr.Done() {
+		_, v, err := itr.Next()
+		if err != nil {
+			return err
+		}
+		if err := na.AssembleValue().AssignNode(v); err != nil {
+			return err
+		}
+	}
+	return na.Finish()
+}
+func (_Commit_Link_List__ReprAssembler) Prototype() ipld.NodePrototype {
+	return _Commit_Link_List__ReprPrototype{}
+}
+func (la *_Commit_Link_List__ReprAssembler) valueFinishTidy() bool {
+	switch la.cm {
+	case schema.Maybe_Value:
+		la.va.w = nil
+		la.cm = schema.Maybe_Absent
+		la.state = laState_initial
+		la.va.reset()
+		return true
+	default:
+		return false
+	}
+}
+func (la *_Commit_Link_List__ReprAssembler) AssembleValue() ipld.NodeAssembler {
+	switch la.state {
+	case laState_initial:
+		// carry on
+	case laState_midValue:
+		if !la.valueFinishTidy() {
+			panic("invalid state: AssembleValue cannot be called when still in the middle of assembling the previous value")
+		} // if tidy success: carry on
+	case laState_finished:
+		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
+	}
+	la.w.x = append(la.w.x, _Commit_Link{})
+	la.state = laState_midValue
+	row := &la.w.x[len(la.w.x)-1]
+	la.va.w = row
+	la.va.m = &la.cm
+	return &la.va
+}
+func (la *_Commit_Link_List__ReprAssembler) Finish() error {
+	switch la.state {
+	case laState_initial:
+		// carry on
+	case laState_midValue:
+		if !la.valueFinishTidy() {
+			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on
+	case laState_finished:
+		panic("invalid state: Finish cannot be called on an assembler that's already finished")
+	}
+	la.state = laState_finished
+	*la.m = schema.Maybe_Value
+	return nil
+}
+func (la *_Commit_Link_List__ReprAssembler) ValuePrototype(_ int64) ipld.NodePrototype {
+	return _Commit_Link__ReprPrototype{}
 }
 
 func (n GpgSig) String() string {
@@ -2219,2195 +3018,6 @@ var _ ipld.Node = &_Link__Repr{}
 
 type _Link__ReprPrototype = _Link__Prototype
 type _Link__ReprAssembler = _Link__Assembler
-
-func (n LinkCommit) Link() ipld.Link {
-	return n.x
-}
-func (_LinkCommit__Prototype) FromLink(v ipld.Link) (LinkCommit, error) {
-	n := _LinkCommit{v}
-	return &n, nil
-}
-
-type _LinkCommit__Maybe struct {
-	m schema.Maybe
-	v _LinkCommit
-}
-type MaybeLinkCommit = *_LinkCommit__Maybe
-
-func (m MaybeLinkCommit) IsNull() bool {
-	return m.m == schema.Maybe_Null
-}
-func (m MaybeLinkCommit) IsAbsent() bool {
-	return m.m == schema.Maybe_Absent
-}
-func (m MaybeLinkCommit) Exists() bool {
-	return m.m == schema.Maybe_Value
-}
-func (m MaybeLinkCommit) AsNode() ipld.Node {
-	switch m.m {
-	case schema.Maybe_Absent:
-		return ipld.Absent
-	case schema.Maybe_Null:
-		return ipld.Null
-	case schema.Maybe_Value:
-		return &m.v
-	default:
-		panic("unreachable")
-	}
-}
-func (m MaybeLinkCommit) Must() LinkCommit {
-	if !m.Exists() {
-		panic("unbox of a maybe rejected")
-	}
-	return &m.v
-}
-
-var _ ipld.Node = (LinkCommit)(&_LinkCommit{})
-var _ schema.TypedNode = (LinkCommit)(&_LinkCommit{})
-
-func (LinkCommit) Kind() ipld.Kind {
-	return ipld.Kind_Link
-}
-func (LinkCommit) LookupByString(string) (ipld.Node, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.LookupByString("")
-}
-func (LinkCommit) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.LookupByNode(nil)
-}
-func (LinkCommit) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.LookupByIndex(0)
-}
-func (LinkCommit) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.LookupBySegment(seg)
-}
-func (LinkCommit) MapIterator() ipld.MapIterator {
-	return nil
-}
-func (LinkCommit) ListIterator() ipld.ListIterator {
-	return nil
-}
-func (LinkCommit) Length() int64 {
-	return -1
-}
-func (LinkCommit) IsAbsent() bool {
-	return false
-}
-func (LinkCommit) IsNull() bool {
-	return false
-}
-func (LinkCommit) AsBool() (bool, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.AsBool()
-}
-func (LinkCommit) AsInt() (int64, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.AsInt()
-}
-func (LinkCommit) AsFloat() (float64, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.AsFloat()
-}
-func (LinkCommit) AsString() (string, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.AsString()
-}
-func (LinkCommit) AsBytes() ([]byte, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkCommit"}.AsBytes()
-}
-func (n LinkCommit) AsLink() (ipld.Link, error) {
-	return n.x, nil
-}
-func (LinkCommit) Prototype() ipld.NodePrototype {
-	return _LinkCommit__Prototype{}
-}
-
-type _LinkCommit__Prototype struct{}
-
-func (_LinkCommit__Prototype) NewBuilder() ipld.NodeBuilder {
-	var nb _LinkCommit__Builder
-	nb.Reset()
-	return &nb
-}
-
-type _LinkCommit__Builder struct {
-	_LinkCommit__Assembler
-}
-
-func (nb *_LinkCommit__Builder) Build() ipld.Node {
-	if *nb.m != schema.Maybe_Value {
-		panic("invalid state: cannot call Build on an assembler that's not finished")
-	}
-	return nb.w
-}
-func (nb *_LinkCommit__Builder) Reset() {
-	var w _LinkCommit
-	var m schema.Maybe
-	*nb = _LinkCommit__Builder{_LinkCommit__Assembler{w: &w, m: &m}}
-}
-
-type _LinkCommit__Assembler struct {
-	w *_LinkCommit
-	m *schema.Maybe
-}
-
-func (na *_LinkCommit__Assembler) reset() {}
-func (_LinkCommit__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.BeginMap(0)
-}
-func (_LinkCommit__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.BeginList(0)
-}
-func (na *_LinkCommit__Assembler) AssignNull() error {
-	switch *na.m {
-	case allowNull:
-		*na.m = schema.Maybe_Null
-		return nil
-	case schema.Maybe_Absent:
-		return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.AssignNull()
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	}
-	panic("unreachable")
-}
-func (_LinkCommit__Assembler) AssignBool(bool) error {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.AssignBool(false)
-}
-func (_LinkCommit__Assembler) AssignInt(int64) error {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.AssignInt(0)
-}
-func (_LinkCommit__Assembler) AssignFloat(float64) error {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.AssignFloat(0)
-}
-func (_LinkCommit__Assembler) AssignString(string) error {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.AssignString("")
-}
-func (_LinkCommit__Assembler) AssignBytes([]byte) error {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkCommit"}.AssignBytes(nil)
-}
-func (na *_LinkCommit__Assembler) AssignLink(v ipld.Link) error {
-	switch *na.m {
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	}
-	na.w.x = v
-	*na.m = schema.Maybe_Value
-	return nil
-}
-func (na *_LinkCommit__Assembler) AssignNode(v ipld.Node) error {
-	if v.IsNull() {
-		return na.AssignNull()
-	}
-	if v2, ok := v.(*_LinkCommit); ok {
-		switch *na.m {
-		case schema.Maybe_Value, schema.Maybe_Null:
-			panic("invalid state: cannot assign into assembler that's already finished")
-		}
-		*na.w = *v2
-		*na.m = schema.Maybe_Value
-		return nil
-	}
-	if v2, err := v.AsLink(); err != nil {
-		return err
-	} else {
-		return na.AssignLink(v2)
-	}
-}
-func (_LinkCommit__Assembler) Prototype() ipld.NodePrototype {
-	return _LinkCommit__Prototype{}
-}
-func (LinkCommit) Type() schema.Type {
-	return nil /*TODO:typelit*/
-}
-func (LinkCommit) LinkTargetNodePrototype() ipld.NodePrototype {
-	return Type.Commit__Repr
-}
-func (n LinkCommit) Representation() ipld.Node {
-	return (*_LinkCommit__Repr)(n)
-}
-
-type _LinkCommit__Repr = _LinkCommit
-
-var _ ipld.Node = &_LinkCommit__Repr{}
-
-type _LinkCommit__ReprPrototype = _LinkCommit__Prototype
-type _LinkCommit__ReprAssembler = _LinkCommit__Assembler
-
-func (n LinkTree) Link() ipld.Link {
-	return n.x
-}
-func (_LinkTree__Prototype) FromLink(v ipld.Link) (LinkTree, error) {
-	n := _LinkTree{v}
-	return &n, nil
-}
-
-type _LinkTree__Maybe struct {
-	m schema.Maybe
-	v _LinkTree
-}
-type MaybeLinkTree = *_LinkTree__Maybe
-
-func (m MaybeLinkTree) IsNull() bool {
-	return m.m == schema.Maybe_Null
-}
-func (m MaybeLinkTree) IsAbsent() bool {
-	return m.m == schema.Maybe_Absent
-}
-func (m MaybeLinkTree) Exists() bool {
-	return m.m == schema.Maybe_Value
-}
-func (m MaybeLinkTree) AsNode() ipld.Node {
-	switch m.m {
-	case schema.Maybe_Absent:
-		return ipld.Absent
-	case schema.Maybe_Null:
-		return ipld.Null
-	case schema.Maybe_Value:
-		return &m.v
-	default:
-		panic("unreachable")
-	}
-}
-func (m MaybeLinkTree) Must() LinkTree {
-	if !m.Exists() {
-		panic("unbox of a maybe rejected")
-	}
-	return &m.v
-}
-
-var _ ipld.Node = (LinkTree)(&_LinkTree{})
-var _ schema.TypedNode = (LinkTree)(&_LinkTree{})
-
-func (LinkTree) Kind() ipld.Kind {
-	return ipld.Kind_Link
-}
-func (LinkTree) LookupByString(string) (ipld.Node, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkTree"}.LookupByString("")
-}
-func (LinkTree) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkTree"}.LookupByNode(nil)
-}
-func (LinkTree) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkTree"}.LookupByIndex(0)
-}
-func (LinkTree) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkTree"}.LookupBySegment(seg)
-}
-func (LinkTree) MapIterator() ipld.MapIterator {
-	return nil
-}
-func (LinkTree) ListIterator() ipld.ListIterator {
-	return nil
-}
-func (LinkTree) Length() int64 {
-	return -1
-}
-func (LinkTree) IsAbsent() bool {
-	return false
-}
-func (LinkTree) IsNull() bool {
-	return false
-}
-func (LinkTree) AsBool() (bool, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkTree"}.AsBool()
-}
-func (LinkTree) AsInt() (int64, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkTree"}.AsInt()
-}
-func (LinkTree) AsFloat() (float64, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkTree"}.AsFloat()
-}
-func (LinkTree) AsString() (string, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkTree"}.AsString()
-}
-func (LinkTree) AsBytes() ([]byte, error) {
-	return mixins.Link{TypeName: "ipldgit.LinkTree"}.AsBytes()
-}
-func (n LinkTree) AsLink() (ipld.Link, error) {
-	return n.x, nil
-}
-func (LinkTree) Prototype() ipld.NodePrototype {
-	return _LinkTree__Prototype{}
-}
-
-type _LinkTree__Prototype struct{}
-
-func (_LinkTree__Prototype) NewBuilder() ipld.NodeBuilder {
-	var nb _LinkTree__Builder
-	nb.Reset()
-	return &nb
-}
-
-type _LinkTree__Builder struct {
-	_LinkTree__Assembler
-}
-
-func (nb *_LinkTree__Builder) Build() ipld.Node {
-	if *nb.m != schema.Maybe_Value {
-		panic("invalid state: cannot call Build on an assembler that's not finished")
-	}
-	return nb.w
-}
-func (nb *_LinkTree__Builder) Reset() {
-	var w _LinkTree
-	var m schema.Maybe
-	*nb = _LinkTree__Builder{_LinkTree__Assembler{w: &w, m: &m}}
-}
-
-type _LinkTree__Assembler struct {
-	w *_LinkTree
-	m *schema.Maybe
-}
-
-func (na *_LinkTree__Assembler) reset() {}
-func (_LinkTree__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkTree"}.BeginMap(0)
-}
-func (_LinkTree__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkTree"}.BeginList(0)
-}
-func (na *_LinkTree__Assembler) AssignNull() error {
-	switch *na.m {
-	case allowNull:
-		*na.m = schema.Maybe_Null
-		return nil
-	case schema.Maybe_Absent:
-		return mixins.LinkAssembler{TypeName: "ipldgit.LinkTree"}.AssignNull()
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	}
-	panic("unreachable")
-}
-func (_LinkTree__Assembler) AssignBool(bool) error {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkTree"}.AssignBool(false)
-}
-func (_LinkTree__Assembler) AssignInt(int64) error {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkTree"}.AssignInt(0)
-}
-func (_LinkTree__Assembler) AssignFloat(float64) error {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkTree"}.AssignFloat(0)
-}
-func (_LinkTree__Assembler) AssignString(string) error {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkTree"}.AssignString("")
-}
-func (_LinkTree__Assembler) AssignBytes([]byte) error {
-	return mixins.LinkAssembler{TypeName: "ipldgit.LinkTree"}.AssignBytes(nil)
-}
-func (na *_LinkTree__Assembler) AssignLink(v ipld.Link) error {
-	switch *na.m {
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	}
-	na.w.x = v
-	*na.m = schema.Maybe_Value
-	return nil
-}
-func (na *_LinkTree__Assembler) AssignNode(v ipld.Node) error {
-	if v.IsNull() {
-		return na.AssignNull()
-	}
-	if v2, ok := v.(*_LinkTree); ok {
-		switch *na.m {
-		case schema.Maybe_Value, schema.Maybe_Null:
-			panic("invalid state: cannot assign into assembler that's already finished")
-		}
-		*na.w = *v2
-		*na.m = schema.Maybe_Value
-		return nil
-	}
-	if v2, err := v.AsLink(); err != nil {
-		return err
-	} else {
-		return na.AssignLink(v2)
-	}
-}
-func (_LinkTree__Assembler) Prototype() ipld.NodePrototype {
-	return _LinkTree__Prototype{}
-}
-func (LinkTree) Type() schema.Type {
-	return nil /*TODO:typelit*/
-}
-func (LinkTree) LinkTargetNodePrototype() ipld.NodePrototype {
-	return Type.Tree__Repr
-}
-func (n LinkTree) Representation() ipld.Node {
-	return (*_LinkTree__Repr)(n)
-}
-
-type _LinkTree__Repr = _LinkTree
-
-var _ ipld.Node = &_LinkTree__Repr{}
-
-type _LinkTree__ReprPrototype = _LinkTree__Prototype
-type _LinkTree__ReprAssembler = _LinkTree__Assembler
-
-func (n *_ListParents) Lookup(idx int64) LinkCommit {
-	if n.Length() <= idx {
-		return nil
-	}
-	v := &n.x[idx]
-	return v
-}
-func (n *_ListParents) LookupMaybe(idx int64) MaybeLinkCommit {
-	if n.Length() <= idx {
-		return nil
-	}
-	v := &n.x[idx]
-	return &_LinkCommit__Maybe{
-		m: schema.Maybe_Value,
-		v: *v,
-	}
-}
-
-var _ListParents__valueAbsent = _LinkCommit__Maybe{m: schema.Maybe_Absent}
-
-func (n ListParents) Iterator() *ListParents__Itr {
-	return &ListParents__Itr{n, 0}
-}
-
-type ListParents__Itr struct {
-	n   ListParents
-	idx int
-}
-
-func (itr *ListParents__Itr) Next() (idx int64, v LinkCommit) {
-	if itr.idx >= len(itr.n.x) {
-		return -1, nil
-	}
-	idx = int64(itr.idx)
-	v = &itr.n.x[itr.idx]
-	itr.idx++
-	return
-}
-func (itr *ListParents__Itr) Done() bool {
-	return itr.idx >= len(itr.n.x)
-}
-
-type _ListParents__Maybe struct {
-	m schema.Maybe
-	v _ListParents
-}
-type MaybeListParents = *_ListParents__Maybe
-
-func (m MaybeListParents) IsNull() bool {
-	return m.m == schema.Maybe_Null
-}
-func (m MaybeListParents) IsAbsent() bool {
-	return m.m == schema.Maybe_Absent
-}
-func (m MaybeListParents) Exists() bool {
-	return m.m == schema.Maybe_Value
-}
-func (m MaybeListParents) AsNode() ipld.Node {
-	switch m.m {
-	case schema.Maybe_Absent:
-		return ipld.Absent
-	case schema.Maybe_Null:
-		return ipld.Null
-	case schema.Maybe_Value:
-		return &m.v
-	default:
-		panic("unreachable")
-	}
-}
-func (m MaybeListParents) Must() ListParents {
-	if !m.Exists() {
-		panic("unbox of a maybe rejected")
-	}
-	return &m.v
-}
-
-var _ ipld.Node = (ListParents)(&_ListParents{})
-var _ schema.TypedNode = (ListParents)(&_ListParents{})
-
-func (ListParents) Kind() ipld.Kind {
-	return ipld.Kind_List
-}
-func (ListParents) LookupByString(string) (ipld.Node, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents"}.LookupByString("")
-}
-func (n ListParents) LookupByNode(k ipld.Node) (ipld.Node, error) {
-	idx, err := k.AsInt()
-	if err != nil {
-		return nil, err
-	}
-	return n.LookupByIndex(idx)
-}
-func (n ListParents) LookupByIndex(idx int64) (ipld.Node, error) {
-	if n.Length() <= idx {
-		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
-	}
-	v := &n.x[idx]
-	return v, nil
-}
-func (n ListParents) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	i, err := seg.Index()
-	if err != nil {
-		return nil, ipld.ErrInvalidSegmentForList{TypeName: "ipldgit.ListParents", TroubleSegment: seg, Reason: err}
-	}
-	return n.LookupByIndex(i)
-}
-func (ListParents) MapIterator() ipld.MapIterator {
-	return nil
-}
-func (n ListParents) ListIterator() ipld.ListIterator {
-	return &_ListParents__ListItr{n, 0}
-}
-
-type _ListParents__ListItr struct {
-	n   ListParents
-	idx int
-}
-
-func (itr *_ListParents__ListItr) Next() (idx int64, v ipld.Node, _ error) {
-	if itr.idx >= len(itr.n.x) {
-		return -1, nil, ipld.ErrIteratorOverread{}
-	}
-	idx = int64(itr.idx)
-	x := &itr.n.x[itr.idx]
-	v = x
-	itr.idx++
-	return
-}
-func (itr *_ListParents__ListItr) Done() bool {
-	return itr.idx >= len(itr.n.x)
-}
-
-func (n ListParents) Length() int64 {
-	return int64(len(n.x))
-}
-func (ListParents) IsAbsent() bool {
-	return false
-}
-func (ListParents) IsNull() bool {
-	return false
-}
-func (ListParents) AsBool() (bool, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents"}.AsBool()
-}
-func (ListParents) AsInt() (int64, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents"}.AsInt()
-}
-func (ListParents) AsFloat() (float64, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents"}.AsFloat()
-}
-func (ListParents) AsString() (string, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents"}.AsString()
-}
-func (ListParents) AsBytes() ([]byte, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents"}.AsBytes()
-}
-func (ListParents) AsLink() (ipld.Link, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents"}.AsLink()
-}
-func (ListParents) Prototype() ipld.NodePrototype {
-	return _ListParents__Prototype{}
-}
-
-type _ListParents__Prototype struct{}
-
-func (_ListParents__Prototype) NewBuilder() ipld.NodeBuilder {
-	var nb _ListParents__Builder
-	nb.Reset()
-	return &nb
-}
-
-type _ListParents__Builder struct {
-	_ListParents__Assembler
-}
-
-func (nb *_ListParents__Builder) Build() ipld.Node {
-	if *nb.m != schema.Maybe_Value {
-		panic("invalid state: cannot call Build on an assembler that's not finished")
-	}
-	return nb.w
-}
-func (nb *_ListParents__Builder) Reset() {
-	var w _ListParents
-	var m schema.Maybe
-	*nb = _ListParents__Builder{_ListParents__Assembler{w: &w, m: &m}}
-}
-
-type _ListParents__Assembler struct {
-	w     *_ListParents
-	m     *schema.Maybe
-	state laState
-
-	cm schema.Maybe
-	va _LinkCommit__Assembler
-}
-
-func (na *_ListParents__Assembler) reset() {
-	na.state = laState_initial
-	na.va.reset()
-}
-func (_ListParents__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents"}.BeginMap(0)
-}
-func (na *_ListParents__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	switch *na.m {
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	case midvalue:
-		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
-	}
-	*na.m = midvalue
-	if sizeHint < 0 {
-		sizeHint = 0
-	}
-	if sizeHint > 0 {
-		na.w.x = make([]_LinkCommit, 0, sizeHint)
-	}
-	return na, nil
-}
-func (na *_ListParents__Assembler) AssignNull() error {
-	switch *na.m {
-	case allowNull:
-		*na.m = schema.Maybe_Null
-		return nil
-	case schema.Maybe_Absent:
-		return mixins.ListAssembler{TypeName: "ipldgit.ListParents"}.AssignNull()
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	case midvalue:
-		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-	}
-	panic("unreachable")
-}
-func (_ListParents__Assembler) AssignBool(bool) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents"}.AssignBool(false)
-}
-func (_ListParents__Assembler) AssignInt(int64) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents"}.AssignInt(0)
-}
-func (_ListParents__Assembler) AssignFloat(float64) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents"}.AssignFloat(0)
-}
-func (_ListParents__Assembler) AssignString(string) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents"}.AssignString("")
-}
-func (_ListParents__Assembler) AssignBytes([]byte) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents"}.AssignBytes(nil)
-}
-func (_ListParents__Assembler) AssignLink(ipld.Link) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents"}.AssignLink(nil)
-}
-func (na *_ListParents__Assembler) AssignNode(v ipld.Node) error {
-	if v.IsNull() {
-		return na.AssignNull()
-	}
-	if v2, ok := v.(*_ListParents); ok {
-		switch *na.m {
-		case schema.Maybe_Value, schema.Maybe_Null:
-			panic("invalid state: cannot assign into assembler that's already finished")
-		case midvalue:
-			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		*na.w = *v2
-		*na.m = schema.Maybe_Value
-		return nil
-	}
-	if v.Kind() != ipld.Kind_List {
-		return ipld.ErrWrongKind{TypeName: "ipldgit.ListParents", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
-	}
-	itr := v.ListIterator()
-	for !itr.Done() {
-		_, v, err := itr.Next()
-		if err != nil {
-			return err
-		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
-			return err
-		}
-	}
-	return na.Finish()
-}
-func (_ListParents__Assembler) Prototype() ipld.NodePrototype {
-	return _ListParents__Prototype{}
-}
-func (la *_ListParents__Assembler) valueFinishTidy() bool {
-	switch la.cm {
-	case schema.Maybe_Value:
-		la.va.w = nil
-		la.cm = schema.Maybe_Absent
-		la.state = laState_initial
-		la.va.reset()
-		return true
-	default:
-		return false
-	}
-}
-func (la *_ListParents__Assembler) AssembleValue() ipld.NodeAssembler {
-	switch la.state {
-	case laState_initial:
-		// carry on
-	case laState_midValue:
-		if !la.valueFinishTidy() {
-			panic("invalid state: AssembleValue cannot be called when still in the middle of assembling the previous value")
-		} // if tidy success: carry on
-	case laState_finished:
-		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
-	}
-	la.w.x = append(la.w.x, _LinkCommit{})
-	la.state = laState_midValue
-	row := &la.w.x[len(la.w.x)-1]
-	la.va.w = row
-	la.va.m = &la.cm
-	return &la.va
-}
-func (la *_ListParents__Assembler) Finish() error {
-	switch la.state {
-	case laState_initial:
-		// carry on
-	case laState_midValue:
-		if !la.valueFinishTidy() {
-			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
-		} // if tidy success: carry on
-	case laState_finished:
-		panic("invalid state: Finish cannot be called on an assembler that's already finished")
-	}
-	la.state = laState_finished
-	*la.m = schema.Maybe_Value
-	return nil
-}
-func (la *_ListParents__Assembler) ValuePrototype(_ int64) ipld.NodePrototype {
-	return _LinkCommit__Prototype{}
-}
-func (ListParents) Type() schema.Type {
-	return nil /*TODO:typelit*/
-}
-func (n ListParents) Representation() ipld.Node {
-	return (*_ListParents__Repr)(n)
-}
-
-type _ListParents__Repr _ListParents
-
-var _ ipld.Node = &_ListParents__Repr{}
-
-func (_ListParents__Repr) Kind() ipld.Kind {
-	return ipld.Kind_List
-}
-func (_ListParents__Repr) LookupByString(string) (ipld.Node, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents.Repr"}.LookupByString("")
-}
-func (nr *_ListParents__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
-	v, err := (ListParents)(nr).LookupByNode(k)
-	if err != nil || v == ipld.Null {
-		return v, err
-	}
-	return v.(LinkCommit).Representation(), nil
-}
-func (nr *_ListParents__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	v, err := (ListParents)(nr).LookupByIndex(idx)
-	if err != nil || v == ipld.Null {
-		return v, err
-	}
-	return v.(LinkCommit).Representation(), nil
-}
-func (n _ListParents__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	i, err := seg.Index()
-	if err != nil {
-		return nil, ipld.ErrInvalidSegmentForList{TypeName: "ipldgit.ListParents.Repr", TroubleSegment: seg, Reason: err}
-	}
-	return n.LookupByIndex(i)
-}
-func (_ListParents__Repr) MapIterator() ipld.MapIterator {
-	return nil
-}
-func (nr *_ListParents__Repr) ListIterator() ipld.ListIterator {
-	return &_ListParents__ReprListItr{(ListParents)(nr), 0}
-}
-
-type _ListParents__ReprListItr _ListParents__ListItr
-
-func (itr *_ListParents__ReprListItr) Next() (idx int64, v ipld.Node, err error) {
-	idx, v, err = (*_ListParents__ListItr)(itr).Next()
-	if err != nil || v == ipld.Null {
-		return
-	}
-	return idx, v.(LinkCommit).Representation(), nil
-}
-func (itr *_ListParents__ReprListItr) Done() bool {
-	return (*_ListParents__ListItr)(itr).Done()
-}
-
-func (rn *_ListParents__Repr) Length() int64 {
-	return int64(len(rn.x))
-}
-func (_ListParents__Repr) IsAbsent() bool {
-	return false
-}
-func (_ListParents__Repr) IsNull() bool {
-	return false
-}
-func (_ListParents__Repr) AsBool() (bool, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents.Repr"}.AsBool()
-}
-func (_ListParents__Repr) AsInt() (int64, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents.Repr"}.AsInt()
-}
-func (_ListParents__Repr) AsFloat() (float64, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents.Repr"}.AsFloat()
-}
-func (_ListParents__Repr) AsString() (string, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents.Repr"}.AsString()
-}
-func (_ListParents__Repr) AsBytes() ([]byte, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents.Repr"}.AsBytes()
-}
-func (_ListParents__Repr) AsLink() (ipld.Link, error) {
-	return mixins.List{TypeName: "ipldgit.ListParents.Repr"}.AsLink()
-}
-func (_ListParents__Repr) Prototype() ipld.NodePrototype {
-	return _ListParents__ReprPrototype{}
-}
-
-type _ListParents__ReprPrototype struct{}
-
-func (_ListParents__ReprPrototype) NewBuilder() ipld.NodeBuilder {
-	var nb _ListParents__ReprBuilder
-	nb.Reset()
-	return &nb
-}
-
-type _ListParents__ReprBuilder struct {
-	_ListParents__ReprAssembler
-}
-
-func (nb *_ListParents__ReprBuilder) Build() ipld.Node {
-	if *nb.m != schema.Maybe_Value {
-		panic("invalid state: cannot call Build on an assembler that's not finished")
-	}
-	return nb.w
-}
-func (nb *_ListParents__ReprBuilder) Reset() {
-	var w _ListParents
-	var m schema.Maybe
-	*nb = _ListParents__ReprBuilder{_ListParents__ReprAssembler{w: &w, m: &m}}
-}
-
-type _ListParents__ReprAssembler struct {
-	w     *_ListParents
-	m     *schema.Maybe
-	state laState
-
-	cm schema.Maybe
-	va _LinkCommit__ReprAssembler
-}
-
-func (na *_ListParents__ReprAssembler) reset() {
-	na.state = laState_initial
-	na.va.reset()
-}
-func (_ListParents__ReprAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents.Repr"}.BeginMap(0)
-}
-func (na *_ListParents__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	switch *na.m {
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	case midvalue:
-		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
-	}
-	*na.m = midvalue
-	if sizeHint < 0 {
-		sizeHint = 0
-	}
-	if sizeHint > 0 {
-		na.w.x = make([]_LinkCommit, 0, sizeHint)
-	}
-	return na, nil
-}
-func (na *_ListParents__ReprAssembler) AssignNull() error {
-	switch *na.m {
-	case allowNull:
-		*na.m = schema.Maybe_Null
-		return nil
-	case schema.Maybe_Absent:
-		return mixins.ListAssembler{TypeName: "ipldgit.ListParents.Repr.Repr"}.AssignNull()
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	case midvalue:
-		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-	}
-	panic("unreachable")
-}
-func (_ListParents__ReprAssembler) AssignBool(bool) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents.Repr"}.AssignBool(false)
-}
-func (_ListParents__ReprAssembler) AssignInt(int64) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents.Repr"}.AssignInt(0)
-}
-func (_ListParents__ReprAssembler) AssignFloat(float64) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents.Repr"}.AssignFloat(0)
-}
-func (_ListParents__ReprAssembler) AssignString(string) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents.Repr"}.AssignString("")
-}
-func (_ListParents__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents.Repr"}.AssignBytes(nil)
-}
-func (_ListParents__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListParents.Repr"}.AssignLink(nil)
-}
-func (na *_ListParents__ReprAssembler) AssignNode(v ipld.Node) error {
-	if v.IsNull() {
-		return na.AssignNull()
-	}
-	if v2, ok := v.(*_ListParents); ok {
-		switch *na.m {
-		case schema.Maybe_Value, schema.Maybe_Null:
-			panic("invalid state: cannot assign into assembler that's already finished")
-		case midvalue:
-			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		*na.w = *v2
-		*na.m = schema.Maybe_Value
-		return nil
-	}
-	if v.Kind() != ipld.Kind_List {
-		return ipld.ErrWrongKind{TypeName: "ipldgit.ListParents.Repr", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
-	}
-	itr := v.ListIterator()
-	for !itr.Done() {
-		_, v, err := itr.Next()
-		if err != nil {
-			return err
-		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
-			return err
-		}
-	}
-	return na.Finish()
-}
-func (_ListParents__ReprAssembler) Prototype() ipld.NodePrototype {
-	return _ListParents__ReprPrototype{}
-}
-func (la *_ListParents__ReprAssembler) valueFinishTidy() bool {
-	switch la.cm {
-	case schema.Maybe_Value:
-		la.va.w = nil
-		la.cm = schema.Maybe_Absent
-		la.state = laState_initial
-		la.va.reset()
-		return true
-	default:
-		return false
-	}
-}
-func (la *_ListParents__ReprAssembler) AssembleValue() ipld.NodeAssembler {
-	switch la.state {
-	case laState_initial:
-		// carry on
-	case laState_midValue:
-		if !la.valueFinishTidy() {
-			panic("invalid state: AssembleValue cannot be called when still in the middle of assembling the previous value")
-		} // if tidy success: carry on
-	case laState_finished:
-		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
-	}
-	la.w.x = append(la.w.x, _LinkCommit{})
-	la.state = laState_midValue
-	row := &la.w.x[len(la.w.x)-1]
-	la.va.w = row
-	la.va.m = &la.cm
-	return &la.va
-}
-func (la *_ListParents__ReprAssembler) Finish() error {
-	switch la.state {
-	case laState_initial:
-		// carry on
-	case laState_midValue:
-		if !la.valueFinishTidy() {
-			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
-		} // if tidy success: carry on
-	case laState_finished:
-		panic("invalid state: Finish cannot be called on an assembler that's already finished")
-	}
-	la.state = laState_finished
-	*la.m = schema.Maybe_Value
-	return nil
-}
-func (la *_ListParents__ReprAssembler) ValuePrototype(_ int64) ipld.NodePrototype {
-	return _LinkCommit__ReprPrototype{}
-}
-
-func (n *_ListString) Lookup(idx int64) String {
-	if n.Length() <= idx {
-		return nil
-	}
-	v := &n.x[idx]
-	return v
-}
-func (n *_ListString) LookupMaybe(idx int64) MaybeString {
-	if n.Length() <= idx {
-		return nil
-	}
-	v := &n.x[idx]
-	return &_String__Maybe{
-		m: schema.Maybe_Value,
-		v: *v,
-	}
-}
-
-var _ListString__valueAbsent = _String__Maybe{m: schema.Maybe_Absent}
-
-func (n ListString) Iterator() *ListString__Itr {
-	return &ListString__Itr{n, 0}
-}
-
-type ListString__Itr struct {
-	n   ListString
-	idx int
-}
-
-func (itr *ListString__Itr) Next() (idx int64, v String) {
-	if itr.idx >= len(itr.n.x) {
-		return -1, nil
-	}
-	idx = int64(itr.idx)
-	v = &itr.n.x[itr.idx]
-	itr.idx++
-	return
-}
-func (itr *ListString__Itr) Done() bool {
-	return itr.idx >= len(itr.n.x)
-}
-
-type _ListString__Maybe struct {
-	m schema.Maybe
-	v _ListString
-}
-type MaybeListString = *_ListString__Maybe
-
-func (m MaybeListString) IsNull() bool {
-	return m.m == schema.Maybe_Null
-}
-func (m MaybeListString) IsAbsent() bool {
-	return m.m == schema.Maybe_Absent
-}
-func (m MaybeListString) Exists() bool {
-	return m.m == schema.Maybe_Value
-}
-func (m MaybeListString) AsNode() ipld.Node {
-	switch m.m {
-	case schema.Maybe_Absent:
-		return ipld.Absent
-	case schema.Maybe_Null:
-		return ipld.Null
-	case schema.Maybe_Value:
-		return &m.v
-	default:
-		panic("unreachable")
-	}
-}
-func (m MaybeListString) Must() ListString {
-	if !m.Exists() {
-		panic("unbox of a maybe rejected")
-	}
-	return &m.v
-}
-
-var _ ipld.Node = (ListString)(&_ListString{})
-var _ schema.TypedNode = (ListString)(&_ListString{})
-
-func (ListString) Kind() ipld.Kind {
-	return ipld.Kind_List
-}
-func (ListString) LookupByString(string) (ipld.Node, error) {
-	return mixins.List{TypeName: "ipldgit.ListString"}.LookupByString("")
-}
-func (n ListString) LookupByNode(k ipld.Node) (ipld.Node, error) {
-	idx, err := k.AsInt()
-	if err != nil {
-		return nil, err
-	}
-	return n.LookupByIndex(idx)
-}
-func (n ListString) LookupByIndex(idx int64) (ipld.Node, error) {
-	if n.Length() <= idx {
-		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
-	}
-	v := &n.x[idx]
-	return v, nil
-}
-func (n ListString) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	i, err := seg.Index()
-	if err != nil {
-		return nil, ipld.ErrInvalidSegmentForList{TypeName: "ipldgit.ListString", TroubleSegment: seg, Reason: err}
-	}
-	return n.LookupByIndex(i)
-}
-func (ListString) MapIterator() ipld.MapIterator {
-	return nil
-}
-func (n ListString) ListIterator() ipld.ListIterator {
-	return &_ListString__ListItr{n, 0}
-}
-
-type _ListString__ListItr struct {
-	n   ListString
-	idx int
-}
-
-func (itr *_ListString__ListItr) Next() (idx int64, v ipld.Node, _ error) {
-	if itr.idx >= len(itr.n.x) {
-		return -1, nil, ipld.ErrIteratorOverread{}
-	}
-	idx = int64(itr.idx)
-	x := &itr.n.x[itr.idx]
-	v = x
-	itr.idx++
-	return
-}
-func (itr *_ListString__ListItr) Done() bool {
-	return itr.idx >= len(itr.n.x)
-}
-
-func (n ListString) Length() int64 {
-	return int64(len(n.x))
-}
-func (ListString) IsAbsent() bool {
-	return false
-}
-func (ListString) IsNull() bool {
-	return false
-}
-func (ListString) AsBool() (bool, error) {
-	return mixins.List{TypeName: "ipldgit.ListString"}.AsBool()
-}
-func (ListString) AsInt() (int64, error) {
-	return mixins.List{TypeName: "ipldgit.ListString"}.AsInt()
-}
-func (ListString) AsFloat() (float64, error) {
-	return mixins.List{TypeName: "ipldgit.ListString"}.AsFloat()
-}
-func (ListString) AsString() (string, error) {
-	return mixins.List{TypeName: "ipldgit.ListString"}.AsString()
-}
-func (ListString) AsBytes() ([]byte, error) {
-	return mixins.List{TypeName: "ipldgit.ListString"}.AsBytes()
-}
-func (ListString) AsLink() (ipld.Link, error) {
-	return mixins.List{TypeName: "ipldgit.ListString"}.AsLink()
-}
-func (ListString) Prototype() ipld.NodePrototype {
-	return _ListString__Prototype{}
-}
-
-type _ListString__Prototype struct{}
-
-func (_ListString__Prototype) NewBuilder() ipld.NodeBuilder {
-	var nb _ListString__Builder
-	nb.Reset()
-	return &nb
-}
-
-type _ListString__Builder struct {
-	_ListString__Assembler
-}
-
-func (nb *_ListString__Builder) Build() ipld.Node {
-	if *nb.m != schema.Maybe_Value {
-		panic("invalid state: cannot call Build on an assembler that's not finished")
-	}
-	return nb.w
-}
-func (nb *_ListString__Builder) Reset() {
-	var w _ListString
-	var m schema.Maybe
-	*nb = _ListString__Builder{_ListString__Assembler{w: &w, m: &m}}
-}
-
-type _ListString__Assembler struct {
-	w     *_ListString
-	m     *schema.Maybe
-	state laState
-
-	cm schema.Maybe
-	va _String__Assembler
-}
-
-func (na *_ListString__Assembler) reset() {
-	na.state = laState_initial
-	na.va.reset()
-}
-func (_ListString__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString"}.BeginMap(0)
-}
-func (na *_ListString__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	switch *na.m {
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	case midvalue:
-		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
-	}
-	*na.m = midvalue
-	if sizeHint < 0 {
-		sizeHint = 0
-	}
-	if sizeHint > 0 {
-		na.w.x = make([]_String, 0, sizeHint)
-	}
-	return na, nil
-}
-func (na *_ListString__Assembler) AssignNull() error {
-	switch *na.m {
-	case allowNull:
-		*na.m = schema.Maybe_Null
-		return nil
-	case schema.Maybe_Absent:
-		return mixins.ListAssembler{TypeName: "ipldgit.ListString"}.AssignNull()
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	case midvalue:
-		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-	}
-	panic("unreachable")
-}
-func (_ListString__Assembler) AssignBool(bool) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString"}.AssignBool(false)
-}
-func (_ListString__Assembler) AssignInt(int64) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString"}.AssignInt(0)
-}
-func (_ListString__Assembler) AssignFloat(float64) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString"}.AssignFloat(0)
-}
-func (_ListString__Assembler) AssignString(string) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString"}.AssignString("")
-}
-func (_ListString__Assembler) AssignBytes([]byte) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString"}.AssignBytes(nil)
-}
-func (_ListString__Assembler) AssignLink(ipld.Link) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString"}.AssignLink(nil)
-}
-func (na *_ListString__Assembler) AssignNode(v ipld.Node) error {
-	if v.IsNull() {
-		return na.AssignNull()
-	}
-	if v2, ok := v.(*_ListString); ok {
-		switch *na.m {
-		case schema.Maybe_Value, schema.Maybe_Null:
-			panic("invalid state: cannot assign into assembler that's already finished")
-		case midvalue:
-			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		*na.w = *v2
-		*na.m = schema.Maybe_Value
-		return nil
-	}
-	if v.Kind() != ipld.Kind_List {
-		return ipld.ErrWrongKind{TypeName: "ipldgit.ListString", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
-	}
-	itr := v.ListIterator()
-	for !itr.Done() {
-		_, v, err := itr.Next()
-		if err != nil {
-			return err
-		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
-			return err
-		}
-	}
-	return na.Finish()
-}
-func (_ListString__Assembler) Prototype() ipld.NodePrototype {
-	return _ListString__Prototype{}
-}
-func (la *_ListString__Assembler) valueFinishTidy() bool {
-	switch la.cm {
-	case schema.Maybe_Value:
-		la.va.w = nil
-		la.cm = schema.Maybe_Absent
-		la.state = laState_initial
-		la.va.reset()
-		return true
-	default:
-		return false
-	}
-}
-func (la *_ListString__Assembler) AssembleValue() ipld.NodeAssembler {
-	switch la.state {
-	case laState_initial:
-		// carry on
-	case laState_midValue:
-		if !la.valueFinishTidy() {
-			panic("invalid state: AssembleValue cannot be called when still in the middle of assembling the previous value")
-		} // if tidy success: carry on
-	case laState_finished:
-		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
-	}
-	la.w.x = append(la.w.x, _String{})
-	la.state = laState_midValue
-	row := &la.w.x[len(la.w.x)-1]
-	la.va.w = row
-	la.va.m = &la.cm
-	return &la.va
-}
-func (la *_ListString__Assembler) Finish() error {
-	switch la.state {
-	case laState_initial:
-		// carry on
-	case laState_midValue:
-		if !la.valueFinishTidy() {
-			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
-		} // if tidy success: carry on
-	case laState_finished:
-		panic("invalid state: Finish cannot be called on an assembler that's already finished")
-	}
-	la.state = laState_finished
-	*la.m = schema.Maybe_Value
-	return nil
-}
-func (la *_ListString__Assembler) ValuePrototype(_ int64) ipld.NodePrototype {
-	return _String__Prototype{}
-}
-func (ListString) Type() schema.Type {
-	return nil /*TODO:typelit*/
-}
-func (n ListString) Representation() ipld.Node {
-	return (*_ListString__Repr)(n)
-}
-
-type _ListString__Repr _ListString
-
-var _ ipld.Node = &_ListString__Repr{}
-
-func (_ListString__Repr) Kind() ipld.Kind {
-	return ipld.Kind_List
-}
-func (_ListString__Repr) LookupByString(string) (ipld.Node, error) {
-	return mixins.List{TypeName: "ipldgit.ListString.Repr"}.LookupByString("")
-}
-func (nr *_ListString__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
-	v, err := (ListString)(nr).LookupByNode(k)
-	if err != nil || v == ipld.Null {
-		return v, err
-	}
-	return v.(String).Representation(), nil
-}
-func (nr *_ListString__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	v, err := (ListString)(nr).LookupByIndex(idx)
-	if err != nil || v == ipld.Null {
-		return v, err
-	}
-	return v.(String).Representation(), nil
-}
-func (n _ListString__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	i, err := seg.Index()
-	if err != nil {
-		return nil, ipld.ErrInvalidSegmentForList{TypeName: "ipldgit.ListString.Repr", TroubleSegment: seg, Reason: err}
-	}
-	return n.LookupByIndex(i)
-}
-func (_ListString__Repr) MapIterator() ipld.MapIterator {
-	return nil
-}
-func (nr *_ListString__Repr) ListIterator() ipld.ListIterator {
-	return &_ListString__ReprListItr{(ListString)(nr), 0}
-}
-
-type _ListString__ReprListItr _ListString__ListItr
-
-func (itr *_ListString__ReprListItr) Next() (idx int64, v ipld.Node, err error) {
-	idx, v, err = (*_ListString__ListItr)(itr).Next()
-	if err != nil || v == ipld.Null {
-		return
-	}
-	return idx, v.(String).Representation(), nil
-}
-func (itr *_ListString__ReprListItr) Done() bool {
-	return (*_ListString__ListItr)(itr).Done()
-}
-
-func (rn *_ListString__Repr) Length() int64 {
-	return int64(len(rn.x))
-}
-func (_ListString__Repr) IsAbsent() bool {
-	return false
-}
-func (_ListString__Repr) IsNull() bool {
-	return false
-}
-func (_ListString__Repr) AsBool() (bool, error) {
-	return mixins.List{TypeName: "ipldgit.ListString.Repr"}.AsBool()
-}
-func (_ListString__Repr) AsInt() (int64, error) {
-	return mixins.List{TypeName: "ipldgit.ListString.Repr"}.AsInt()
-}
-func (_ListString__Repr) AsFloat() (float64, error) {
-	return mixins.List{TypeName: "ipldgit.ListString.Repr"}.AsFloat()
-}
-func (_ListString__Repr) AsString() (string, error) {
-	return mixins.List{TypeName: "ipldgit.ListString.Repr"}.AsString()
-}
-func (_ListString__Repr) AsBytes() ([]byte, error) {
-	return mixins.List{TypeName: "ipldgit.ListString.Repr"}.AsBytes()
-}
-func (_ListString__Repr) AsLink() (ipld.Link, error) {
-	return mixins.List{TypeName: "ipldgit.ListString.Repr"}.AsLink()
-}
-func (_ListString__Repr) Prototype() ipld.NodePrototype {
-	return _ListString__ReprPrototype{}
-}
-
-type _ListString__ReprPrototype struct{}
-
-func (_ListString__ReprPrototype) NewBuilder() ipld.NodeBuilder {
-	var nb _ListString__ReprBuilder
-	nb.Reset()
-	return &nb
-}
-
-type _ListString__ReprBuilder struct {
-	_ListString__ReprAssembler
-}
-
-func (nb *_ListString__ReprBuilder) Build() ipld.Node {
-	if *nb.m != schema.Maybe_Value {
-		panic("invalid state: cannot call Build on an assembler that's not finished")
-	}
-	return nb.w
-}
-func (nb *_ListString__ReprBuilder) Reset() {
-	var w _ListString
-	var m schema.Maybe
-	*nb = _ListString__ReprBuilder{_ListString__ReprAssembler{w: &w, m: &m}}
-}
-
-type _ListString__ReprAssembler struct {
-	w     *_ListString
-	m     *schema.Maybe
-	state laState
-
-	cm schema.Maybe
-	va _String__ReprAssembler
-}
-
-func (na *_ListString__ReprAssembler) reset() {
-	na.state = laState_initial
-	na.va.reset()
-}
-func (_ListString__ReprAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString.Repr"}.BeginMap(0)
-}
-func (na *_ListString__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	switch *na.m {
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	case midvalue:
-		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
-	}
-	*na.m = midvalue
-	if sizeHint < 0 {
-		sizeHint = 0
-	}
-	if sizeHint > 0 {
-		na.w.x = make([]_String, 0, sizeHint)
-	}
-	return na, nil
-}
-func (na *_ListString__ReprAssembler) AssignNull() error {
-	switch *na.m {
-	case allowNull:
-		*na.m = schema.Maybe_Null
-		return nil
-	case schema.Maybe_Absent:
-		return mixins.ListAssembler{TypeName: "ipldgit.ListString.Repr.Repr"}.AssignNull()
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	case midvalue:
-		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-	}
-	panic("unreachable")
-}
-func (_ListString__ReprAssembler) AssignBool(bool) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString.Repr"}.AssignBool(false)
-}
-func (_ListString__ReprAssembler) AssignInt(int64) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString.Repr"}.AssignInt(0)
-}
-func (_ListString__ReprAssembler) AssignFloat(float64) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString.Repr"}.AssignFloat(0)
-}
-func (_ListString__ReprAssembler) AssignString(string) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString.Repr"}.AssignString("")
-}
-func (_ListString__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString.Repr"}.AssignBytes(nil)
-}
-func (_ListString__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListString.Repr"}.AssignLink(nil)
-}
-func (na *_ListString__ReprAssembler) AssignNode(v ipld.Node) error {
-	if v.IsNull() {
-		return na.AssignNull()
-	}
-	if v2, ok := v.(*_ListString); ok {
-		switch *na.m {
-		case schema.Maybe_Value, schema.Maybe_Null:
-			panic("invalid state: cannot assign into assembler that's already finished")
-		case midvalue:
-			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		*na.w = *v2
-		*na.m = schema.Maybe_Value
-		return nil
-	}
-	if v.Kind() != ipld.Kind_List {
-		return ipld.ErrWrongKind{TypeName: "ipldgit.ListString.Repr", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
-	}
-	itr := v.ListIterator()
-	for !itr.Done() {
-		_, v, err := itr.Next()
-		if err != nil {
-			return err
-		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
-			return err
-		}
-	}
-	return na.Finish()
-}
-func (_ListString__ReprAssembler) Prototype() ipld.NodePrototype {
-	return _ListString__ReprPrototype{}
-}
-func (la *_ListString__ReprAssembler) valueFinishTidy() bool {
-	switch la.cm {
-	case schema.Maybe_Value:
-		la.va.w = nil
-		la.cm = schema.Maybe_Absent
-		la.state = laState_initial
-		la.va.reset()
-		return true
-	default:
-		return false
-	}
-}
-func (la *_ListString__ReprAssembler) AssembleValue() ipld.NodeAssembler {
-	switch la.state {
-	case laState_initial:
-		// carry on
-	case laState_midValue:
-		if !la.valueFinishTidy() {
-			panic("invalid state: AssembleValue cannot be called when still in the middle of assembling the previous value")
-		} // if tidy success: carry on
-	case laState_finished:
-		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
-	}
-	la.w.x = append(la.w.x, _String{})
-	la.state = laState_midValue
-	row := &la.w.x[len(la.w.x)-1]
-	la.va.w = row
-	la.va.m = &la.cm
-	return &la.va
-}
-func (la *_ListString__ReprAssembler) Finish() error {
-	switch la.state {
-	case laState_initial:
-		// carry on
-	case laState_midValue:
-		if !la.valueFinishTidy() {
-			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
-		} // if tidy success: carry on
-	case laState_finished:
-		panic("invalid state: Finish cannot be called on an assembler that's already finished")
-	}
-	la.state = laState_finished
-	*la.m = schema.Maybe_Value
-	return nil
-}
-func (la *_ListString__ReprAssembler) ValuePrototype(_ int64) ipld.NodePrototype {
-	return _String__ReprPrototype{}
-}
-
-func (n *_ListTag) Lookup(idx int64) Tag {
-	if n.Length() <= idx {
-		return nil
-	}
-	v := &n.x[idx]
-	return v
-}
-func (n *_ListTag) LookupMaybe(idx int64) MaybeTag {
-	if n.Length() <= idx {
-		return nil
-	}
-	v := &n.x[idx]
-	return &_Tag__Maybe{
-		m: schema.Maybe_Value,
-		v: v,
-	}
-}
-
-var _ListTag__valueAbsent = _Tag__Maybe{m: schema.Maybe_Absent}
-
-func (n ListTag) Iterator() *ListTag__Itr {
-	return &ListTag__Itr{n, 0}
-}
-
-type ListTag__Itr struct {
-	n   ListTag
-	idx int
-}
-
-func (itr *ListTag__Itr) Next() (idx int64, v Tag) {
-	if itr.idx >= len(itr.n.x) {
-		return -1, nil
-	}
-	idx = int64(itr.idx)
-	v = &itr.n.x[itr.idx]
-	itr.idx++
-	return
-}
-func (itr *ListTag__Itr) Done() bool {
-	return itr.idx >= len(itr.n.x)
-}
-
-type _ListTag__Maybe struct {
-	m schema.Maybe
-	v _ListTag
-}
-type MaybeListTag = *_ListTag__Maybe
-
-func (m MaybeListTag) IsNull() bool {
-	return m.m == schema.Maybe_Null
-}
-func (m MaybeListTag) IsAbsent() bool {
-	return m.m == schema.Maybe_Absent
-}
-func (m MaybeListTag) Exists() bool {
-	return m.m == schema.Maybe_Value
-}
-func (m MaybeListTag) AsNode() ipld.Node {
-	switch m.m {
-	case schema.Maybe_Absent:
-		return ipld.Absent
-	case schema.Maybe_Null:
-		return ipld.Null
-	case schema.Maybe_Value:
-		return &m.v
-	default:
-		panic("unreachable")
-	}
-}
-func (m MaybeListTag) Must() ListTag {
-	if !m.Exists() {
-		panic("unbox of a maybe rejected")
-	}
-	return &m.v
-}
-
-var _ ipld.Node = (ListTag)(&_ListTag{})
-var _ schema.TypedNode = (ListTag)(&_ListTag{})
-
-func (ListTag) Kind() ipld.Kind {
-	return ipld.Kind_List
-}
-func (ListTag) LookupByString(string) (ipld.Node, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag"}.LookupByString("")
-}
-func (n ListTag) LookupByNode(k ipld.Node) (ipld.Node, error) {
-	idx, err := k.AsInt()
-	if err != nil {
-		return nil, err
-	}
-	return n.LookupByIndex(idx)
-}
-func (n ListTag) LookupByIndex(idx int64) (ipld.Node, error) {
-	if n.Length() <= idx {
-		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
-	}
-	v := &n.x[idx]
-	return v, nil
-}
-func (n ListTag) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	i, err := seg.Index()
-	if err != nil {
-		return nil, ipld.ErrInvalidSegmentForList{TypeName: "ipldgit.ListTag", TroubleSegment: seg, Reason: err}
-	}
-	return n.LookupByIndex(i)
-}
-func (ListTag) MapIterator() ipld.MapIterator {
-	return nil
-}
-func (n ListTag) ListIterator() ipld.ListIterator {
-	return &_ListTag__ListItr{n, 0}
-}
-
-type _ListTag__ListItr struct {
-	n   ListTag
-	idx int
-}
-
-func (itr *_ListTag__ListItr) Next() (idx int64, v ipld.Node, _ error) {
-	if itr.idx >= len(itr.n.x) {
-		return -1, nil, ipld.ErrIteratorOverread{}
-	}
-	idx = int64(itr.idx)
-	x := &itr.n.x[itr.idx]
-	v = x
-	itr.idx++
-	return
-}
-func (itr *_ListTag__ListItr) Done() bool {
-	return itr.idx >= len(itr.n.x)
-}
-
-func (n ListTag) Length() int64 {
-	return int64(len(n.x))
-}
-func (ListTag) IsAbsent() bool {
-	return false
-}
-func (ListTag) IsNull() bool {
-	return false
-}
-func (ListTag) AsBool() (bool, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag"}.AsBool()
-}
-func (ListTag) AsInt() (int64, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag"}.AsInt()
-}
-func (ListTag) AsFloat() (float64, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag"}.AsFloat()
-}
-func (ListTag) AsString() (string, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag"}.AsString()
-}
-func (ListTag) AsBytes() ([]byte, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag"}.AsBytes()
-}
-func (ListTag) AsLink() (ipld.Link, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag"}.AsLink()
-}
-func (ListTag) Prototype() ipld.NodePrototype {
-	return _ListTag__Prototype{}
-}
-
-type _ListTag__Prototype struct{}
-
-func (_ListTag__Prototype) NewBuilder() ipld.NodeBuilder {
-	var nb _ListTag__Builder
-	nb.Reset()
-	return &nb
-}
-
-type _ListTag__Builder struct {
-	_ListTag__Assembler
-}
-
-func (nb *_ListTag__Builder) Build() ipld.Node {
-	if *nb.m != schema.Maybe_Value {
-		panic("invalid state: cannot call Build on an assembler that's not finished")
-	}
-	return nb.w
-}
-func (nb *_ListTag__Builder) Reset() {
-	var w _ListTag
-	var m schema.Maybe
-	*nb = _ListTag__Builder{_ListTag__Assembler{w: &w, m: &m}}
-}
-
-type _ListTag__Assembler struct {
-	w     *_ListTag
-	m     *schema.Maybe
-	state laState
-
-	cm schema.Maybe
-	va _Tag__Assembler
-}
-
-func (na *_ListTag__Assembler) reset() {
-	na.state = laState_initial
-	na.va.reset()
-}
-func (_ListTag__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag"}.BeginMap(0)
-}
-func (na *_ListTag__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	switch *na.m {
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	case midvalue:
-		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
-	}
-	*na.m = midvalue
-	if sizeHint < 0 {
-		sizeHint = 0
-	}
-	if sizeHint > 0 {
-		na.w.x = make([]_Tag, 0, sizeHint)
-	}
-	return na, nil
-}
-func (na *_ListTag__Assembler) AssignNull() error {
-	switch *na.m {
-	case allowNull:
-		*na.m = schema.Maybe_Null
-		return nil
-	case schema.Maybe_Absent:
-		return mixins.ListAssembler{TypeName: "ipldgit.ListTag"}.AssignNull()
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	case midvalue:
-		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-	}
-	panic("unreachable")
-}
-func (_ListTag__Assembler) AssignBool(bool) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag"}.AssignBool(false)
-}
-func (_ListTag__Assembler) AssignInt(int64) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag"}.AssignInt(0)
-}
-func (_ListTag__Assembler) AssignFloat(float64) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag"}.AssignFloat(0)
-}
-func (_ListTag__Assembler) AssignString(string) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag"}.AssignString("")
-}
-func (_ListTag__Assembler) AssignBytes([]byte) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag"}.AssignBytes(nil)
-}
-func (_ListTag__Assembler) AssignLink(ipld.Link) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag"}.AssignLink(nil)
-}
-func (na *_ListTag__Assembler) AssignNode(v ipld.Node) error {
-	if v.IsNull() {
-		return na.AssignNull()
-	}
-	if v2, ok := v.(*_ListTag); ok {
-		switch *na.m {
-		case schema.Maybe_Value, schema.Maybe_Null:
-			panic("invalid state: cannot assign into assembler that's already finished")
-		case midvalue:
-			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		*na.w = *v2
-		*na.m = schema.Maybe_Value
-		return nil
-	}
-	if v.Kind() != ipld.Kind_List {
-		return ipld.ErrWrongKind{TypeName: "ipldgit.ListTag", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
-	}
-	itr := v.ListIterator()
-	for !itr.Done() {
-		_, v, err := itr.Next()
-		if err != nil {
-			return err
-		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
-			return err
-		}
-	}
-	return na.Finish()
-}
-func (_ListTag__Assembler) Prototype() ipld.NodePrototype {
-	return _ListTag__Prototype{}
-}
-func (la *_ListTag__Assembler) valueFinishTidy() bool {
-	switch la.cm {
-	case schema.Maybe_Value:
-		la.va.w = nil
-		la.cm = schema.Maybe_Absent
-		la.state = laState_initial
-		la.va.reset()
-		return true
-	default:
-		return false
-	}
-}
-func (la *_ListTag__Assembler) AssembleValue() ipld.NodeAssembler {
-	switch la.state {
-	case laState_initial:
-		// carry on
-	case laState_midValue:
-		if !la.valueFinishTidy() {
-			panic("invalid state: AssembleValue cannot be called when still in the middle of assembling the previous value")
-		} // if tidy success: carry on
-	case laState_finished:
-		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
-	}
-	la.w.x = append(la.w.x, _Tag{})
-	la.state = laState_midValue
-	row := &la.w.x[len(la.w.x)-1]
-	la.va.w = row
-	la.va.m = &la.cm
-	return &la.va
-}
-func (la *_ListTag__Assembler) Finish() error {
-	switch la.state {
-	case laState_initial:
-		// carry on
-	case laState_midValue:
-		if !la.valueFinishTidy() {
-			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
-		} // if tidy success: carry on
-	case laState_finished:
-		panic("invalid state: Finish cannot be called on an assembler that's already finished")
-	}
-	la.state = laState_finished
-	*la.m = schema.Maybe_Value
-	return nil
-}
-func (la *_ListTag__Assembler) ValuePrototype(_ int64) ipld.NodePrototype {
-	return _Tag__Prototype{}
-}
-func (ListTag) Type() schema.Type {
-	return nil /*TODO:typelit*/
-}
-func (n ListTag) Representation() ipld.Node {
-	return (*_ListTag__Repr)(n)
-}
-
-type _ListTag__Repr _ListTag
-
-var _ ipld.Node = &_ListTag__Repr{}
-
-func (_ListTag__Repr) Kind() ipld.Kind {
-	return ipld.Kind_List
-}
-func (_ListTag__Repr) LookupByString(string) (ipld.Node, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag.Repr"}.LookupByString("")
-}
-func (nr *_ListTag__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
-	v, err := (ListTag)(nr).LookupByNode(k)
-	if err != nil || v == ipld.Null {
-		return v, err
-	}
-	return v.(Tag).Representation(), nil
-}
-func (nr *_ListTag__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	v, err := (ListTag)(nr).LookupByIndex(idx)
-	if err != nil || v == ipld.Null {
-		return v, err
-	}
-	return v.(Tag).Representation(), nil
-}
-func (n _ListTag__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	i, err := seg.Index()
-	if err != nil {
-		return nil, ipld.ErrInvalidSegmentForList{TypeName: "ipldgit.ListTag.Repr", TroubleSegment: seg, Reason: err}
-	}
-	return n.LookupByIndex(i)
-}
-func (_ListTag__Repr) MapIterator() ipld.MapIterator {
-	return nil
-}
-func (nr *_ListTag__Repr) ListIterator() ipld.ListIterator {
-	return &_ListTag__ReprListItr{(ListTag)(nr), 0}
-}
-
-type _ListTag__ReprListItr _ListTag__ListItr
-
-func (itr *_ListTag__ReprListItr) Next() (idx int64, v ipld.Node, err error) {
-	idx, v, err = (*_ListTag__ListItr)(itr).Next()
-	if err != nil || v == ipld.Null {
-		return
-	}
-	return idx, v.(Tag).Representation(), nil
-}
-func (itr *_ListTag__ReprListItr) Done() bool {
-	return (*_ListTag__ListItr)(itr).Done()
-}
-
-func (rn *_ListTag__Repr) Length() int64 {
-	return int64(len(rn.x))
-}
-func (_ListTag__Repr) IsAbsent() bool {
-	return false
-}
-func (_ListTag__Repr) IsNull() bool {
-	return false
-}
-func (_ListTag__Repr) AsBool() (bool, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag.Repr"}.AsBool()
-}
-func (_ListTag__Repr) AsInt() (int64, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag.Repr"}.AsInt()
-}
-func (_ListTag__Repr) AsFloat() (float64, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag.Repr"}.AsFloat()
-}
-func (_ListTag__Repr) AsString() (string, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag.Repr"}.AsString()
-}
-func (_ListTag__Repr) AsBytes() ([]byte, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag.Repr"}.AsBytes()
-}
-func (_ListTag__Repr) AsLink() (ipld.Link, error) {
-	return mixins.List{TypeName: "ipldgit.ListTag.Repr"}.AsLink()
-}
-func (_ListTag__Repr) Prototype() ipld.NodePrototype {
-	return _ListTag__ReprPrototype{}
-}
-
-type _ListTag__ReprPrototype struct{}
-
-func (_ListTag__ReprPrototype) NewBuilder() ipld.NodeBuilder {
-	var nb _ListTag__ReprBuilder
-	nb.Reset()
-	return &nb
-}
-
-type _ListTag__ReprBuilder struct {
-	_ListTag__ReprAssembler
-}
-
-func (nb *_ListTag__ReprBuilder) Build() ipld.Node {
-	if *nb.m != schema.Maybe_Value {
-		panic("invalid state: cannot call Build on an assembler that's not finished")
-	}
-	return nb.w
-}
-func (nb *_ListTag__ReprBuilder) Reset() {
-	var w _ListTag
-	var m schema.Maybe
-	*nb = _ListTag__ReprBuilder{_ListTag__ReprAssembler{w: &w, m: &m}}
-}
-
-type _ListTag__ReprAssembler struct {
-	w     *_ListTag
-	m     *schema.Maybe
-	state laState
-
-	cm schema.Maybe
-	va _Tag__ReprAssembler
-}
-
-func (na *_ListTag__ReprAssembler) reset() {
-	na.state = laState_initial
-	na.va.reset()
-}
-func (_ListTag__ReprAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag.Repr"}.BeginMap(0)
-}
-func (na *_ListTag__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	switch *na.m {
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	case midvalue:
-		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
-	}
-	*na.m = midvalue
-	if sizeHint < 0 {
-		sizeHint = 0
-	}
-	if sizeHint > 0 {
-		na.w.x = make([]_Tag, 0, sizeHint)
-	}
-	return na, nil
-}
-func (na *_ListTag__ReprAssembler) AssignNull() error {
-	switch *na.m {
-	case allowNull:
-		*na.m = schema.Maybe_Null
-		return nil
-	case schema.Maybe_Absent:
-		return mixins.ListAssembler{TypeName: "ipldgit.ListTag.Repr.Repr"}.AssignNull()
-	case schema.Maybe_Value, schema.Maybe_Null:
-		panic("invalid state: cannot assign into assembler that's already finished")
-	case midvalue:
-		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-	}
-	panic("unreachable")
-}
-func (_ListTag__ReprAssembler) AssignBool(bool) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag.Repr"}.AssignBool(false)
-}
-func (_ListTag__ReprAssembler) AssignInt(int64) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag.Repr"}.AssignInt(0)
-}
-func (_ListTag__ReprAssembler) AssignFloat(float64) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag.Repr"}.AssignFloat(0)
-}
-func (_ListTag__ReprAssembler) AssignString(string) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag.Repr"}.AssignString("")
-}
-func (_ListTag__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag.Repr"}.AssignBytes(nil)
-}
-func (_ListTag__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.ListAssembler{TypeName: "ipldgit.ListTag.Repr"}.AssignLink(nil)
-}
-func (na *_ListTag__ReprAssembler) AssignNode(v ipld.Node) error {
-	if v.IsNull() {
-		return na.AssignNull()
-	}
-	if v2, ok := v.(*_ListTag); ok {
-		switch *na.m {
-		case schema.Maybe_Value, schema.Maybe_Null:
-			panic("invalid state: cannot assign into assembler that's already finished")
-		case midvalue:
-			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		*na.w = *v2
-		*na.m = schema.Maybe_Value
-		return nil
-	}
-	if v.Kind() != ipld.Kind_List {
-		return ipld.ErrWrongKind{TypeName: "ipldgit.ListTag.Repr", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
-	}
-	itr := v.ListIterator()
-	for !itr.Done() {
-		_, v, err := itr.Next()
-		if err != nil {
-			return err
-		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
-			return err
-		}
-	}
-	return na.Finish()
-}
-func (_ListTag__ReprAssembler) Prototype() ipld.NodePrototype {
-	return _ListTag__ReprPrototype{}
-}
-func (la *_ListTag__ReprAssembler) valueFinishTidy() bool {
-	switch la.cm {
-	case schema.Maybe_Value:
-		la.va.w = nil
-		la.cm = schema.Maybe_Absent
-		la.state = laState_initial
-		la.va.reset()
-		return true
-	default:
-		return false
-	}
-}
-func (la *_ListTag__ReprAssembler) AssembleValue() ipld.NodeAssembler {
-	switch la.state {
-	case laState_initial:
-		// carry on
-	case laState_midValue:
-		if !la.valueFinishTidy() {
-			panic("invalid state: AssembleValue cannot be called when still in the middle of assembling the previous value")
-		} // if tidy success: carry on
-	case laState_finished:
-		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
-	}
-	la.w.x = append(la.w.x, _Tag{})
-	la.state = laState_midValue
-	row := &la.w.x[len(la.w.x)-1]
-	la.va.w = row
-	la.va.m = &la.cm
-	return &la.va
-}
-func (la *_ListTag__ReprAssembler) Finish() error {
-	switch la.state {
-	case laState_initial:
-		// carry on
-	case laState_midValue:
-		if !la.valueFinishTidy() {
-			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
-		} // if tidy success: carry on
-	case laState_finished:
-		panic("invalid state: Finish cannot be called on an assembler that's already finished")
-	}
-	la.state = laState_finished
-	*la.m = schema.Maybe_Value
-	return nil
-}
-func (la *_ListTag__ReprAssembler) ValuePrototype(_ int64) ipld.NodePrototype {
-	return _Tag__ReprPrototype{}
-}
 
 func (n _PersonInfo) FieldDate() String {
 	return &n.date
@@ -5721,11 +4331,602 @@ var _ ipld.Node = &_String__Repr{}
 type _String__ReprPrototype = _String__Prototype
 type _String__ReprAssembler = _String__Assembler
 
-func (n _Tag) FieldMessage() String {
-	return &n.message
+func (n *_String_List) Lookup(idx int64) String {
+	if n.Length() <= idx {
+		return nil
+	}
+	v := &n.x[idx]
+	return v
 }
+func (n *_String_List) LookupMaybe(idx int64) MaybeString {
+	if n.Length() <= idx {
+		return nil
+	}
+	v := &n.x[idx]
+	return &_String__Maybe{
+		m: schema.Maybe_Value,
+		v: *v,
+	}
+}
+
+var _String_List__valueAbsent = _String__Maybe{m: schema.Maybe_Absent}
+
+func (n String_List) Iterator() *String_List__Itr {
+	return &String_List__Itr{n, 0}
+}
+
+type String_List__Itr struct {
+	n   String_List
+	idx int
+}
+
+func (itr *String_List__Itr) Next() (idx int64, v String) {
+	if itr.idx >= len(itr.n.x) {
+		return -1, nil
+	}
+	idx = int64(itr.idx)
+	v = &itr.n.x[itr.idx]
+	itr.idx++
+	return
+}
+func (itr *String_List__Itr) Done() bool {
+	return itr.idx >= len(itr.n.x)
+}
+
+type _String_List__Maybe struct {
+	m schema.Maybe
+	v _String_List
+}
+type MaybeString_List = *_String_List__Maybe
+
+func (m MaybeString_List) IsNull() bool {
+	return m.m == schema.Maybe_Null
+}
+func (m MaybeString_List) IsAbsent() bool {
+	return m.m == schema.Maybe_Absent
+}
+func (m MaybeString_List) Exists() bool {
+	return m.m == schema.Maybe_Value
+}
+func (m MaybeString_List) AsNode() ipld.Node {
+	switch m.m {
+	case schema.Maybe_Absent:
+		return ipld.Absent
+	case schema.Maybe_Null:
+		return ipld.Null
+	case schema.Maybe_Value:
+		return &m.v
+	default:
+		panic("unreachable")
+	}
+}
+func (m MaybeString_List) Must() String_List {
+	if !m.Exists() {
+		panic("unbox of a maybe rejected")
+	}
+	return &m.v
+}
+
+var _ ipld.Node = (String_List)(&_String_List{})
+var _ schema.TypedNode = (String_List)(&_String_List{})
+
+func (String_List) Kind() ipld.Kind {
+	return ipld.Kind_List
+}
+func (String_List) LookupByString(string) (ipld.Node, error) {
+	return mixins.List{TypeName: "ipldgit.String_List"}.LookupByString("")
+}
+func (n String_List) LookupByNode(k ipld.Node) (ipld.Node, error) {
+	idx, err := k.AsInt()
+	if err != nil {
+		return nil, err
+	}
+	return n.LookupByIndex(idx)
+}
+func (n String_List) LookupByIndex(idx int64) (ipld.Node, error) {
+	if n.Length() <= idx {
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
+	}
+	v := &n.x[idx]
+	return v, nil
+}
+func (n String_List) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	i, err := seg.Index()
+	if err != nil {
+		return nil, ipld.ErrInvalidSegmentForList{TypeName: "ipldgit.String_List", TroubleSegment: seg, Reason: err}
+	}
+	return n.LookupByIndex(i)
+}
+func (String_List) MapIterator() ipld.MapIterator {
+	return nil
+}
+func (n String_List) ListIterator() ipld.ListIterator {
+	return &_String_List__ListItr{n, 0}
+}
+
+type _String_List__ListItr struct {
+	n   String_List
+	idx int
+}
+
+func (itr *_String_List__ListItr) Next() (idx int64, v ipld.Node, _ error) {
+	if itr.idx >= len(itr.n.x) {
+		return -1, nil, ipld.ErrIteratorOverread{}
+	}
+	idx = int64(itr.idx)
+	x := &itr.n.x[itr.idx]
+	v = x
+	itr.idx++
+	return
+}
+func (itr *_String_List__ListItr) Done() bool {
+	return itr.idx >= len(itr.n.x)
+}
+
+func (n String_List) Length() int64 {
+	return int64(len(n.x))
+}
+func (String_List) IsAbsent() bool {
+	return false
+}
+func (String_List) IsNull() bool {
+	return false
+}
+func (String_List) AsBool() (bool, error) {
+	return mixins.List{TypeName: "ipldgit.String_List"}.AsBool()
+}
+func (String_List) AsInt() (int64, error) {
+	return mixins.List{TypeName: "ipldgit.String_List"}.AsInt()
+}
+func (String_List) AsFloat() (float64, error) {
+	return mixins.List{TypeName: "ipldgit.String_List"}.AsFloat()
+}
+func (String_List) AsString() (string, error) {
+	return mixins.List{TypeName: "ipldgit.String_List"}.AsString()
+}
+func (String_List) AsBytes() ([]byte, error) {
+	return mixins.List{TypeName: "ipldgit.String_List"}.AsBytes()
+}
+func (String_List) AsLink() (ipld.Link, error) {
+	return mixins.List{TypeName: "ipldgit.String_List"}.AsLink()
+}
+func (String_List) Prototype() ipld.NodePrototype {
+	return _String_List__Prototype{}
+}
+
+type _String_List__Prototype struct{}
+
+func (_String_List__Prototype) NewBuilder() ipld.NodeBuilder {
+	var nb _String_List__Builder
+	nb.Reset()
+	return &nb
+}
+
+type _String_List__Builder struct {
+	_String_List__Assembler
+}
+
+func (nb *_String_List__Builder) Build() ipld.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_String_List__Builder) Reset() {
+	var w _String_List
+	var m schema.Maybe
+	*nb = _String_List__Builder{_String_List__Assembler{w: &w, m: &m}}
+}
+
+type _String_List__Assembler struct {
+	w     *_String_List
+	m     *schema.Maybe
+	state laState
+
+	cm schema.Maybe
+	va _String__Assembler
+}
+
+func (na *_String_List__Assembler) reset() {
+	na.state = laState_initial
+	na.va.reset()
+}
+func (_String_List__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List"}.BeginMap(0)
+}
+func (na *_String_List__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
+	}
+	*na.m = midvalue
+	if sizeHint < 0 {
+		sizeHint = 0
+	}
+	if sizeHint > 0 {
+		na.w.x = make([]_String, 0, sizeHint)
+	}
+	return na, nil
+}
+func (na *_String_List__Assembler) AssignNull() error {
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.ListAssembler{TypeName: "ipldgit.String_List"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+	}
+	panic("unreachable")
+}
+func (_String_List__Assembler) AssignBool(bool) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List"}.AssignBool(false)
+}
+func (_String_List__Assembler) AssignInt(int64) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List"}.AssignInt(0)
+}
+func (_String_List__Assembler) AssignFloat(float64) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List"}.AssignFloat(0)
+}
+func (_String_List__Assembler) AssignString(string) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List"}.AssignString("")
+}
+func (_String_List__Assembler) AssignBytes([]byte) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List"}.AssignBytes(nil)
+}
+func (_String_List__Assembler) AssignLink(ipld.Link) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List"}.AssignLink(nil)
+}
+func (na *_String_List__Assembler) AssignNode(v ipld.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_String_List); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		case midvalue:
+			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	if v.Kind() != ipld.Kind_List {
+		return ipld.ErrWrongKind{TypeName: "ipldgit.String_List", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
+	}
+	itr := v.ListIterator()
+	for !itr.Done() {
+		_, v, err := itr.Next()
+		if err != nil {
+			return err
+		}
+		if err := na.AssembleValue().AssignNode(v); err != nil {
+			return err
+		}
+	}
+	return na.Finish()
+}
+func (_String_List__Assembler) Prototype() ipld.NodePrototype {
+	return _String_List__Prototype{}
+}
+func (la *_String_List__Assembler) valueFinishTidy() bool {
+	switch la.cm {
+	case schema.Maybe_Value:
+		la.va.w = nil
+		la.cm = schema.Maybe_Absent
+		la.state = laState_initial
+		la.va.reset()
+		return true
+	default:
+		return false
+	}
+}
+func (la *_String_List__Assembler) AssembleValue() ipld.NodeAssembler {
+	switch la.state {
+	case laState_initial:
+		// carry on
+	case laState_midValue:
+		if !la.valueFinishTidy() {
+			panic("invalid state: AssembleValue cannot be called when still in the middle of assembling the previous value")
+		} // if tidy success: carry on
+	case laState_finished:
+		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
+	}
+	la.w.x = append(la.w.x, _String{})
+	la.state = laState_midValue
+	row := &la.w.x[len(la.w.x)-1]
+	la.va.w = row
+	la.va.m = &la.cm
+	return &la.va
+}
+func (la *_String_List__Assembler) Finish() error {
+	switch la.state {
+	case laState_initial:
+		// carry on
+	case laState_midValue:
+		if !la.valueFinishTidy() {
+			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on
+	case laState_finished:
+		panic("invalid state: Finish cannot be called on an assembler that's already finished")
+	}
+	la.state = laState_finished
+	*la.m = schema.Maybe_Value
+	return nil
+}
+func (la *_String_List__Assembler) ValuePrototype(_ int64) ipld.NodePrototype {
+	return _String__Prototype{}
+}
+func (String_List) Type() schema.Type {
+	return nil /*TODO:typelit*/
+}
+func (n String_List) Representation() ipld.Node {
+	return (*_String_List__Repr)(n)
+}
+
+type _String_List__Repr _String_List
+
+var _ ipld.Node = &_String_List__Repr{}
+
+func (_String_List__Repr) Kind() ipld.Kind {
+	return ipld.Kind_List
+}
+func (_String_List__Repr) LookupByString(string) (ipld.Node, error) {
+	return mixins.List{TypeName: "ipldgit.String_List.Repr"}.LookupByString("")
+}
+func (nr *_String_List__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
+	v, err := (String_List)(nr).LookupByNode(k)
+	if err != nil || v == ipld.Null {
+		return v, err
+	}
+	return v.(String).Representation(), nil
+}
+func (nr *_String_List__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
+	v, err := (String_List)(nr).LookupByIndex(idx)
+	if err != nil || v == ipld.Null {
+		return v, err
+	}
+	return v.(String).Representation(), nil
+}
+func (n _String_List__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	i, err := seg.Index()
+	if err != nil {
+		return nil, ipld.ErrInvalidSegmentForList{TypeName: "ipldgit.String_List.Repr", TroubleSegment: seg, Reason: err}
+	}
+	return n.LookupByIndex(i)
+}
+func (_String_List__Repr) MapIterator() ipld.MapIterator {
+	return nil
+}
+func (nr *_String_List__Repr) ListIterator() ipld.ListIterator {
+	return &_String_List__ReprListItr{(String_List)(nr), 0}
+}
+
+type _String_List__ReprListItr _String_List__ListItr
+
+func (itr *_String_List__ReprListItr) Next() (idx int64, v ipld.Node, err error) {
+	idx, v, err = (*_String_List__ListItr)(itr).Next()
+	if err != nil || v == ipld.Null {
+		return
+	}
+	return idx, v.(String).Representation(), nil
+}
+func (itr *_String_List__ReprListItr) Done() bool {
+	return (*_String_List__ListItr)(itr).Done()
+}
+
+func (rn *_String_List__Repr) Length() int64 {
+	return int64(len(rn.x))
+}
+func (_String_List__Repr) IsAbsent() bool {
+	return false
+}
+func (_String_List__Repr) IsNull() bool {
+	return false
+}
+func (_String_List__Repr) AsBool() (bool, error) {
+	return mixins.List{TypeName: "ipldgit.String_List.Repr"}.AsBool()
+}
+func (_String_List__Repr) AsInt() (int64, error) {
+	return mixins.List{TypeName: "ipldgit.String_List.Repr"}.AsInt()
+}
+func (_String_List__Repr) AsFloat() (float64, error) {
+	return mixins.List{TypeName: "ipldgit.String_List.Repr"}.AsFloat()
+}
+func (_String_List__Repr) AsString() (string, error) {
+	return mixins.List{TypeName: "ipldgit.String_List.Repr"}.AsString()
+}
+func (_String_List__Repr) AsBytes() ([]byte, error) {
+	return mixins.List{TypeName: "ipldgit.String_List.Repr"}.AsBytes()
+}
+func (_String_List__Repr) AsLink() (ipld.Link, error) {
+	return mixins.List{TypeName: "ipldgit.String_List.Repr"}.AsLink()
+}
+func (_String_List__Repr) Prototype() ipld.NodePrototype {
+	return _String_List__ReprPrototype{}
+}
+
+type _String_List__ReprPrototype struct{}
+
+func (_String_List__ReprPrototype) NewBuilder() ipld.NodeBuilder {
+	var nb _String_List__ReprBuilder
+	nb.Reset()
+	return &nb
+}
+
+type _String_List__ReprBuilder struct {
+	_String_List__ReprAssembler
+}
+
+func (nb *_String_List__ReprBuilder) Build() ipld.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_String_List__ReprBuilder) Reset() {
+	var w _String_List
+	var m schema.Maybe
+	*nb = _String_List__ReprBuilder{_String_List__ReprAssembler{w: &w, m: &m}}
+}
+
+type _String_List__ReprAssembler struct {
+	w     *_String_List
+	m     *schema.Maybe
+	state laState
+
+	cm schema.Maybe
+	va _String__ReprAssembler
+}
+
+func (na *_String_List__ReprAssembler) reset() {
+	na.state = laState_initial
+	na.va.reset()
+}
+func (_String_List__ReprAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List.Repr"}.BeginMap(0)
+}
+func (na *_String_List__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
+	}
+	*na.m = midvalue
+	if sizeHint < 0 {
+		sizeHint = 0
+	}
+	if sizeHint > 0 {
+		na.w.x = make([]_String, 0, sizeHint)
+	}
+	return na, nil
+}
+func (na *_String_List__ReprAssembler) AssignNull() error {
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.ListAssembler{TypeName: "ipldgit.String_List.Repr.Repr"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+	}
+	panic("unreachable")
+}
+func (_String_List__ReprAssembler) AssignBool(bool) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List.Repr"}.AssignBool(false)
+}
+func (_String_List__ReprAssembler) AssignInt(int64) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List.Repr"}.AssignInt(0)
+}
+func (_String_List__ReprAssembler) AssignFloat(float64) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List.Repr"}.AssignFloat(0)
+}
+func (_String_List__ReprAssembler) AssignString(string) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List.Repr"}.AssignString("")
+}
+func (_String_List__ReprAssembler) AssignBytes([]byte) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List.Repr"}.AssignBytes(nil)
+}
+func (_String_List__ReprAssembler) AssignLink(ipld.Link) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.String_List.Repr"}.AssignLink(nil)
+}
+func (na *_String_List__ReprAssembler) AssignNode(v ipld.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_String_List); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		case midvalue:
+			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	if v.Kind() != ipld.Kind_List {
+		return ipld.ErrWrongKind{TypeName: "ipldgit.String_List.Repr", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
+	}
+	itr := v.ListIterator()
+	for !itr.Done() {
+		_, v, err := itr.Next()
+		if err != nil {
+			return err
+		}
+		if err := na.AssembleValue().AssignNode(v); err != nil {
+			return err
+		}
+	}
+	return na.Finish()
+}
+func (_String_List__ReprAssembler) Prototype() ipld.NodePrototype {
+	return _String_List__ReprPrototype{}
+}
+func (la *_String_List__ReprAssembler) valueFinishTidy() bool {
+	switch la.cm {
+	case schema.Maybe_Value:
+		la.va.w = nil
+		la.cm = schema.Maybe_Absent
+		la.state = laState_initial
+		la.va.reset()
+		return true
+	default:
+		return false
+	}
+}
+func (la *_String_List__ReprAssembler) AssembleValue() ipld.NodeAssembler {
+	switch la.state {
+	case laState_initial:
+		// carry on
+	case laState_midValue:
+		if !la.valueFinishTidy() {
+			panic("invalid state: AssembleValue cannot be called when still in the middle of assembling the previous value")
+		} // if tidy success: carry on
+	case laState_finished:
+		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
+	}
+	la.w.x = append(la.w.x, _String{})
+	la.state = laState_midValue
+	row := &la.w.x[len(la.w.x)-1]
+	la.va.w = row
+	la.va.m = &la.cm
+	return &la.va
+}
+func (la *_String_List__ReprAssembler) Finish() error {
+	switch la.state {
+	case laState_initial:
+		// carry on
+	case laState_midValue:
+		if !la.valueFinishTidy() {
+			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on
+	case laState_finished:
+		panic("invalid state: Finish cannot be called on an assembler that's already finished")
+	}
+	la.state = laState_finished
+	*la.m = schema.Maybe_Value
+	return nil
+}
+func (la *_String_List__ReprAssembler) ValuePrototype(_ int64) ipld.NodePrototype {
+	return _String__ReprPrototype{}
+}
+
 func (n _Tag) FieldObject() Link {
 	return &n.object
+}
+func (n _Tag) FieldType() String {
+	return &n.typ
 }
 func (n _Tag) FieldTag() String {
 	return &n.tag
@@ -5733,8 +4934,8 @@ func (n _Tag) FieldTag() String {
 func (n _Tag) FieldTagger() PersonInfo {
 	return &n.tagger
 }
-func (n _Tag) FieldTagType() String {
-	return &n.tagType
+func (n _Tag) FieldMessage() String {
+	return &n.message
 }
 
 type _Tag__Maybe struct {
@@ -5772,11 +4973,11 @@ func (m MaybeTag) Must() Tag {
 }
 
 var (
-	fieldName__Tag_Message = _String{"message"}
 	fieldName__Tag_Object  = _String{"object"}
+	fieldName__Tag_Type    = _String{"type"}
 	fieldName__Tag_Tag     = _String{"tag"}
 	fieldName__Tag_Tagger  = _String{"tagger"}
-	fieldName__Tag_TagType = _String{"tagType"}
+	fieldName__Tag_Message = _String{"message"}
 )
 var _ ipld.Node = (Tag)(&_Tag{})
 var _ schema.TypedNode = (Tag)(&_Tag{})
@@ -5786,16 +4987,16 @@ func (Tag) Kind() ipld.Kind {
 }
 func (n Tag) LookupByString(key string) (ipld.Node, error) {
 	switch key {
-	case "message":
-		return &n.message, nil
 	case "object":
 		return &n.object, nil
+	case "type":
+		return &n.typ, nil
 	case "tag":
 		return &n.tag, nil
 	case "tagger":
 		return &n.tagger, nil
-	case "tagType":
-		return &n.tagType, nil
+	case "message":
+		return &n.message, nil
 	default:
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
 	}
@@ -5828,11 +5029,11 @@ func (itr *_Tag__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 	}
 	switch itr.idx {
 	case 0:
-		k = &fieldName__Tag_Message
-		v = &itr.n.message
-	case 1:
 		k = &fieldName__Tag_Object
 		v = &itr.n.object
+	case 1:
+		k = &fieldName__Tag_Type
+		v = &itr.n.typ
 	case 2:
 		k = &fieldName__Tag_Tag
 		v = &itr.n.tag
@@ -5840,8 +5041,8 @@ func (itr *_Tag__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 		k = &fieldName__Tag_Tagger
 		v = &itr.n.tagger
 	case 4:
-		k = &fieldName__Tag_TagType
-		v = &itr.n.tagType
+		k = &fieldName__Tag_Message
+		v = &itr.n.message
 	default:
 		panic("unreachable")
 	}
@@ -5918,29 +5119,29 @@ type _Tag__Assembler struct {
 	f     int
 
 	cm         schema.Maybe
-	ca_message _String__Assembler
 	ca_object  _Link__Assembler
+	ca_typ     _String__Assembler
 	ca_tag     _String__Assembler
 	ca_tagger  _PersonInfo__Assembler
-	ca_tagType _String__Assembler
+	ca_message _String__Assembler
 }
 
 func (na *_Tag__Assembler) reset() {
 	na.state = maState_initial
 	na.s = 0
-	na.ca_message.reset()
 	na.ca_object.reset()
+	na.ca_typ.reset()
 	na.ca_tag.reset()
 	na.ca_tagger.reset()
-	na.ca_tagType.reset()
+	na.ca_message.reset()
 }
 
 var (
-	fieldBit__Tag_Message     = 1 << 0
-	fieldBit__Tag_Object      = 1 << 1
+	fieldBit__Tag_Object      = 1 << 0
+	fieldBit__Tag_Type        = 1 << 1
 	fieldBit__Tag_Tag         = 1 << 2
 	fieldBit__Tag_Tagger      = 1 << 3
-	fieldBit__Tag_TagType     = 1 << 4
+	fieldBit__Tag_Message     = 1 << 4
 	fieldBits__Tag_sufficient = 0 + 1<<0 + 1<<1 + 1<<2 + 1<<3 + 1<<4
 )
 
@@ -6038,7 +5239,7 @@ func (ma *_Tag__Assembler) valueFinishTidy() bool {
 	case 0:
 		switch ma.cm {
 		case schema.Maybe_Value:
-			ma.ca_message.w = nil
+			ma.ca_object.w = nil
 			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
 			return true
@@ -6048,7 +5249,7 @@ func (ma *_Tag__Assembler) valueFinishTidy() bool {
 	case 1:
 		switch ma.cm {
 		case schema.Maybe_Value:
-			ma.ca_object.w = nil
+			ma.ca_typ.w = nil
 			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
 			return true
@@ -6078,7 +5279,7 @@ func (ma *_Tag__Assembler) valueFinishTidy() bool {
 	case 4:
 		switch ma.cm {
 		case schema.Maybe_Value:
-			ma.ca_tagType.w = nil
+			ma.ca_message.w = nil
 			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
 			return true
@@ -6105,26 +5306,26 @@ func (ma *_Tag__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
 	switch k {
-	case "message":
-		if ma.s&fieldBit__Tag_Message != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Message}
-		}
-		ma.s += fieldBit__Tag_Message
-		ma.state = maState_midValue
-		ma.f = 0
-		ma.ca_message.w = &ma.w.message
-		ma.ca_message.m = &ma.cm
-		return &ma.ca_message, nil
 	case "object":
 		if ma.s&fieldBit__Tag_Object != 0 {
 			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Object}
 		}
 		ma.s += fieldBit__Tag_Object
 		ma.state = maState_midValue
-		ma.f = 1
+		ma.f = 0
 		ma.ca_object.w = &ma.w.object
 		ma.ca_object.m = &ma.cm
 		return &ma.ca_object, nil
+	case "type":
+		if ma.s&fieldBit__Tag_Type != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Type}
+		}
+		ma.s += fieldBit__Tag_Type
+		ma.state = maState_midValue
+		ma.f = 1
+		ma.ca_typ.w = &ma.w.typ
+		ma.ca_typ.m = &ma.cm
+		return &ma.ca_typ, nil
 	case "tag":
 		if ma.s&fieldBit__Tag_Tag != 0 {
 			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Tag}
@@ -6145,16 +5346,16 @@ func (ma *_Tag__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
 		ma.ca_tagger.w = &ma.w.tagger
 		ma.ca_tagger.m = &ma.cm
 		return &ma.ca_tagger, nil
-	case "tagType":
-		if ma.s&fieldBit__Tag_TagType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_TagType}
+	case "message":
+		if ma.s&fieldBit__Tag_Message != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Message}
 		}
-		ma.s += fieldBit__Tag_TagType
+		ma.s += fieldBit__Tag_Message
 		ma.state = maState_midValue
 		ma.f = 4
-		ma.ca_tagType.w = &ma.w.tagType
-		ma.ca_tagType.m = &ma.cm
-		return &ma.ca_tagType, nil
+		ma.ca_message.w = &ma.w.message
+		ma.ca_message.m = &ma.cm
+		return &ma.ca_message, nil
 	}
 	return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.Tag", Key: &_String{k}}
 }
@@ -6192,13 +5393,13 @@ func (ma *_Tag__Assembler) AssembleValue() ipld.NodeAssembler {
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_message.w = &ma.w.message
-		ma.ca_message.m = &ma.cm
-		return &ma.ca_message
-	case 1:
 		ma.ca_object.w = &ma.w.object
 		ma.ca_object.m = &ma.cm
 		return &ma.ca_object
+	case 1:
+		ma.ca_typ.w = &ma.w.typ
+		ma.ca_typ.m = &ma.cm
+		return &ma.ca_typ
 	case 2:
 		ma.ca_tag.w = &ma.w.tag
 		ma.ca_tag.m = &ma.cm
@@ -6208,9 +5409,9 @@ func (ma *_Tag__Assembler) AssembleValue() ipld.NodeAssembler {
 		ma.ca_tagger.m = &ma.cm
 		return &ma.ca_tagger
 	case 4:
-		ma.ca_tagType.w = &ma.w.tagType
-		ma.ca_tagType.m = &ma.cm
-		return &ma.ca_tagType
+		ma.ca_message.w = &ma.w.message
+		ma.ca_message.m = &ma.cm
+		return &ma.ca_message
 	default:
 		panic("unreachable")
 	}
@@ -6232,11 +5433,11 @@ func (ma *_Tag__Assembler) Finish() error {
 	}
 	if ma.s&fieldBits__Tag_sufficient != fieldBits__Tag_sufficient {
 		err := ipld.ErrMissingRequiredField{Missing: make([]string, 0)}
-		if ma.s&fieldBit__Tag_Message == 0 {
-			err.Missing = append(err.Missing, "message")
-		}
 		if ma.s&fieldBit__Tag_Object == 0 {
 			err.Missing = append(err.Missing, "object")
+		}
+		if ma.s&fieldBit__Tag_Type == 0 {
+			err.Missing = append(err.Missing, "type")
 		}
 		if ma.s&fieldBit__Tag_Tag == 0 {
 			err.Missing = append(err.Missing, "tag")
@@ -6244,8 +5445,8 @@ func (ma *_Tag__Assembler) Finish() error {
 		if ma.s&fieldBit__Tag_Tagger == 0 {
 			err.Missing = append(err.Missing, "tagger")
 		}
-		if ma.s&fieldBit__Tag_TagType == 0 {
-			err.Missing = append(err.Missing, "tagType")
+		if ma.s&fieldBit__Tag_Message == 0 {
+			err.Missing = append(err.Missing, "message")
 		}
 		return err
 	}
@@ -6285,19 +5486,19 @@ func (ka *_Tag__KeyAssembler) AssignString(k string) error {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
 	switch k {
-	case "message":
-		if ka.s&fieldBit__Tag_Message != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Message}
-		}
-		ka.s += fieldBit__Tag_Message
-		ka.state = maState_expectValue
-		ka.f = 0
-		return nil
 	case "object":
 		if ka.s&fieldBit__Tag_Object != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Object}
 		}
 		ka.s += fieldBit__Tag_Object
+		ka.state = maState_expectValue
+		ka.f = 0
+		return nil
+	case "type":
+		if ka.s&fieldBit__Tag_Type != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Type}
+		}
+		ka.s += fieldBit__Tag_Type
 		ka.state = maState_expectValue
 		ka.f = 1
 		return nil
@@ -6317,11 +5518,11 @@ func (ka *_Tag__KeyAssembler) AssignString(k string) error {
 		ka.state = maState_expectValue
 		ka.f = 3
 		return nil
-	case "tagType":
-		if ka.s&fieldBit__Tag_TagType != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_TagType}
+	case "message":
+		if ka.s&fieldBit__Tag_Message != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Message}
 		}
-		ka.s += fieldBit__Tag_TagType
+		ka.s += fieldBit__Tag_Message
 		ka.state = maState_expectValue
 		ka.f = 4
 		return nil
@@ -6355,11 +5556,11 @@ func (n Tag) Representation() ipld.Node {
 type _Tag__Repr _Tag
 
 var (
-	fieldName__Tag_Message_serial = _String{"message"}
 	fieldName__Tag_Object_serial  = _String{"object"}
+	fieldName__Tag_Type_serial    = _String{"type"}
 	fieldName__Tag_Tag_serial     = _String{"tag"}
 	fieldName__Tag_Tagger_serial  = _String{"tagger"}
-	fieldName__Tag_TagType_serial = _String{"tagType"}
+	fieldName__Tag_Message_serial = _String{"message"}
 )
 var _ ipld.Node = &_Tag__Repr{}
 
@@ -6368,16 +5569,16 @@ func (_Tag__Repr) Kind() ipld.Kind {
 }
 func (n *_Tag__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
-	case "message":
-		return n.message.Representation(), nil
 	case "object":
 		return n.object.Representation(), nil
+	case "type":
+		return n.typ.Representation(), nil
 	case "tag":
 		return n.tag.Representation(), nil
 	case "tagger":
 		return n.tagger.Representation(), nil
-	case "tagType":
-		return n.tagType.Representation(), nil
+	case "message":
+		return n.message.Representation(), nil
 	default:
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
 	}
@@ -6410,11 +5611,11 @@ func (itr *_Tag__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 	}
 	switch itr.idx {
 	case 0:
-		k = &fieldName__Tag_Message_serial
-		v = itr.n.message.Representation()
-	case 1:
 		k = &fieldName__Tag_Object_serial
 		v = itr.n.object.Representation()
+	case 1:
+		k = &fieldName__Tag_Type_serial
+		v = itr.n.typ.Representation()
 	case 2:
 		k = &fieldName__Tag_Tag_serial
 		v = itr.n.tag.Representation()
@@ -6422,8 +5623,8 @@ func (itr *_Tag__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 		k = &fieldName__Tag_Tagger_serial
 		v = itr.n.tagger.Representation()
 	case 4:
-		k = &fieldName__Tag_TagType_serial
-		v = itr.n.tagType.Representation()
+		k = &fieldName__Tag_Message_serial
+		v = itr.n.message.Representation()
 	default:
 		panic("unreachable")
 	}
@@ -6500,21 +5701,21 @@ type _Tag__ReprAssembler struct {
 	f     int
 
 	cm         schema.Maybe
-	ca_message _String__ReprAssembler
 	ca_object  _Link__ReprAssembler
+	ca_typ     _String__ReprAssembler
 	ca_tag     _String__ReprAssembler
 	ca_tagger  _PersonInfo__ReprAssembler
-	ca_tagType _String__ReprAssembler
+	ca_message _String__ReprAssembler
 }
 
 func (na *_Tag__ReprAssembler) reset() {
 	na.state = maState_initial
 	na.s = 0
-	na.ca_message.reset()
 	na.ca_object.reset()
+	na.ca_typ.reset()
 	na.ca_tag.reset()
 	na.ca_tagger.reset()
-	na.ca_tagType.reset()
+	na.ca_message.reset()
 }
 func (na *_Tag__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	switch *na.m {
@@ -6672,26 +5873,26 @@ func (ma *_Tag__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
 	switch k {
-	case "message":
-		if ma.s&fieldBit__Tag_Message != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Message_serial}
-		}
-		ma.s += fieldBit__Tag_Message
-		ma.state = maState_midValue
-		ma.f = 0
-		ma.ca_message.w = &ma.w.message
-		ma.ca_message.m = &ma.cm
-		return &ma.ca_message, nil
 	case "object":
 		if ma.s&fieldBit__Tag_Object != 0 {
 			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Object_serial}
 		}
 		ma.s += fieldBit__Tag_Object
 		ma.state = maState_midValue
-		ma.f = 1
+		ma.f = 0
 		ma.ca_object.w = &ma.w.object
 		ma.ca_object.m = &ma.cm
 		return &ma.ca_object, nil
+	case "type":
+		if ma.s&fieldBit__Tag_Type != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Type_serial}
+		}
+		ma.s += fieldBit__Tag_Type
+		ma.state = maState_midValue
+		ma.f = 1
+		ma.ca_typ.w = &ma.w.typ
+		ma.ca_typ.m = &ma.cm
+		return &ma.ca_typ, nil
 	case "tag":
 		if ma.s&fieldBit__Tag_Tag != 0 {
 			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Tag_serial}
@@ -6712,16 +5913,16 @@ func (ma *_Tag__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 		ma.ca_tagger.w = &ma.w.tagger
 		ma.ca_tagger.m = &ma.cm
 		return &ma.ca_tagger, nil
-	case "tagType":
-		if ma.s&fieldBit__Tag_TagType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_TagType_serial}
+	case "message":
+		if ma.s&fieldBit__Tag_Message != 0 {
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Message_serial}
 		}
-		ma.s += fieldBit__Tag_TagType
+		ma.s += fieldBit__Tag_Message
 		ma.state = maState_midValue
 		ma.f = 4
-		ma.ca_tagType.w = &ma.w.tagType
-		ma.ca_tagType.m = &ma.cm
-		return &ma.ca_tagType, nil
+		ma.ca_message.w = &ma.w.message
+		ma.ca_message.m = &ma.cm
+		return &ma.ca_message, nil
 	default:
 	}
 	return nil, ipld.ErrInvalidKey{TypeName: "ipldgit.Tag.Repr", Key: &_String{k}}
@@ -6760,13 +5961,13 @@ func (ma *_Tag__ReprAssembler) AssembleValue() ipld.NodeAssembler {
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_message.w = &ma.w.message
-		ma.ca_message.m = &ma.cm
-		return &ma.ca_message
-	case 1:
 		ma.ca_object.w = &ma.w.object
 		ma.ca_object.m = &ma.cm
 		return &ma.ca_object
+	case 1:
+		ma.ca_typ.w = &ma.w.typ
+		ma.ca_typ.m = &ma.cm
+		return &ma.ca_typ
 	case 2:
 		ma.ca_tag.w = &ma.w.tag
 		ma.ca_tag.m = &ma.cm
@@ -6776,9 +5977,9 @@ func (ma *_Tag__ReprAssembler) AssembleValue() ipld.NodeAssembler {
 		ma.ca_tagger.m = &ma.cm
 		return &ma.ca_tagger
 	case 4:
-		ma.ca_tagType.w = &ma.w.tagType
-		ma.ca_tagType.m = &ma.cm
-		return &ma.ca_tagType
+		ma.ca_message.w = &ma.w.message
+		ma.ca_message.m = &ma.cm
+		return &ma.ca_message
 	default:
 		panic("unreachable")
 	}
@@ -6800,11 +6001,11 @@ func (ma *_Tag__ReprAssembler) Finish() error {
 	}
 	if ma.s&fieldBits__Tag_sufficient != fieldBits__Tag_sufficient {
 		err := ipld.ErrMissingRequiredField{Missing: make([]string, 0)}
-		if ma.s&fieldBit__Tag_Message == 0 {
-			err.Missing = append(err.Missing, "message")
-		}
 		if ma.s&fieldBit__Tag_Object == 0 {
 			err.Missing = append(err.Missing, "object")
+		}
+		if ma.s&fieldBit__Tag_Type == 0 {
+			err.Missing = append(err.Missing, "type")
 		}
 		if ma.s&fieldBit__Tag_Tag == 0 {
 			err.Missing = append(err.Missing, "tag")
@@ -6812,8 +6013,8 @@ func (ma *_Tag__ReprAssembler) Finish() error {
 		if ma.s&fieldBit__Tag_Tagger == 0 {
 			err.Missing = append(err.Missing, "tagger")
 		}
-		if ma.s&fieldBit__Tag_TagType == 0 {
-			err.Missing = append(err.Missing, "tagType")
+		if ma.s&fieldBit__Tag_Message == 0 {
+			err.Missing = append(err.Missing, "message")
 		}
 		return err
 	}
@@ -6853,19 +6054,19 @@ func (ka *_Tag__ReprKeyAssembler) AssignString(k string) error {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
 	switch k {
-	case "message":
-		if ka.s&fieldBit__Tag_Message != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Message_serial}
-		}
-		ka.s += fieldBit__Tag_Message
-		ka.state = maState_expectValue
-		ka.f = 0
-		return nil
 	case "object":
 		if ka.s&fieldBit__Tag_Object != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Object_serial}
 		}
 		ka.s += fieldBit__Tag_Object
+		ka.state = maState_expectValue
+		ka.f = 0
+		return nil
+	case "type":
+		if ka.s&fieldBit__Tag_Type != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Type_serial}
+		}
+		ka.s += fieldBit__Tag_Type
 		ka.state = maState_expectValue
 		ka.f = 1
 		return nil
@@ -6885,11 +6086,11 @@ func (ka *_Tag__ReprKeyAssembler) AssignString(k string) error {
 		ka.state = maState_expectValue
 		ka.f = 3
 		return nil
-	case "tagType":
-		if ka.s&fieldBit__Tag_TagType != 0 {
-			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_TagType_serial}
+	case "message":
+		if ka.s&fieldBit__Tag_Message != 0 {
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Tag_Message_serial}
 		}
-		ka.s += fieldBit__Tag_TagType
+		ka.s += fieldBit__Tag_Message
 		ka.state = maState_expectValue
 		ka.f = 4
 		return nil
@@ -6911,6 +6112,597 @@ func (ka *_Tag__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 }
 func (_Tag__ReprKeyAssembler) Prototype() ipld.NodePrototype {
 	return _String__Prototype{}
+}
+
+func (n *_Tag_List) Lookup(idx int64) Tag {
+	if n.Length() <= idx {
+		return nil
+	}
+	v := &n.x[idx]
+	return v
+}
+func (n *_Tag_List) LookupMaybe(idx int64) MaybeTag {
+	if n.Length() <= idx {
+		return nil
+	}
+	v := &n.x[idx]
+	return &_Tag__Maybe{
+		m: schema.Maybe_Value,
+		v: v,
+	}
+}
+
+var _Tag_List__valueAbsent = _Tag__Maybe{m: schema.Maybe_Absent}
+
+func (n Tag_List) Iterator() *Tag_List__Itr {
+	return &Tag_List__Itr{n, 0}
+}
+
+type Tag_List__Itr struct {
+	n   Tag_List
+	idx int
+}
+
+func (itr *Tag_List__Itr) Next() (idx int64, v Tag) {
+	if itr.idx >= len(itr.n.x) {
+		return -1, nil
+	}
+	idx = int64(itr.idx)
+	v = &itr.n.x[itr.idx]
+	itr.idx++
+	return
+}
+func (itr *Tag_List__Itr) Done() bool {
+	return itr.idx >= len(itr.n.x)
+}
+
+type _Tag_List__Maybe struct {
+	m schema.Maybe
+	v _Tag_List
+}
+type MaybeTag_List = *_Tag_List__Maybe
+
+func (m MaybeTag_List) IsNull() bool {
+	return m.m == schema.Maybe_Null
+}
+func (m MaybeTag_List) IsAbsent() bool {
+	return m.m == schema.Maybe_Absent
+}
+func (m MaybeTag_List) Exists() bool {
+	return m.m == schema.Maybe_Value
+}
+func (m MaybeTag_List) AsNode() ipld.Node {
+	switch m.m {
+	case schema.Maybe_Absent:
+		return ipld.Absent
+	case schema.Maybe_Null:
+		return ipld.Null
+	case schema.Maybe_Value:
+		return &m.v
+	default:
+		panic("unreachable")
+	}
+}
+func (m MaybeTag_List) Must() Tag_List {
+	if !m.Exists() {
+		panic("unbox of a maybe rejected")
+	}
+	return &m.v
+}
+
+var _ ipld.Node = (Tag_List)(&_Tag_List{})
+var _ schema.TypedNode = (Tag_List)(&_Tag_List{})
+
+func (Tag_List) Kind() ipld.Kind {
+	return ipld.Kind_List
+}
+func (Tag_List) LookupByString(string) (ipld.Node, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List"}.LookupByString("")
+}
+func (n Tag_List) LookupByNode(k ipld.Node) (ipld.Node, error) {
+	idx, err := k.AsInt()
+	if err != nil {
+		return nil, err
+	}
+	return n.LookupByIndex(idx)
+}
+func (n Tag_List) LookupByIndex(idx int64) (ipld.Node, error) {
+	if n.Length() <= idx {
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
+	}
+	v := &n.x[idx]
+	return v, nil
+}
+func (n Tag_List) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	i, err := seg.Index()
+	if err != nil {
+		return nil, ipld.ErrInvalidSegmentForList{TypeName: "ipldgit.Tag_List", TroubleSegment: seg, Reason: err}
+	}
+	return n.LookupByIndex(i)
+}
+func (Tag_List) MapIterator() ipld.MapIterator {
+	return nil
+}
+func (n Tag_List) ListIterator() ipld.ListIterator {
+	return &_Tag_List__ListItr{n, 0}
+}
+
+type _Tag_List__ListItr struct {
+	n   Tag_List
+	idx int
+}
+
+func (itr *_Tag_List__ListItr) Next() (idx int64, v ipld.Node, _ error) {
+	if itr.idx >= len(itr.n.x) {
+		return -1, nil, ipld.ErrIteratorOverread{}
+	}
+	idx = int64(itr.idx)
+	x := &itr.n.x[itr.idx]
+	v = x
+	itr.idx++
+	return
+}
+func (itr *_Tag_List__ListItr) Done() bool {
+	return itr.idx >= len(itr.n.x)
+}
+
+func (n Tag_List) Length() int64 {
+	return int64(len(n.x))
+}
+func (Tag_List) IsAbsent() bool {
+	return false
+}
+func (Tag_List) IsNull() bool {
+	return false
+}
+func (Tag_List) AsBool() (bool, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List"}.AsBool()
+}
+func (Tag_List) AsInt() (int64, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List"}.AsInt()
+}
+func (Tag_List) AsFloat() (float64, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List"}.AsFloat()
+}
+func (Tag_List) AsString() (string, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List"}.AsString()
+}
+func (Tag_List) AsBytes() ([]byte, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List"}.AsBytes()
+}
+func (Tag_List) AsLink() (ipld.Link, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List"}.AsLink()
+}
+func (Tag_List) Prototype() ipld.NodePrototype {
+	return _Tag_List__Prototype{}
+}
+
+type _Tag_List__Prototype struct{}
+
+func (_Tag_List__Prototype) NewBuilder() ipld.NodeBuilder {
+	var nb _Tag_List__Builder
+	nb.Reset()
+	return &nb
+}
+
+type _Tag_List__Builder struct {
+	_Tag_List__Assembler
+}
+
+func (nb *_Tag_List__Builder) Build() ipld.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_Tag_List__Builder) Reset() {
+	var w _Tag_List
+	var m schema.Maybe
+	*nb = _Tag_List__Builder{_Tag_List__Assembler{w: &w, m: &m}}
+}
+
+type _Tag_List__Assembler struct {
+	w     *_Tag_List
+	m     *schema.Maybe
+	state laState
+
+	cm schema.Maybe
+	va _Tag__Assembler
+}
+
+func (na *_Tag_List__Assembler) reset() {
+	na.state = laState_initial
+	na.va.reset()
+}
+func (_Tag_List__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List"}.BeginMap(0)
+}
+func (na *_Tag_List__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
+	}
+	*na.m = midvalue
+	if sizeHint < 0 {
+		sizeHint = 0
+	}
+	if sizeHint > 0 {
+		na.w.x = make([]_Tag, 0, sizeHint)
+	}
+	return na, nil
+}
+func (na *_Tag_List__Assembler) AssignNull() error {
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.ListAssembler{TypeName: "ipldgit.Tag_List"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+	}
+	panic("unreachable")
+}
+func (_Tag_List__Assembler) AssignBool(bool) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List"}.AssignBool(false)
+}
+func (_Tag_List__Assembler) AssignInt(int64) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List"}.AssignInt(0)
+}
+func (_Tag_List__Assembler) AssignFloat(float64) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List"}.AssignFloat(0)
+}
+func (_Tag_List__Assembler) AssignString(string) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List"}.AssignString("")
+}
+func (_Tag_List__Assembler) AssignBytes([]byte) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List"}.AssignBytes(nil)
+}
+func (_Tag_List__Assembler) AssignLink(ipld.Link) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List"}.AssignLink(nil)
+}
+func (na *_Tag_List__Assembler) AssignNode(v ipld.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_Tag_List); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		case midvalue:
+			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	if v.Kind() != ipld.Kind_List {
+		return ipld.ErrWrongKind{TypeName: "ipldgit.Tag_List", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
+	}
+	itr := v.ListIterator()
+	for !itr.Done() {
+		_, v, err := itr.Next()
+		if err != nil {
+			return err
+		}
+		if err := na.AssembleValue().AssignNode(v); err != nil {
+			return err
+		}
+	}
+	return na.Finish()
+}
+func (_Tag_List__Assembler) Prototype() ipld.NodePrototype {
+	return _Tag_List__Prototype{}
+}
+func (la *_Tag_List__Assembler) valueFinishTidy() bool {
+	switch la.cm {
+	case schema.Maybe_Value:
+		la.va.w = nil
+		la.cm = schema.Maybe_Absent
+		la.state = laState_initial
+		la.va.reset()
+		return true
+	default:
+		return false
+	}
+}
+func (la *_Tag_List__Assembler) AssembleValue() ipld.NodeAssembler {
+	switch la.state {
+	case laState_initial:
+		// carry on
+	case laState_midValue:
+		if !la.valueFinishTidy() {
+			panic("invalid state: AssembleValue cannot be called when still in the middle of assembling the previous value")
+		} // if tidy success: carry on
+	case laState_finished:
+		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
+	}
+	la.w.x = append(la.w.x, _Tag{})
+	la.state = laState_midValue
+	row := &la.w.x[len(la.w.x)-1]
+	la.va.w = row
+	la.va.m = &la.cm
+	return &la.va
+}
+func (la *_Tag_List__Assembler) Finish() error {
+	switch la.state {
+	case laState_initial:
+		// carry on
+	case laState_midValue:
+		if !la.valueFinishTidy() {
+			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on
+	case laState_finished:
+		panic("invalid state: Finish cannot be called on an assembler that's already finished")
+	}
+	la.state = laState_finished
+	*la.m = schema.Maybe_Value
+	return nil
+}
+func (la *_Tag_List__Assembler) ValuePrototype(_ int64) ipld.NodePrototype {
+	return _Tag__Prototype{}
+}
+func (Tag_List) Type() schema.Type {
+	return nil /*TODO:typelit*/
+}
+func (n Tag_List) Representation() ipld.Node {
+	return (*_Tag_List__Repr)(n)
+}
+
+type _Tag_List__Repr _Tag_List
+
+var _ ipld.Node = &_Tag_List__Repr{}
+
+func (_Tag_List__Repr) Kind() ipld.Kind {
+	return ipld.Kind_List
+}
+func (_Tag_List__Repr) LookupByString(string) (ipld.Node, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List.Repr"}.LookupByString("")
+}
+func (nr *_Tag_List__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
+	v, err := (Tag_List)(nr).LookupByNode(k)
+	if err != nil || v == ipld.Null {
+		return v, err
+	}
+	return v.(Tag).Representation(), nil
+}
+func (nr *_Tag_List__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
+	v, err := (Tag_List)(nr).LookupByIndex(idx)
+	if err != nil || v == ipld.Null {
+		return v, err
+	}
+	return v.(Tag).Representation(), nil
+}
+func (n _Tag_List__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	i, err := seg.Index()
+	if err != nil {
+		return nil, ipld.ErrInvalidSegmentForList{TypeName: "ipldgit.Tag_List.Repr", TroubleSegment: seg, Reason: err}
+	}
+	return n.LookupByIndex(i)
+}
+func (_Tag_List__Repr) MapIterator() ipld.MapIterator {
+	return nil
+}
+func (nr *_Tag_List__Repr) ListIterator() ipld.ListIterator {
+	return &_Tag_List__ReprListItr{(Tag_List)(nr), 0}
+}
+
+type _Tag_List__ReprListItr _Tag_List__ListItr
+
+func (itr *_Tag_List__ReprListItr) Next() (idx int64, v ipld.Node, err error) {
+	idx, v, err = (*_Tag_List__ListItr)(itr).Next()
+	if err != nil || v == ipld.Null {
+		return
+	}
+	return idx, v.(Tag).Representation(), nil
+}
+func (itr *_Tag_List__ReprListItr) Done() bool {
+	return (*_Tag_List__ListItr)(itr).Done()
+}
+
+func (rn *_Tag_List__Repr) Length() int64 {
+	return int64(len(rn.x))
+}
+func (_Tag_List__Repr) IsAbsent() bool {
+	return false
+}
+func (_Tag_List__Repr) IsNull() bool {
+	return false
+}
+func (_Tag_List__Repr) AsBool() (bool, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List.Repr"}.AsBool()
+}
+func (_Tag_List__Repr) AsInt() (int64, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List.Repr"}.AsInt()
+}
+func (_Tag_List__Repr) AsFloat() (float64, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List.Repr"}.AsFloat()
+}
+func (_Tag_List__Repr) AsString() (string, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List.Repr"}.AsString()
+}
+func (_Tag_List__Repr) AsBytes() ([]byte, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List.Repr"}.AsBytes()
+}
+func (_Tag_List__Repr) AsLink() (ipld.Link, error) {
+	return mixins.List{TypeName: "ipldgit.Tag_List.Repr"}.AsLink()
+}
+func (_Tag_List__Repr) Prototype() ipld.NodePrototype {
+	return _Tag_List__ReprPrototype{}
+}
+
+type _Tag_List__ReprPrototype struct{}
+
+func (_Tag_List__ReprPrototype) NewBuilder() ipld.NodeBuilder {
+	var nb _Tag_List__ReprBuilder
+	nb.Reset()
+	return &nb
+}
+
+type _Tag_List__ReprBuilder struct {
+	_Tag_List__ReprAssembler
+}
+
+func (nb *_Tag_List__ReprBuilder) Build() ipld.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_Tag_List__ReprBuilder) Reset() {
+	var w _Tag_List
+	var m schema.Maybe
+	*nb = _Tag_List__ReprBuilder{_Tag_List__ReprAssembler{w: &w, m: &m}}
+}
+
+type _Tag_List__ReprAssembler struct {
+	w     *_Tag_List
+	m     *schema.Maybe
+	state laState
+
+	cm schema.Maybe
+	va _Tag__ReprAssembler
+}
+
+func (na *_Tag_List__ReprAssembler) reset() {
+	na.state = laState_initial
+	na.va.reset()
+}
+func (_Tag_List__ReprAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List.Repr"}.BeginMap(0)
+}
+func (na *_Tag_List__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
+	}
+	*na.m = midvalue
+	if sizeHint < 0 {
+		sizeHint = 0
+	}
+	if sizeHint > 0 {
+		na.w.x = make([]_Tag, 0, sizeHint)
+	}
+	return na, nil
+}
+func (na *_Tag_List__ReprAssembler) AssignNull() error {
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.ListAssembler{TypeName: "ipldgit.Tag_List.Repr.Repr"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+	}
+	panic("unreachable")
+}
+func (_Tag_List__ReprAssembler) AssignBool(bool) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List.Repr"}.AssignBool(false)
+}
+func (_Tag_List__ReprAssembler) AssignInt(int64) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List.Repr"}.AssignInt(0)
+}
+func (_Tag_List__ReprAssembler) AssignFloat(float64) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List.Repr"}.AssignFloat(0)
+}
+func (_Tag_List__ReprAssembler) AssignString(string) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List.Repr"}.AssignString("")
+}
+func (_Tag_List__ReprAssembler) AssignBytes([]byte) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List.Repr"}.AssignBytes(nil)
+}
+func (_Tag_List__ReprAssembler) AssignLink(ipld.Link) error {
+	return mixins.ListAssembler{TypeName: "ipldgit.Tag_List.Repr"}.AssignLink(nil)
+}
+func (na *_Tag_List__ReprAssembler) AssignNode(v ipld.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_Tag_List); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		case midvalue:
+			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	if v.Kind() != ipld.Kind_List {
+		return ipld.ErrWrongKind{TypeName: "ipldgit.Tag_List.Repr", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
+	}
+	itr := v.ListIterator()
+	for !itr.Done() {
+		_, v, err := itr.Next()
+		if err != nil {
+			return err
+		}
+		if err := na.AssembleValue().AssignNode(v); err != nil {
+			return err
+		}
+	}
+	return na.Finish()
+}
+func (_Tag_List__ReprAssembler) Prototype() ipld.NodePrototype {
+	return _Tag_List__ReprPrototype{}
+}
+func (la *_Tag_List__ReprAssembler) valueFinishTidy() bool {
+	switch la.cm {
+	case schema.Maybe_Value:
+		la.va.w = nil
+		la.cm = schema.Maybe_Absent
+		la.state = laState_initial
+		la.va.reset()
+		return true
+	default:
+		return false
+	}
+}
+func (la *_Tag_List__ReprAssembler) AssembleValue() ipld.NodeAssembler {
+	switch la.state {
+	case laState_initial:
+		// carry on
+	case laState_midValue:
+		if !la.valueFinishTidy() {
+			panic("invalid state: AssembleValue cannot be called when still in the middle of assembling the previous value")
+		} // if tidy success: carry on
+	case laState_finished:
+		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
+	}
+	la.w.x = append(la.w.x, _Tag{})
+	la.state = laState_midValue
+	row := &la.w.x[len(la.w.x)-1]
+	la.va.w = row
+	la.va.m = &la.cm
+	return &la.va
+}
+func (la *_Tag_List__ReprAssembler) Finish() error {
+	switch la.state {
+	case laState_initial:
+		// carry on
+	case laState_midValue:
+		if !la.valueFinishTidy() {
+			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on
+	case laState_finished:
+		panic("invalid state: Finish cannot be called on an assembler that's already finished")
+	}
+	la.state = laState_finished
+	*la.m = schema.Maybe_Value
+	return nil
+}
+func (la *_Tag_List__ReprAssembler) ValuePrototype(_ int64) ipld.NodePrototype {
+	return _Tag__ReprPrototype{}
 }
 
 func (n *_Tree) Lookup(k String) TreeEntry {
@@ -8590,3 +8382,211 @@ func (ka *_TreeEntry__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 func (_TreeEntry__ReprKeyAssembler) Prototype() ipld.NodePrototype {
 	return _String__Prototype{}
 }
+
+func (n Tree_Link) Link() ipld.Link {
+	return n.x
+}
+func (_Tree_Link__Prototype) FromLink(v ipld.Link) (Tree_Link, error) {
+	n := _Tree_Link{v}
+	return &n, nil
+}
+
+type _Tree_Link__Maybe struct {
+	m schema.Maybe
+	v _Tree_Link
+}
+type MaybeTree_Link = *_Tree_Link__Maybe
+
+func (m MaybeTree_Link) IsNull() bool {
+	return m.m == schema.Maybe_Null
+}
+func (m MaybeTree_Link) IsAbsent() bool {
+	return m.m == schema.Maybe_Absent
+}
+func (m MaybeTree_Link) Exists() bool {
+	return m.m == schema.Maybe_Value
+}
+func (m MaybeTree_Link) AsNode() ipld.Node {
+	switch m.m {
+	case schema.Maybe_Absent:
+		return ipld.Absent
+	case schema.Maybe_Null:
+		return ipld.Null
+	case schema.Maybe_Value:
+		return &m.v
+	default:
+		panic("unreachable")
+	}
+}
+func (m MaybeTree_Link) Must() Tree_Link {
+	if !m.Exists() {
+		panic("unbox of a maybe rejected")
+	}
+	return &m.v
+}
+
+var _ ipld.Node = (Tree_Link)(&_Tree_Link{})
+var _ schema.TypedNode = (Tree_Link)(&_Tree_Link{})
+
+func (Tree_Link) Kind() ipld.Kind {
+	return ipld.Kind_Link
+}
+func (Tree_Link) LookupByString(string) (ipld.Node, error) {
+	return mixins.Link{TypeName: "ipldgit.Tree_Link"}.LookupByString("")
+}
+func (Tree_Link) LookupByNode(ipld.Node) (ipld.Node, error) {
+	return mixins.Link{TypeName: "ipldgit.Tree_Link"}.LookupByNode(nil)
+}
+func (Tree_Link) LookupByIndex(idx int64) (ipld.Node, error) {
+	return mixins.Link{TypeName: "ipldgit.Tree_Link"}.LookupByIndex(0)
+}
+func (Tree_Link) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return mixins.Link{TypeName: "ipldgit.Tree_Link"}.LookupBySegment(seg)
+}
+func (Tree_Link) MapIterator() ipld.MapIterator {
+	return nil
+}
+func (Tree_Link) ListIterator() ipld.ListIterator {
+	return nil
+}
+func (Tree_Link) Length() int64 {
+	return -1
+}
+func (Tree_Link) IsAbsent() bool {
+	return false
+}
+func (Tree_Link) IsNull() bool {
+	return false
+}
+func (Tree_Link) AsBool() (bool, error) {
+	return mixins.Link{TypeName: "ipldgit.Tree_Link"}.AsBool()
+}
+func (Tree_Link) AsInt() (int64, error) {
+	return mixins.Link{TypeName: "ipldgit.Tree_Link"}.AsInt()
+}
+func (Tree_Link) AsFloat() (float64, error) {
+	return mixins.Link{TypeName: "ipldgit.Tree_Link"}.AsFloat()
+}
+func (Tree_Link) AsString() (string, error) {
+	return mixins.Link{TypeName: "ipldgit.Tree_Link"}.AsString()
+}
+func (Tree_Link) AsBytes() ([]byte, error) {
+	return mixins.Link{TypeName: "ipldgit.Tree_Link"}.AsBytes()
+}
+func (n Tree_Link) AsLink() (ipld.Link, error) {
+	return n.x, nil
+}
+func (Tree_Link) Prototype() ipld.NodePrototype {
+	return _Tree_Link__Prototype{}
+}
+
+type _Tree_Link__Prototype struct{}
+
+func (_Tree_Link__Prototype) NewBuilder() ipld.NodeBuilder {
+	var nb _Tree_Link__Builder
+	nb.Reset()
+	return &nb
+}
+
+type _Tree_Link__Builder struct {
+	_Tree_Link__Assembler
+}
+
+func (nb *_Tree_Link__Builder) Build() ipld.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_Tree_Link__Builder) Reset() {
+	var w _Tree_Link
+	var m schema.Maybe
+	*nb = _Tree_Link__Builder{_Tree_Link__Assembler{w: &w, m: &m}}
+}
+
+type _Tree_Link__Assembler struct {
+	w *_Tree_Link
+	m *schema.Maybe
+}
+
+func (na *_Tree_Link__Assembler) reset() {}
+func (_Tree_Link__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Tree_Link"}.BeginMap(0)
+}
+func (_Tree_Link__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Tree_Link"}.BeginList(0)
+}
+func (na *_Tree_Link__Assembler) AssignNull() error {
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.LinkAssembler{TypeName: "ipldgit.Tree_Link"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	panic("unreachable")
+}
+func (_Tree_Link__Assembler) AssignBool(bool) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Tree_Link"}.AssignBool(false)
+}
+func (_Tree_Link__Assembler) AssignInt(int64) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Tree_Link"}.AssignInt(0)
+}
+func (_Tree_Link__Assembler) AssignFloat(float64) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Tree_Link"}.AssignFloat(0)
+}
+func (_Tree_Link__Assembler) AssignString(string) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Tree_Link"}.AssignString("")
+}
+func (_Tree_Link__Assembler) AssignBytes([]byte) error {
+	return mixins.LinkAssembler{TypeName: "ipldgit.Tree_Link"}.AssignBytes(nil)
+}
+func (na *_Tree_Link__Assembler) AssignLink(v ipld.Link) error {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	na.w.x = v
+	*na.m = schema.Maybe_Value
+	return nil
+}
+func (na *_Tree_Link__Assembler) AssignNode(v ipld.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_Tree_Link); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	if v2, err := v.AsLink(); err != nil {
+		return err
+	} else {
+		return na.AssignLink(v2)
+	}
+}
+func (_Tree_Link__Assembler) Prototype() ipld.NodePrototype {
+	return _Tree_Link__Prototype{}
+}
+func (Tree_Link) Type() schema.Type {
+	return nil /*TODO:typelit*/
+}
+func (Tree_Link) LinkTargetNodePrototype() ipld.NodePrototype {
+	return Type.Tree__Repr
+}
+func (n Tree_Link) Representation() ipld.Node {
+	return (*_Tree_Link__Repr)(n)
+}
+
+type _Tree_Link__Repr = _Tree_Link
+
+var _ ipld.Node = &_Tree_Link__Repr{}
+
+type _Tree_Link__ReprPrototype = _Tree_Link__Prototype
+type _Tree_Link__ReprAssembler = _Tree_Link__Assembler

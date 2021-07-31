@@ -209,7 +209,7 @@ func testNode(t *testing.T, nd ipld.Node) error {
 			t.Fatalf("Tag is not a tag")
 		}
 
-		tt, err := tag.tagType.AsString()
+		tt, err := tag.typ.AsString()
 		assert(t, err == nil)
 
 		assert(t, tt == "commit" || tt == "tree" || tt == "blob" || tt == "tag")
@@ -222,7 +222,11 @@ func testNode(t *testing.T, nd ipld.Node) error {
 		}
 
 		assert(t, len(tree.m) > 0)
+
+	default:
+		return fmt.Errorf("unexpected or unknown NodePrototype %v", nd.Prototype())
 	}
+
 	return nil
 }
 

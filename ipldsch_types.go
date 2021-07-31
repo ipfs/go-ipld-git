@@ -20,34 +20,34 @@ var _ ipld.Node = nil // suppress errors when this dependency is not referenced
 var Type typeSlab
 
 type typeSlab struct {
-	Blob              _Blob__Prototype
-	Blob__Repr        _Blob__ReprPrototype
-	Commit            _Commit__Prototype
-	Commit__Repr      _Commit__ReprPrototype
-	GpgSig            _GpgSig__Prototype
-	GpgSig__Repr      _GpgSig__ReprPrototype
-	Link              _Link__Prototype
-	Link__Repr        _Link__ReprPrototype
-	LinkCommit        _LinkCommit__Prototype
-	LinkCommit__Repr  _LinkCommit__ReprPrototype
-	LinkTree          _LinkTree__Prototype
-	LinkTree__Repr    _LinkTree__ReprPrototype
-	ListParents       _ListParents__Prototype
-	ListParents__Repr _ListParents__ReprPrototype
-	ListString        _ListString__Prototype
-	ListString__Repr  _ListString__ReprPrototype
-	ListTag           _ListTag__Prototype
-	ListTag__Repr     _ListTag__ReprPrototype
-	PersonInfo        _PersonInfo__Prototype
-	PersonInfo__Repr  _PersonInfo__ReprPrototype
-	String            _String__Prototype
-	String__Repr      _String__ReprPrototype
-	Tag               _Tag__Prototype
-	Tag__Repr         _Tag__ReprPrototype
-	Tree              _Tree__Prototype
-	Tree__Repr        _Tree__ReprPrototype
-	TreeEntry         _TreeEntry__Prototype
-	TreeEntry__Repr   _TreeEntry__ReprPrototype
+	Blob                   _Blob__Prototype
+	Blob__Repr             _Blob__ReprPrototype
+	Commit                 _Commit__Prototype
+	Commit__Repr           _Commit__ReprPrototype
+	Commit_Link            _Commit_Link__Prototype
+	Commit_Link__Repr      _Commit_Link__ReprPrototype
+	Commit_Link_List       _Commit_Link_List__Prototype
+	Commit_Link_List__Repr _Commit_Link_List__ReprPrototype
+	GpgSig                 _GpgSig__Prototype
+	GpgSig__Repr           _GpgSig__ReprPrototype
+	Link                   _Link__Prototype
+	Link__Repr             _Link__ReprPrototype
+	PersonInfo             _PersonInfo__Prototype
+	PersonInfo__Repr       _PersonInfo__ReprPrototype
+	String                 _String__Prototype
+	String__Repr           _String__ReprPrototype
+	String_List            _String_List__Prototype
+	String_List__Repr      _String_List__ReprPrototype
+	Tag                    _Tag__Prototype
+	Tag__Repr              _Tag__ReprPrototype
+	Tag_List               _Tag_List__Prototype
+	Tag_List__Repr         _Tag_List__ReprPrototype
+	Tree                   _Tree__Prototype
+	Tree__Repr             _Tree__ReprPrototype
+	TreeEntry              _TreeEntry__Prototype
+	TreeEntry__Repr        _TreeEntry__ReprPrototype
+	Tree_Link              _Tree_Link__Prototype
+	Tree_Link__Repr        _Tree_Link__ReprPrototype
 }
 
 // --- type definitions follow ---
@@ -59,15 +59,25 @@ type _Blob struct{ x []byte }
 // Commit matches the IPLD Schema type "Commit".  It has Struct type-kind, and may be interrogated like map kind.
 type Commit = *_Commit
 type _Commit struct {
+	tree      _Tree_Link
+	parents   _Commit_Link_List
+	message   _String
 	author    _PersonInfo__Maybe
 	committer _PersonInfo__Maybe
-	message   _String
-	parents   _ListParents
-	tree      _LinkTree
 	encoding  _String__Maybe
 	signature _GpgSig__Maybe
-	mergeTag  _ListTag
-	other     _ListString
+	mergetag  _Tag_List
+	other     _String_List
+}
+
+// Commit_Link matches the IPLD Schema type "Commit_Link".  It has link kind.
+type Commit_Link = *_Commit_Link
+type _Commit_Link struct{ x ipld.Link }
+
+// Commit_Link_List matches the IPLD Schema type "Commit_Link_List".  It has list kind.
+type Commit_Link_List = *_Commit_Link_List
+type _Commit_Link_List struct {
+	x []_Commit_Link
 }
 
 // GpgSig matches the IPLD Schema type "GpgSig".  It has string kind.
@@ -77,32 +87,6 @@ type _GpgSig struct{ x string }
 // Link matches the IPLD Schema type "Link".  It has link kind.
 type Link = *_Link
 type _Link struct{ x ipld.Link }
-
-// LinkCommit matches the IPLD Schema type "LinkCommit".  It has link kind.
-type LinkCommit = *_LinkCommit
-type _LinkCommit struct{ x ipld.Link }
-
-// LinkTree matches the IPLD Schema type "LinkTree".  It has link kind.
-type LinkTree = *_LinkTree
-type _LinkTree struct{ x ipld.Link }
-
-// ListParents matches the IPLD Schema type "ListParents".  It has list kind.
-type ListParents = *_ListParents
-type _ListParents struct {
-	x []_LinkCommit
-}
-
-// ListString matches the IPLD Schema type "ListString".  It has list kind.
-type ListString = *_ListString
-type _ListString struct {
-	x []_String
-}
-
-// ListTag matches the IPLD Schema type "ListTag".  It has list kind.
-type ListTag = *_ListTag
-type _ListTag struct {
-	x []_Tag
-}
 
 // PersonInfo matches the IPLD Schema type "PersonInfo".  It has Struct type-kind, and may be interrogated like map kind.
 type PersonInfo = *_PersonInfo
@@ -117,14 +101,26 @@ type _PersonInfo struct {
 type String = *_String
 type _String struct{ x string }
 
+// String_List matches the IPLD Schema type "String_List".  It has list kind.
+type String_List = *_String_List
+type _String_List struct {
+	x []_String
+}
+
 // Tag matches the IPLD Schema type "Tag".  It has Struct type-kind, and may be interrogated like map kind.
 type Tag = *_Tag
 type _Tag struct {
-	message _String
 	object  _Link
+	typ     _String
 	tag     _String
 	tagger  _PersonInfo
-	tagType _String
+	message _String
+}
+
+// Tag_List matches the IPLD Schema type "Tag_List".  It has list kind.
+type Tag_List = *_Tag_List
+type _Tag_List struct {
+	x []_Tag
 }
 
 // Tree matches the IPLD Schema type "Tree".  It has map kind.
@@ -144,3 +140,7 @@ type _TreeEntry struct {
 	mode _String
 	hash _Link
 }
+
+// Tree_Link matches the IPLD Schema type "Tree_Link".  It has link kind.
+type Tree_Link = *_Tree_Link
+type _Tree_Link struct{ x ipld.Link }
