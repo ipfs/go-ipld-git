@@ -100,7 +100,7 @@ As JSON, real data would look something like:
     "email": "author@mail",
     "name": "Author Name"
   },
-  "tagType": "commit"
+  "type": "commit"
 }
 ```
 
