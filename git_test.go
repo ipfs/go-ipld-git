@@ -2,23 +2,31 @@ package ipldgit
 
 import (
 	"archive/tar"
+	"bytes"
 	"compress/gzip"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"testing"
 
-	node "github.com/ipfs/go-ipld-format"
+	"github.com/ipfs/go-cid"
+	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/multiformats/go-multihash"
 )
 
-type GitObj interface {
-	GitSha() []byte
-}
-
 func TestObjectParse(t *testing.T) {
+	lb := cidlink.LinkPrototype{Prefix: cid.Prefix{
+		Version:  1,
+		Codec:    cid.GitRaw,
+		MhType:   0x11,
+		MhLength: 20,
+	}}
+	ls := cidlink.DefaultLinkSystem()
+
 	i := 0
 	err := filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -41,26 +49,36 @@ func TestObjectParse(t *testing.T) {
 		}
 		defer fi.Close()
 
+		fmt.Printf("parsing for %s\n", path)
 		thing, err := ParseCompressedObject(fi)
 		if err != nil {
 			fmt.Println("ERROR: ", path, err)
 			return err
 		}
+		fmt.Printf("parsed.. now compute link.\n")
 
 		if i%64 == 0 {
 			fmt.Printf("%d %s\r", i, path)
 		}
 
-		sha := thing.(GitObj).GitSha()
-		if fmt.Sprintf("%x", sha) != parts[len(parts)-2]+parts[len(parts)-1] {
+		lnk := ls.MustComputeLink(lb, thing)
+		sha := lnk.(cidlink.Link).Cid.Hash()
+		mh, err := multihash.Decode(sha)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if fmt.Sprintf("%x", mh.Digest) != parts[len(parts)-2]+parts[len(parts)-1] {
+			fmt.Printf("\n")
 			fmt.Printf("\nsha: %x\n", sha)
 			fmt.Printf("path: %s\n", path)
 			fmt.Printf("mismatch on: %T\n", thing)
 			fmt.Printf("%#v\n", thing)
 			fmt.Println("vvvvvv")
-			fmt.Println(string(thing.RawData()))
+			fmt.Println(thing.AsBytes())
 			fmt.Println("^^^^^^")
 			t.Fatal("mismatch!")
+		} else {
+			fmt.Printf("\nsha: %x\n", mh.Digest)
 		}
 
 		err = testNode(t, thing)
@@ -76,6 +94,14 @@ func TestObjectParse(t *testing.T) {
 }
 
 func TestArchiveObjectParse(t *testing.T) {
+	lb := cidlink.LinkPrototype{Prefix: cid.Prefix{
+		Version:  1,
+		Codec:    cid.GitRaw,
+		MhType:   0x11,
+		MhLength: 20,
+	}}
+	ls := cidlink.DefaultLinkSystem()
+
 	archive, err := os.Open("testdata.tar.gz")
 	if err != nil {
 		fmt.Println("ERROR: ", err)
@@ -128,14 +154,21 @@ func TestArchiveObjectParse(t *testing.T) {
 
 			fmt.Printf("%s\r", name)
 
-			sha := thing.(GitObj).GitSha()
-			if fmt.Sprintf("%x", sha) != parts[len(parts)-2]+parts[len(parts)-1] {
+			lnk := ls.MustComputeLink(lb, thing)
+			sha := lnk.(cidlink.Link).Cid.Hash()
+			mh, err := multihash.Decode(sha)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if fmt.Sprintf("%x", mh.Digest) != parts[len(parts)-2]+parts[len(parts)-1] {
 				fmt.Printf("\nsha: %x\n", sha)
 				fmt.Printf("path: %s\n", name)
 				fmt.Printf("mismatch on: %T\n", thing)
 				fmt.Printf("%#v\n", thing)
 				fmt.Println("vvvvvv")
-				fmt.Println(string(thing.RawData()))
+				buf := bytes.NewBuffer([]byte{})
+				Encode(thing, buf)
+				fmt.Println(buf.String())
 				fmt.Println("^^^^^^")
 				t.Fatal("mismatch!")
 			}
@@ -151,227 +184,218 @@ func TestArchiveObjectParse(t *testing.T) {
 
 }
 
-func testNode(t *testing.T, nd node.Node) error {
-	switch nd.String() {
-	case "[git blob]":
-		blob, ok := nd.(*Blob)
+func testNode(t *testing.T, nd ipld.Node) error {
+	switch nd.Prototype() {
+	case Type.Blob:
+		blob, ok := nd.(Blob)
 		if !ok {
 			t.Fatalf("Blob is not a blob")
 		}
 
-		assert(t, blob.Links() == nil)
-		assert(t, blob.Tree("", 0) == nil)
-		assert(t, blob.Loggable()["type"] == "git_blob")
+		b, err := blob.AsBytes()
+		assert(t, err == nil)
+		assert(t, len(b) != 0)
 
-		s, _ := blob.Size()
-		assert(t, len(blob.RawData()) == int(s))
-	case "[git commit object]":
-		commit, ok := nd.(*Commit)
+	case Type.Commit:
+		commit, ok := nd.(Commit)
 		if !ok {
 			t.Fatalf("Commit is not a commit")
 		}
 
-		s, _ := commit.Size()
-		assert(t, len(commit.RawData()) == int(s))
-		assert(t, reflect.DeepEqual(commit.RawData(), commit.RawData()))
-		assert(t, commit.GitTree.Defined())
-		assert(t, commit.Links() != nil)
-		assert(t, commit.Loggable()["type"] == "git_commit")
-
-		assert(t, commit.Tree("", -1) != nil)
-		lnk, rest, err := commit.ResolveLink([]string{"tree", "aoeu"})
-		assert(t, err == nil)
-		assert(t, lnk != nil)
-		assert(t, len(rest) == 1)
-		assert(t, rest[0] == "aoeu")
-
-		lnk, rest, err = commit.ResolveLink([]string{"parents", "0"})
-		assert(t, err == nil || err.Error() == "index out of range")
-		assert(t, lnk != nil || err.Error() == "index out of range")
-		assert(t, len(rest) == 0)
-
-		mt, _, err := commit.Resolve([]string{"mergetag"})
-		assert(t, err == nil)
-		if len(mt.([]*MergeTag)) > 0 {
-			mtag, _, err := commit.Resolve([]string{"mergetag", "0"})
-			assert(t, err == nil)
-			tag, ok := mtag.(*MergeTag)
-			if !ok {
-				t.Fatal("Invalid mergetag")
-			}
-
-			ttype, rest, err := commit.Resolve([]string{"mergetag", "0", "type"})
-			assert(t, err == nil)
-			assert(t, len(rest) == 0)
-			assert(t, ttype.(string) == "commit")
-
-			tagger, rest, err := commit.Resolve([]string{"mergetag", "0", "tagger"})
-			assert(t, err == nil)
-			assert(t, len(rest) == 0)
-			assert(t, tagger == tag.Tagger)
-
-			link, rest, err := commit.Resolve([]string{"mergetag", "0", "object"})
-			assert(t, err == nil)
-			assert(t, len(rest) == 0)
-			assert(t, link.(*node.Link).Cid == tag.Object)
-
-			text, rest, err := commit.Resolve([]string{"mergetag", "0", "tag"})
-			assert(t, err == nil)
-			assert(t, len(rest) == 0)
-			assert(t, text.(string) == tag.Tag)
-
-			text, rest, err = commit.Resolve([]string{"mergetag", "0", "text"})
-			assert(t, err == nil)
-			assert(t, len(rest) == 0)
-			assert(t, text.(string) == tag.Text)
-		}
-
-	case "[git tag object]":
-		tag, ok := nd.(*Tag)
+		assert(t, !commit.tree.IsNull())
+	case Type.Tag:
+		tag, ok := nd.(Tag)
 		if !ok {
 			t.Fatalf("Tag is not a tag")
 		}
 
-		assert(t, tag.Type == "commit" || tag.Type == "tree" || tag.Type == "blob" || tag.Type == "tag")
-		assert(t, reflect.DeepEqual(tag.RawData(), tag.RawData()))
-		assert(t, tag.Object.Defined())
-		assert(t, tag.Loggable()["type"] == "git_tag")
-		assert(t, tag.Tree("", -1) != nil)
-		obj, rest, err := tag.ResolveLink([]string{"object", "aoeu"})
+		tt, err := tag.typ.AsString()
 		assert(t, err == nil)
-		assert(t, obj != nil)
-		assert(t, rest != nil)
-		assert(t, len(rest) == 1)
-		//lint:ignore SA5011 see lines above
-		assert(t, rest[0] == "aoeu")
-	case "[git tree object]":
-		tree, ok := nd.(*Tree)
+
+		assert(t, tt == "commit" || tt == "tree" || tt == "blob" || tt == "tag")
+		assert(t, !tag.object.IsNull())
+
+	case Type.Tree:
+		tree, ok := nd.(Tree)
 		if !ok {
 			t.Fatalf("Tree is not a tree")
 		}
 
-		assert(t, reflect.DeepEqual(tree.RawData(), tree.RawData()))
-		assert(t, tree.entries != nil)
-		assert(t, tree.Tree("", 0) == nil)
+		assert(t, len(tree.m) > 0)
+
+	default:
+		return fmt.Errorf("unexpected or unknown NodePrototype %v", nd.Prototype())
 	}
+
 	return nil
 }
 
 func TestParsePersonInfo(t *testing.T) {
-	pi, err := parsePersonInfo([]byte("prefix Someone <some@one.somewhere> 123456 +0123"))
+	p1 := []byte("prefix Someone <some@one.somewhere> 123456 +0123")
+	pi, err := parsePersonInfo(p1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal([]byte(pi.GitString()), p1[7:]) {
+		t.Fatal("not equal:", string(p1), "vs: ", pi.GitString())
+	}
+
+	if d, err := pi.LookupByString("date"); err != nil {
+		t.Fatalf("invalid date, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "123456" {
+		t.Fatalf("invalid date, got %s\n", ds)
+	}
+
+	if d, err := pi.LookupByString("timezone"); err != nil {
+		t.Fatalf("invalid timezone, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "+0123" {
+		t.Fatalf("invalid timezone, got %s\n", ds)
+	}
+
+	if d, err := pi.LookupByString("email"); err != nil {
+		t.Fatalf("invalid email, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "some@one.somewhere" {
+		t.Fatalf("invalid email, got %s\n", ds)
+	}
+
+	if d, err := pi.LookupByString("name"); err != nil {
+		t.Fatalf("invalid name, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "Someone" {
+		t.Fatalf("invalid name, got %s\n", ds)
+	}
+
+	p2 := []byte("prefix So Me One <some@one.somewhere> 123456 +0123")
+	pi, err = parsePersonInfo(p2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal([]byte(pi.GitString()), p2[7:]) {
+		t.Fatal("not equal", p2, pi.GitString())
+	}
+
+	if d, err := pi.LookupByString("name"); err != nil {
+		t.Fatalf("invalid name, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "So Me One" {
+		t.Fatalf("invalid name, got %s\n", ds)
+	}
+
+	p3 := []byte("prefix Some One & Other One <some@one.somewhere, other@one.elsewhere> 987654 +4321")
+	pi, err = parsePersonInfo(p3)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal([]byte(pi.GitString()), p3[7:]) {
+		t.Fatal("not equal", p3, pi.GitString())
+	}
+	if d, err := pi.LookupByString("date"); err != nil {
+		t.Fatalf("invalid date, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "987654" {
+		t.Fatalf("invalid date, got %s\n", ds)
+	}
+
+	if d, err := pi.LookupByString("timezone"); err != nil {
+		t.Fatalf("invalid tz, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "+4321" {
+		t.Fatalf("invalid tz, got %s\n", ds)
+	}
+
+	if d, err := pi.LookupByString("email"); err != nil {
+		t.Fatalf("invalid email, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "some@one.somewhere, other@one.elsewhere" {
+		t.Fatalf("invalid email, got %s\n", ds)
+	}
+
+	if d, err := pi.LookupByString("name"); err != nil {
+		t.Fatalf("invalid name, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "Some One & Other One" {
+		t.Fatalf("invalid name, got %s\n", ds)
+	}
+
+	p4 := []byte("prefix  <some@one.somewhere> 987654 +4321")
+	pi, err = parsePersonInfo(p4)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal([]byte(pi.GitString()), p4[7:]) {
+		t.Fatal("not equal", p4, pi.GitString())
+	}
+
+	if d, err := pi.LookupByString("name"); err != nil {
+		t.Fatalf("invalid name, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "" {
+		t.Fatalf("invalid name, got %s\n", ds)
+	}
+
+	if d, err := pi.LookupByString("email"); err != nil {
+		t.Fatalf("invalid email, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "some@one.somewhere" {
+		t.Fatalf("invalid email, got %s\n", ds)
+	}
+
+	if d, err := pi.LookupByString("date"); err != nil {
+		t.Fatalf("invalid date, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "987654" {
+		t.Fatalf("invalid date, got %s\n", ds)
+	}
+
+	if d, err := pi.LookupByString("timezone"); err != nil {
+		t.Fatalf("invalid tz, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "+4321" {
+		t.Fatalf("invalid tz, got %s\n", ds)
+	}
+
+	p5 := []byte("prefix Someone  <some@one.somewhere> 987654 +4321")
+	pi, err = parsePersonInfo(p5)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal([]byte(pi.GitString()), p5[7:]) {
+		t.Fatal("not equal", p5, pi.GitString())
+	}
+
+	if d, err := pi.LookupByString("name"); err != nil {
+		t.Fatalf("invalid name, got %s\n", err)
+	} else if ds, _ := d.AsString(); ds != "Someone " {
+		t.Fatalf("invalid name, got %s\n", ds)
+	}
+
+	p6 := []byte("prefix Someone <some.one@some.where>")
+	pi, err = parsePersonInfo(p6)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if pi.Date != "123456" {
-		t.Fatalf("invalid date, got %s\n", pi.Date)
-	}
+	assert(t, pi.GitString() == "Someone <some.one@some.where>")
 
-	if pi.Timezone != "+0123" {
-		t.Fatalf("invalid timezone, got %s\n", pi.Timezone)
-	}
-
-	if pi.Email != "some@one.somewhere" {
-		t.Fatalf("invalid email, got %s\n", pi.Email)
-	}
-
-	if pi.Name != "Someone" {
-		t.Fatalf("invalid name, got %s\n", pi.Name)
-	}
-
-	pi, err = parsePersonInfo([]byte("prefix So Me One <some@one.somewhere> 123456 +0123"))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if pi.Name != "So Me One" {
-		t.Fatalf("invalid name, got %s\n", pi.Name)
-	}
-
-	pi, err = parsePersonInfo([]byte("prefix Some One & Other One <some@one.somewhere, other@one.elsewhere> 987654 +4321"))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if pi.Date != "987654" {
-		t.Fatalf("invalid date, got %s\n", pi.Date)
-	}
-
-	if pi.Timezone != "+4321" {
-		t.Fatalf("invalid timezone, got %s\n", pi.Timezone)
-	}
-
-	if pi.Email != "some@one.somewhere, other@one.elsewhere" {
-		t.Fatalf("invalid email, got %s\n", pi.Email)
-	}
-
-	if pi.Name != "Some One & Other One" {
-		t.Fatalf("invalid name, got %s\n", pi.Name)
-	}
-
-	pi, err = parsePersonInfo([]byte("prefix  <some@one.somewhere> 987654 +4321"))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if pi.Name != "" {
-		t.Fatalf("invalid name, got %s\n", pi.Name)
-	}
-
-	if pi.Email != "some@one.somewhere" {
-		t.Fatalf("invalid email, got %s\n", pi.Email)
-	}
-
-	if pi.Date != "987654" {
-		t.Fatalf("invalid date, got %s\n", pi.Date)
-	}
-
-	if pi.Timezone != "+4321" {
-		t.Fatalf("invalid timezone, got %s\n", pi.Timezone)
-	}
-
-	pi, err = parsePersonInfo([]byte("prefix Someone  <some@one.somewhere> 987654 +4321"))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if pi.Name != "Someone " {
-		t.Fatalf("invalid name, got %s\n", pi.Name)
-	}
-
-	pi, err = parsePersonInfo([]byte("prefix Someone <some.one@some.where>"))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	assert(t, pi.String() == "Someone <some.one@some.where>")
+	buf := new(bytes.Buffer)
 
 	pi, err = parsePersonInfo([]byte("prefix Łukasz Magiera <magik6k@users.noreply.github.com> 1546187652 +0100"))
 	assert(t, err == nil)
-	piJSON, err := pi.MarshalJSON()
+	buf.Reset()
+	err = dagjson.Encode(pi, buf)
 	assert(t, err == nil)
-	date, _, err := pi.resolve([]string{"date"})
-	assert(t, err == nil)
-	assert(t, string(piJSON) == `{"date":"2018-12-30T17:34:12+01:00","email":"magik6k@users.noreply.github.com","name":"Łukasz Magiera"}`)
-	assert(t, date == "2018-12-30T17:34:12+01:00")
+	assert(t, buf.String() == `{"date":"1546187652","email":"magik6k@users.noreply.github.com","name":"Łukasz Magiera","timezone":"+0100"}`)
 
 	pi, err = parsePersonInfo([]byte("prefix Sameer <sameer@users.noreply.github.com> 1545162499 -0500"))
 	assert(t, err == nil)
-	piJSON, err = pi.MarshalJSON()
+	buf.Reset()
+	err = dagjson.Encode(pi, buf)
 	assert(t, err == nil)
-	assert(t, string(piJSON) == `{"date":"2018-12-18T14:48:19-05:00","email":"sameer@users.noreply.github.com","name":"Sameer"}`)
+	assert(t, buf.String() == `{"date":"1545162499","email":"sameer@users.noreply.github.com","name":"Sameer","timezone":"-0500"}`)
 
 	pi, err = parsePersonInfo([]byte("prefix Łukasz Magiera <magik6k@users.noreply.github.com> 1546187652 +0122"))
 	assert(t, err == nil)
-	piJSON, err = pi.MarshalJSON()
+	buf.Reset()
+	err = dagjson.Encode(pi, buf)
 	assert(t, err == nil)
-	assert(t, string(piJSON) == `{"date":"2018-12-30T17:56:12+01:22","email":"magik6k@users.noreply.github.com","name":"Łukasz Magiera"}`)
+	assert(t, buf.String() == `{"date":"1546187652","email":"magik6k@users.noreply.github.com","name":"Łukasz Magiera","timezone":"+0122"}`)
 
 	pi, err = parsePersonInfo([]byte("prefix Sameer <sameer@users.noreply.github.com> 1545162499 -0545"))
 	assert(t, err == nil)
-	piJSON, err = pi.MarshalJSON()
+	buf.Reset()
+	err = dagjson.Encode(pi, buf)
 	assert(t, err == nil)
-	assert(t, string(piJSON) == `{"date":"2018-12-18T14:03:19-05:45","email":"sameer@users.noreply.github.com","name":"Sameer"}`)
+	assert(t, buf.String() == `{"date":"1545162499","email":"sameer@users.noreply.github.com","name":"Sameer","timezone":"-0545"}`)
 }
 
 func assert(t *testing.T, ok bool) {
@@ -405,8 +429,8 @@ func BenchmarkRawData(b *testing.B) {
 			if err != nil {
 				return err
 			}
-			thing.RawData()
-			return nil
+			buf := bytes.NewBuffer([]byte{})
+			return Encode(thing, buf)
 		})
 		if err != nil {
 			b.Fatal(err)
@@ -415,6 +439,14 @@ func BenchmarkRawData(b *testing.B) {
 }
 
 func BenchmarkCid(b *testing.B) {
+	lb := cidlink.LinkPrototype{Prefix: cid.Prefix{
+		Version:  1,
+		Codec:    cid.GitRaw,
+		MhType:   0x11,
+		MhLength: 20,
+	}}
+	ls := cidlink.DefaultLinkSystem()
+
 	for i := 0; i < b.N; i++ {
 		err := filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
 			if err != nil {
@@ -438,8 +470,9 @@ func BenchmarkCid(b *testing.B) {
 			if err != nil {
 				return err
 			}
-			thing.Cid()
-			return nil
+
+			_, err = ls.ComputeLink(lb, thing)
+			return err
 		})
 		if err != nil {
 			b.Fatal(err)

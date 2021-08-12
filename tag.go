@@ -1,143 +1,178 @@
 package ipldgit
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/hex"
-	"errors"
 	"fmt"
-	"sync"
+	"io"
+	"io/ioutil"
 
-	cid "github.com/ipfs/go-cid"
-	node "github.com/ipfs/go-ipld-format"
+	"github.com/ipld/go-ipld-prime"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
-type Tag struct {
-	Object   cid.Cid     `json:"object"`
-	Type     string      `json:"type"`
-	Tag      string      `json:"tag"`
-	Tagger   *PersonInfo `json:"tagger"`
-	Message  string      `json:"message"`
-	dataSize string
+const tagObjectPrefixLen = 7 // "prefix 'object '"
+const tagTagPrefixLen = 4    // "prefix 'tag '"
+const tagTypePrefixLen = 5   // "prefix 'type '"
 
-	cid cid.Cid
-
-	rawData     []byte
-	rawDataOnce sync.Once
-}
-
-func (t *Tag) Cid() cid.Cid {
-	return t.cid
-}
-
-func (t *Tag) Copy() node.Node {
-	return &Tag{
-		Object:   t.Object,
-		Type:     t.Type,
-		Tag:      t.Tag,
-		Tagger:   t.Tagger,
-		Message:  t.Message,
-		dataSize: t.dataSize,
-		cid:      t.cid,
-	}
-}
-
-func (t *Tag) Links() []*node.Link {
-	return []*node.Link{{Cid: t.Object}}
-}
-
-func (t *Tag) Loggable() map[string]interface{} {
-	return map[string]interface{}{
-		"type": "git_tag",
-	}
-}
-
-func (t *Tag) RawData() []byte {
-	t.rawDataOnce.Do(func() {
-		buf := new(bytes.Buffer)
-		fmt.Fprintf(buf, "tag %s\x00", t.dataSize)
-		fmt.Fprintf(buf, "object %s\n", hex.EncodeToString(cidToSha(t.Object)))
-		fmt.Fprintf(buf, "type %s\n", t.Type)
-		fmt.Fprintf(buf, "tag %s\n", t.Tag)
-		if t.Tagger != nil {
-			fmt.Fprintf(buf, "tagger %s\n", t.Tagger.String())
-		}
-		if t.Message != "" {
-			fmt.Fprintf(buf, "\n%s", t.Message)
-		}
-		t.rawData = buf.Bytes()
-	})
-
-	return t.rawData
-}
-
-func (t *Tag) Resolve(path []string) (interface{}, []string, error) {
-	if len(path) == 0 {
-		return nil, nil, fmt.Errorf("zero length path")
-	}
-
-	switch path[0] {
-	case "object":
-		return &node.Link{Cid: t.Object}, path[1:], nil
-	case "type":
-		return t.Type, path[1:], nil
-	case "tagger":
-		if len(path) == 1 {
-			return t.Tagger, nil, nil
-		}
-		return t.Tagger.resolve(path[1:])
-	case "message":
-		return t.Message, path[1:], nil
-	case "tag":
-		return t.Tag, path[1:], nil
-	default:
-		return nil, nil, errors.New("no such link")
-	}
-}
-
-func (t *Tag) ResolveLink(path []string) (*node.Link, []string, error) {
-	out, rest, err := t.Resolve(path)
+// DecodeTag fills a NodeAssembler (from `Type.Tag__Repr.NewBuilder()`) from a stream of bytes
+func DecodeTag(na ipld.NodeAssembler, rd *bufio.Reader) error {
+	_, err := rd.ReadString(0)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
-	lnk, ok := out.(*node.Link)
-	if !ok {
-		return nil, nil, errors.New("not a link")
-	}
+	out := _Tag{}
 
-	return lnk, rest, nil
-}
-
-func (t *Tag) Size() (uint64, error) {
-	return uint64(len(t.RawData())), nil
-}
-
-func (t *Tag) Stat() (*node.NodeStat, error) {
-	return &node.NodeStat{}, nil
-}
-
-func (t *Tag) String() string {
-	return "[git tag object]"
-}
-
-func (t *Tag) Tree(p string, depth int) []string {
-	if p != "" {
-		if p == "tagger" {
-			return []string{"name", "email", "date"}
+	for {
+		line, _, err := rd.ReadLine()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return err
 		}
-		return nil
-	}
-	if depth == 0 {
-		return nil
+
+		switch {
+		case bytes.HasPrefix(line, []byte("object ")):
+			sha, err := hex.DecodeString(string(line[tagObjectPrefixLen:]))
+			if err != nil {
+				return err
+			}
+
+			out.object = _Link{cidlink.Link{Cid: shaToCid(sha)}}
+		case bytes.HasPrefix(line, []byte("tag ")):
+			out.tag = _String{string(line[tagTagPrefixLen:])}
+		case bytes.HasPrefix(line, []byte("tagger ")):
+			c, err := parsePersonInfo(line)
+			if err != nil {
+				return err
+			}
+
+			out.tagger = *c
+		case bytes.HasPrefix(line, []byte("type ")):
+			out.typ = _String{string(line[tagTypePrefixLen:])}
+		case len(line) == 0:
+			rest, err := ioutil.ReadAll(rd)
+			if err != nil {
+				return err
+			}
+
+			out.message = _String{string(rest)}
+		default:
+			fmt.Println("unhandled line: ", string(line))
+		}
 	}
 
-	tree := []string{"object", "type", "tag", "message"}
-	tree = append(tree, t.Tagger.tree("tagger", depth)...)
-	return tree
+	return na.AssignNode(&out)
 }
 
-func (t *Tag) GitSha() []byte {
-	return cidToSha(t.Cid())
+// readMergeTag works for tags within commits like DecodeTag
+func readMergeTag(hash []byte, rd *bufio.Reader) (Tag, []byte, error) {
+	out := _Tag{}
+
+	out.object = _Link{cidlink.Link{Cid: shaToCid(hash)}}
+	for {
+		line, _, err := rd.ReadLine()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return nil, nil, err
+		}
+
+		switch {
+		case bytes.HasPrefix(line, []byte(" type ")):
+			out.typ = _String{string(line[1+tagTypePrefixLen:])}
+		case bytes.HasPrefix(line, []byte(" tag ")):
+			out.tag = _String{string(line[1+tagTagPrefixLen:])}
+		case bytes.HasPrefix(line, []byte(" tagger ")):
+			tagger, err := parsePersonInfo(line[1:])
+			if err != nil {
+				return nil, nil, err
+			}
+			out.tagger = *tagger
+		case string(line) == " ":
+			for {
+				line, _, err := rd.ReadLine()
+				if err != nil {
+					return nil, nil, err
+				}
+
+				if !bytes.HasPrefix(line, []byte(" ")) {
+					return &out, line, nil
+				}
+
+				out.message.x += string(line) + "\n"
+			}
+		}
+	}
+	return &out, nil, nil
 }
 
-var _ node.Node = (*Tag)(nil)
+func encodeTag(n ipld.Node, w io.Writer) error {
+	obj, err := n.LookupByString("object")
+	if err != nil {
+		return err
+	}
+	objLnk, err := obj.AsLink()
+	if err != nil {
+		return err
+	}
+
+	tt, err := n.LookupByString("type")
+	if err != nil {
+		return err
+	}
+	ttStr, err := tt.AsString()
+	if err != nil {
+		return err
+	}
+
+	tag, err := n.LookupByString("tag")
+	if err != nil {
+		return err
+	}
+	tagStr, err := tag.AsString()
+	if err != nil {
+		return err
+	}
+
+	message, err := n.LookupByString("message")
+	if err != nil {
+		return err
+	}
+	messageStr, err := message.AsString()
+	if err != nil {
+		return err
+	}
+
+	tagger, taggerErr := n.LookupByString("tagger")
+
+	buf := new(bytes.Buffer)
+	fmt.Fprintf(buf, "object %s\n", hex.EncodeToString(sha(objLnk)))
+	fmt.Fprintf(buf, "type %s\n", ttStr)
+	fmt.Fprintf(buf, "tag %s\n", tagStr)
+	if taggerErr == nil && !tagger.IsNull() {
+		pi := Type.PersonInfo__Repr.NewBuilder()
+		if err := pi.AssignNode(tagger); err != nil {
+			return err
+		}
+		piN := pi.Build()
+		parsed, ok := piN.(*_PersonInfo)
+		if !ok {
+			return fmt.Errorf("could not parse tagger person info %v", tagger)
+		}
+		fmt.Fprintf(buf, "tagger %s\n", parsed.GitString())
+	}
+	if messageStr != "" {
+		fmt.Fprintf(buf, "\n%s", messageStr)
+	}
+
+	if _, err := fmt.Fprintf(w, "tag %d\x00", buf.Len()); err != nil {
+		return err
+	}
+	_, err = buf.WriteTo(w)
+	return err
+}
