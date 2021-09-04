@@ -13,6 +13,9 @@ func Decode(na ipld.NodeAssembler, r io.Reader) error {
 	rd := bufio.NewReader(r)
 
 	typ, err := rd.ReadString(' ')
+	if err == io.EOF {
+		return io.ErrUnexpectedEOF
+	}
 	if err != nil {
 		return err
 	}
@@ -28,7 +31,7 @@ func Decode(na ipld.NodeAssembler, r io.Reader) error {
 	case "tag":
 		return DecodeTag(na, rd)
 	default:
-		return fmt.Errorf("unrecognized object type: %s", typ)
+		return fmt.Errorf("unrecognized object type: %q", typ)
 	}
 }
 
@@ -37,6 +40,9 @@ func ParseObject(r io.Reader) (ipld.Node, error) {
 	rd := bufio.NewReader(r)
 
 	typ, err := rd.ReadString(' ')
+	if err == io.EOF {
+		return nil, io.ErrUnexpectedEOF
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +64,7 @@ func ParseObject(r io.Reader) (ipld.Node, error) {
 		na = Type.Tag.NewBuilder()
 		decode = DecodeTag
 	default:
-		return nil, fmt.Errorf("unrecognized object type: %s", typ)
+		return nil, fmt.Errorf("unrecognized object type: %q", typ)
 	}
 	// fmt.Printf("type %s\n", typ)
 
