@@ -1,6 +1,6 @@
 module github.com/ipfs/go-ipld-git
 
-go 1.17
+go 1.18
 
 require (
 	github.com/ipfs/go-block-format v0.0.3
