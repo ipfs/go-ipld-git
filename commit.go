@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strings"
 
 	"github.com/ipld/go-ipld-prime"
@@ -101,7 +100,7 @@ func decodeCommitLine(c Commit, line []byte, rd *bufio.Reader) error {
 		}
 		c.signature = _GpgSig__Maybe{m: schema.Maybe_Value, v: sig}
 	case len(line) == 0:
-		rest, err := ioutil.ReadAll(rd)
+		rest, err := io.ReadAll(rd)
 		if err != nil {
 			return err
 		}

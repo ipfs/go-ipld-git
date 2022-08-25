@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 
 	"github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
@@ -54,7 +53,7 @@ func DecodeTag(na ipld.NodeAssembler, rd *bufio.Reader) error {
 		case bytes.HasPrefix(line, []byte("type ")):
 			out.typ = _String{string(line[tagTypePrefixLen:])}
 		case len(line) == 0:
-			rest, err := ioutil.ReadAll(rd)
+			rest, err := io.ReadAll(rd)
 			if err != nil {
 				return err
 			}
