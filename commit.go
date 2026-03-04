@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
@@ -94,7 +93,7 @@ func decodeCommitLine(c Commit, line []byte, rd *bufio.Reader) error {
 			}
 		}
 	case bytes.HasPrefix(line, []byte("gpgsig ")):
-		sig, err := decodeGpgSig(rd)
+		sig, err := decodeGpgSig(string(line[len("gpgsig "):]), rd)
 		if err != nil {
 			return err
 		}
@@ -112,23 +111,9 @@ func decodeCommitLine(c Commit, line []byte, rd *bufio.Reader) error {
 	return nil
 }
 
-func decodeGpgSig(rd *bufio.Reader) (_GpgSig, error) {
+func decodeGpgSig(firstLine string, rd *bufio.Reader) (_GpgSig, error) {
 	out := _GpgSig{}
-
-	line, _, err := rd.ReadLine()
-	if err != nil {
-		return out, err
-	}
-
-	if string(line) != " " {
-		if strings.HasPrefix(string(line), " Version: ") || strings.HasPrefix(string(line), " Comment: ") {
-			out.x += string(line) + "\n"
-		} else {
-			return out, fmt.Errorf("expected first line of sig to be a single space or version")
-		}
-	} else {
-		out.x += " \n"
-	}
+	out.x = firstLine + "\n"
 
 	for {
 		line, _, err := rd.ReadLine()
@@ -136,11 +121,15 @@ func decodeGpgSig(rd *bufio.Reader) (_GpgSig, error) {
 			return out, err
 		}
 
-		if bytes.Equal(line, []byte(" -----END PGP SIGNATURE-----")) {
-			break
+		if len(line) == 0 || line[0] != ' ' {
+			return out, fmt.Errorf("unexpected end of signature")
 		}
 
 		out.x += string(line) + "\n"
+
+		if bytes.HasPrefix(line, []byte(" -----END")) && bytes.HasSuffix(line, []byte("-----")) {
+			break
+		}
 	}
 
 	return out, nil
@@ -172,9 +161,7 @@ func encodeCommit(n ipld.Node, w io.Writer) error {
 		fmt.Fprintf(buf, "%s", mtag.message.x)
 	}
 	if c.signature.m == schema.Maybe_Value {
-		fmt.Fprintln(buf, "gpgsig -----BEGIN PGP SIGNATURE-----")
-		fmt.Fprint(buf, c.signature.v.x)
-		fmt.Fprintln(buf, " -----END PGP SIGNATURE-----")
+		fmt.Fprintf(buf, "gpgsig %s", c.signature.v.x)
 	}
 	for _, line := range c.other.x {
 		fmt.Fprintln(buf, line.x)
