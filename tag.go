@@ -40,7 +40,11 @@ func DecodeTag(na ipld.NodeAssembler, rd *bufio.Reader) error {
 				return err
 			}
 
-			out.object = _Link{cidlink.Link{Cid: shaToCid(sha)}}
+			c, err := shaToCid(sha)
+			if err != nil {
+				return err
+			}
+			out.object = _Link{cidlink.Link{Cid: c}}
 		case bytes.HasPrefix(line, []byte("tag ")):
 			out.tag = _String{string(line[tagTagPrefixLen:])}
 		case bytes.HasPrefix(line, []byte("tagger ")):
@@ -71,7 +75,11 @@ func DecodeTag(na ipld.NodeAssembler, rd *bufio.Reader) error {
 func readMergeTag(hash []byte, rd *bufio.Reader) (Tag, []byte, error) {
 	out := _Tag{}
 
-	out.object = _Link{cidlink.Link{Cid: shaToCid(hash)}}
+	objCid, err := shaToCid(hash)
+	if err != nil {
+		return nil, nil, err
+	}
+	out.object = _Link{cidlink.Link{Cid: objCid}}
 	for {
 		line, _, err := rd.ReadLine()
 		if err != nil {

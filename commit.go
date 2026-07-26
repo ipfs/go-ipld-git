@@ -50,14 +50,24 @@ func decodeCommitLine(c Commit, line []byte, rd *bufio.Reader) error {
 			return err
 		}
 
-		c.tree = _Tree_Link{cidlink.Link{Cid: shaToCid(sha)}}
+		treeCid, err := shaToCid(sha)
+		if err != nil {
+			return err
+		}
+
+		c.tree = _Tree_Link{cidlink.Link{Cid: treeCid}}
 	case bytes.HasPrefix(line, []byte("parent ")):
 		psha, err := hex.DecodeString(string(line[7:]))
 		if err != nil {
 			return err
 		}
 
-		c.parents.x = append(c.parents.x, _Commit_Link{cidlink.Link{Cid: shaToCid(psha)}})
+		parentCid, err := shaToCid(psha)
+		if err != nil {
+			return err
+		}
+
+		c.parents.x = append(c.parents.x, _Commit_Link{cidlink.Link{Cid: parentCid}})
 	case bytes.HasPrefix(line, []byte("author ")):
 		a, err := parsePersonInfo(line)
 		if err != nil {
