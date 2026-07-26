@@ -33,15 +33,17 @@ func TestObjectParse(t *testing.T) {
 			return err
 		}
 		if info.IsDir() {
+			// Only loose object files should reach the code below. Skip the
+			// pack and info directories and everything inside them, because
+			// git keeps other kinds of files there, such as a commit-graph
+			// tucked in a folder under info.
+			if name := info.Name(); name == "info" || name == "pack" {
+				return filepath.SkipDir
+			}
 			return nil
 		}
 
 		parts := strings.Split(path, string(filepath.Separator))
-
-		dir := parts[len(parts)-2]
-		if dir == "info" || dir == "pack" {
-			return nil
-		}
 
 		fi, err := os.Open(path)
 		if err != nil {
