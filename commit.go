@@ -130,19 +130,24 @@ func decodeGpgSig(rd *bufio.Reader) (_GpgSig, error) {
 		return out, err
 	}
 
+	// Accumulate in a builder: the signature has no fixed size, and repeated
+	// string concatenation would copy the whole thing on every line.
+	var sig strings.Builder
+
 	if string(line) != " " {
 		if strings.HasPrefix(string(line), " Version: ") || strings.HasPrefix(string(line), " Comment: ") {
-			out.x += string(line) + "\n"
+			sig.WriteString(string(line) + "\n")
 		} else {
 			return out, fmt.Errorf("expected first line of sig to be a single space or version")
 		}
 	} else {
-		out.x += " \n"
+		sig.WriteString(" \n")
 	}
 
 	for {
 		line, _, err := rd.ReadLine()
 		if err != nil {
+			out.x = sig.String()
 			return out, err
 		}
 
@@ -150,9 +155,10 @@ func decodeGpgSig(rd *bufio.Reader) (_GpgSig, error) {
 			break
 		}
 
-		out.x += string(line) + "\n"
+		sig.WriteString(string(line) + "\n")
 	}
 
+	out.x = sig.String()
 	return out, nil
 }
 

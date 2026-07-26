@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
@@ -101,17 +102,22 @@ func readMergeTag(hash []byte, rd *bufio.Reader) (Tag, []byte, error) {
 			}
 			out.tagger = *tagger
 		case string(line) == " ":
+			// Accumulate in a builder: the message has no fixed size, and
+			// repeated string concatenation would copy it on every line.
+			var msg strings.Builder
 			for {
 				line, _, err := rd.ReadLine()
 				if err != nil {
+					out.message.x = msg.String()
 					return nil, nil, err
 				}
 
 				if !bytes.HasPrefix(line, []byte(" ")) {
+					out.message.x = msg.String()
 					return &out, line, nil
 				}
 
-				out.message.x += string(line) + "\n"
+				msg.WriteString(string(line) + "\n")
 			}
 		}
 	}
