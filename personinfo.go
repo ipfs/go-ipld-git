@@ -44,12 +44,15 @@ func parsePersonInfo(line []byte) (PersonInfo, error) {
 			return nil, fmt.Errorf("invalid personInfo: %q", line)
 		}
 		part := parts[at]
-		if part[0] == '<' {
+		// A part can be empty when the email contains repeated spaces, which
+		// git itself produces, so skip rather than index into it. The name loop
+		// above already treats that case the same way.
+		if len(part) > 0 && part[0] == '<' {
 			part = part[1:]
 		}
 
 		at++
-		if part[len(part)-1] == '>' {
+		if len(part) > 0 && part[len(part)-1] == '>' {
 			email.WriteString(string(part[:len(part)-1]))
 			break
 		}

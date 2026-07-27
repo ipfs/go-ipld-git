@@ -50,14 +50,24 @@ func decodeCommitLine(c Commit, line []byte, rd *bufio.Reader) error {
 			return err
 		}
 
-		c.tree = _Tree_Link{cidlink.Link{Cid: shaToCid(sha)}}
+		treeCid, err := shaToCid(sha)
+		if err != nil {
+			return err
+		}
+
+		c.tree = _Tree_Link{cidlink.Link{Cid: treeCid}}
 	case bytes.HasPrefix(line, []byte("parent ")):
 		psha, err := hex.DecodeString(string(line[7:]))
 		if err != nil {
 			return err
 		}
 
-		c.parents.x = append(c.parents.x, _Commit_Link{cidlink.Link{Cid: shaToCid(psha)}})
+		parentCid, err := shaToCid(psha)
+		if err != nil {
+			return err
+		}
+
+		c.parents.x = append(c.parents.x, _Commit_Link{cidlink.Link{Cid: parentCid}})
 	case bytes.HasPrefix(line, []byte("author ")):
 		a, err := parsePersonInfo(line)
 		if err != nil {
@@ -120,19 +130,24 @@ func decodeGpgSig(rd *bufio.Reader) (_GpgSig, error) {
 		return out, err
 	}
 
+	// Accumulate in a builder: the signature has no fixed size, and repeated
+	// string concatenation would copy the whole thing on every line.
+	var sig strings.Builder
+
 	if string(line) != " " {
 		if strings.HasPrefix(string(line), " Version: ") || strings.HasPrefix(string(line), " Comment: ") {
-			out.x += string(line) + "\n"
+			sig.WriteString(string(line) + "\n")
 		} else {
 			return out, fmt.Errorf("expected first line of sig to be a single space or version")
 		}
 	} else {
-		out.x += " \n"
+		sig.WriteString(" \n")
 	}
 
 	for {
 		line, _, err := rd.ReadLine()
 		if err != nil {
+			out.x = sig.String()
 			return out, err
 		}
 
@@ -140,9 +155,10 @@ func decodeGpgSig(rd *bufio.Reader) (_GpgSig, error) {
 			break
 		}
 
-		out.x += string(line) + "\n"
+		sig.WriteString(string(line) + "\n")
 	}
 
+	out.x = sig.String()
 	return out, nil
 }
 
