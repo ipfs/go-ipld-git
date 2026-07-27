@@ -6,6 +6,7 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,16 +29,16 @@ func TestObjectParse(t *testing.T) {
 	ls := cidlink.DefaultLinkSystem()
 
 	i := 0
-	err := filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
+	err := filepath.WalkDir(".git/objects", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-		if info.IsDir() {
+		if d.IsDir() {
 			// Only loose object files should reach the code below. Skip the
 			// pack and info directories and everything inside them, because
 			// git keeps other kinds of files there, such as a commit-graph
 			// tucked in a folder under info.
-			if name := info.Name(); name == "info" || name == "pack" {
+			if name := d.Name(); name == "info" || name == "pack" {
 				return filepath.SkipDir
 			}
 			return nil
@@ -409,16 +410,16 @@ func assert(t *testing.T, ok bool) {
 
 func BenchmarkRawData(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		err := filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
+		err := filepath.WalkDir(".git/objects", func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return nil
 			}
-			if info.IsDir() {
-				return nil
-			}
-
-			parts := strings.Split(path, string(filepath.Separator))
-			if dir := parts[len(parts)-2]; dir == "info" || dir == "pack" {
+			if d.IsDir() {
+				// See TestObjectParse: git keeps files that are not loose
+				// objects under pack and info.
+				if name := d.Name(); name == "info" || name == "pack" {
+					return filepath.SkipDir
+				}
 				return nil
 			}
 
@@ -450,16 +451,16 @@ func BenchmarkCid(b *testing.B) {
 	ls := cidlink.DefaultLinkSystem()
 
 	for i := 0; i < b.N; i++ {
-		err := filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
+		err := filepath.WalkDir(".git/objects", func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return nil
 			}
-			if info.IsDir() {
-				return nil
-			}
-
-			parts := strings.Split(path, string(filepath.Separator))
-			if dir := parts[len(parts)-2]; dir == "info" || dir == "pack" {
+			if d.IsDir() {
+				// See TestObjectParse: git keeps files that are not loose
+				// objects under pack and info.
+				if name := d.Name(); name == "info" || name == "pack" {
+					return filepath.SkipDir
+				}
 				return nil
 			}
 
